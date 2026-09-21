@@ -1529,7 +1529,7 @@ document.addEventListener('DOMContentLoaded',function(){
   function collectStackWeights(x){const out={};[...(x.wheatStacks||[]),...(x.riceStacks||[])].forEach(o=>{const k=String(o.stack||'').trim();if(k)out[k]=stackWeightValue(x,o);});return out;}
   function stackCommodityCell(x){
     let locked=false; try{const ovs=JSON.parse(localStorage.getItem('shambhuALPOverridesV1')||'{}'); locked=!!ovs[String(x.date||'')]?.locked;}catch(e){locked=false;}
-    const fmt=(arr,cls)=>arr.length?`<div class="stack-commodity-block ${cls}"><div class="stack-items stack-compact-items">${arr.map(o=>{const k=String(o.stack||'').trim();const wt=(locked&&x.stackWeights&&x.stackWeights[k])||stackWeightValue(x,o);const dArg=JSON.stringify(String(x.date||'')),kArg=JSON.stringify(k);const tap=`onpointerdown="event.preventDefault();event.stopPropagation();return toggleStackWeight(${dArg},${kArg},this)" onclick="event.preventDefault();event.stopPropagation();return false"`;return `<button type="button" class="stack-item stack-weight-toggle" data-weight-date="${escC(String(x.date||''))}" data-weight-stack="${escC(k)}" ${tap} title="Tap FEW / HEAVY to change"><span>${escC(k)}</span><small class="stack-detail">(${Math.round(chemNum(o.mt))} MT)</small><em class="stack-detail">${wt}</em></button>`;}).join('')}</div></div>`:'';
+    const fmt=(arr,cls)=>arr.length?`<div class="stack-commodity-block ${cls}"><div class="stack-items stack-compact-items">${arr.map(o=>{const k=String(o.stack||'').trim();const wt=(locked&&x.stackWeights&&x.stackWeights[k])||stackWeightValue(x,o);const dArg=JSON.stringify(String(x.date||'')),kArg=JSON.stringify(k);return `<button type="button" class="stack-item stack-weight-toggle" data-weight-date="${escC(String(x.date||''))}" data-weight-stack="${escC(k)}" title="Tap FEW / HEAVY to change"><span>${escC(k)}</span><small class="stack-detail">(${Math.round(chemNum(o.mt))} MT)</small><em class="stack-detail">${wt}</em></button>`;}).join('')}</div></div>`:'';
     const w=fmt(x.wheatStacks||[],'wheat-stack'),r=fmt(x.riceStacks||[],'rice-stack');
     if(w||r)return `<div class="stack-commodity-cell" onclick="toggleChemicalStackDetails(event)">${w}${r}</div>`;
     return `<div class="stack-fallback" onclick="toggleChemicalStackDetails(event)">${escC(x.stackText||'')}<span class="stack-detail"><small>(${x.count||0} stack)</small></span></div>`;
@@ -1839,39 +1839,32 @@ document.addEventListener('DOMContentLoaded',function(){
     };
   }
 
-  /* Rebuild stack buttons with data attributes; this avoids unreliable inline handlers on Android. */
-  const oldStackCommodityCell=stackCommodityCell;
-  window.__buildReliableStackButtons=function(){
-    /* The stack button already has one authoritative inline toggleStackWeight()
-       handler. Do not attach a second click handler here: on Android a tap
-       would toggle FEW -> HEAVY -> FEW and appear unchanged. */
-    document.querySelectorAll('.chem-register-table .stack-weight-toggle').forEach(btn=>{
-      btn.dataset.fhBound='1';
-    });
-  };
-
-  /* Make existing generated buttons carry stable data attributes. */
-  const origStackCommodityCell=window.stackCommodityCell;
-  if(typeof origStackCommodityCell==='function' && !window.__stackCellPatched){
-    window.__stackCellPatched=true;
-    /* Replace the internal function is not possible through lexical binding; delegation below handles current/future buttons. */
-  }
-
-  /* The button listener above is the single FEW/HEAVY toggle handler.
-     Do not add a second document-level toggle here: on Android that would
-     toggle twice and make FEW/HEAVY appear unchanged. */
+  /* Single delegated FEW/HEAVY handler. No inline touch/click handler is used, so one phone tap = one toggle. */
   function addStackData(){
     document.querySelectorAll('.chem-register-table .stack-weight-toggle').forEach(btn=>{
-      if(btn.dataset.weightStack)return;
-      const st=btn.querySelector('span')?.textContent?.trim()||'';
-      const row=btn.closest('tr');
-      const d=row?.querySelector('td:nth-child(2)')?.textContent?.trim()||'';
-      /* Store the display date key only as fallback. The original inline handler remains authoritative when present. */
-      if(st)btn.dataset.weightStack=st;
-      if(d)btn.dataset.weightDate=d;
+      btn.dataset.fhBound='1';
+      if(!btn.dataset.weightStack){const st=btn.querySelector('span')?.textContent?.trim()||'';if(st)btn.dataset.weightStack=st;}
     });
-    window.__buildReliableStackButtons();
   }
+  if(!window.__fewHeavyDelegatedBound){
+    window.__fewHeavyDelegatedBound=true;
+    document.addEventListener('click',function(ev){
+      const btn=ev.target && ev.target.closest ? ev.target.closest('.chem-register-table .stack-weight-toggle') : null;
+      if(!btn)return;
+      ev.preventDefault();
+      ev.stopPropagation();
+      const d=btn.dataset.weightDate||'';
+      const k=btn.dataset.weightStack||'';
+      if(!d||!k)return;
+      toggleStackWeight(d,k,btn);
+    },true);
+  }
+  setTimeout(addStackData,0);
+  document.addEventListener('click',function(ev){
+    const btn=ev.target && ev.target.closest ? ev.target.closest('.chem-register-table .stack-weight-toggle') : null;
+    if(btn)ev.stopPropagation();
+  },false);
+
   const oldOpen=window.openChemicalFolder;
   if(typeof oldOpen==='function' && !window.__chemOpenPatched){
     window.__chemOpenPatched=true;
@@ -1991,6 +1984,6 @@ document.addEventListener('DOMContentLoaded',function(){
 
 <style id="malathion-20-indicator">.mal-20-indicator{margin:10px 0 0;padding:10px;border:1px solid #d9b45b;border-left:4px solid #b8860b;border-radius:9px;background:#fffaf0}.mal-20-title{font-size:12px;font-weight:900;margin-bottom:7px;color:#6b4d00}.mal-20-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.mal-20-grid>div{background:#fff;border:1px solid #eadfbd;border-radius:7px;padding:6px;text-align:center}.mal-20-grid small{display:block;font-size:9px;color:#66736c}.mal-20-grid b{display:block;font-size:13px;margin-top:2px}.mal-20-baki{background:#fff1f1!important;border-color:#e6b4b4!important;color:#a12626}.mal-20-all{font-size:10px;margin-top:7px;padding-top:6px;border-top:1px solid #eadfbd}.mal-20-report-indicator{margin:9px 0;padding:9px;border:1px solid #d9b45b;border-left:4px solid #b8860b;border-radius:8px;background:#fffaf0;font-size:12px}.mal-20-report-indicator strong{color:#a12626}@media(max-width:600px){.mal-20-grid{grid-template-columns:repeat(2,1fr)}}</style>
 <style id="chemical-malathion-entry-final">
-.malathion-add-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding-top:2px}.malathion-add-btn{font-size:12px!important;padding:8px 11px!important}.malathion-entry-box{max-width:520px!important}.malathion-entry-form{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.malathion-entry-form label{display:grid;gap:4px;font-size:11px;font-weight:800}.malathion-entry-form input,.malathion-entry-form select{width:100%;padding:9px;border:1px solid #cbd9d3;border-radius:8px;background:#fff}.commodity-toggle{border:1px solid #8bb5d5;border-radius:8px;padding:9px;background:#e8f3ff;color:#246a9d;font-weight:900}.commodity-toggle.wheat{background:#fff2d8;border-color:#d8b66c;color:#9a6500}.commodity-toggle.rice{background:#e8f3ff;border-color:#8bb5d5;color:#246a9d}.mal-consumption-preview{grid-column:1/-1;background:#f3f8f5;border:1px solid #d8e6df;border-radius:8px;padding:9px;font-size:12px}.malathion-entry-actions{justify-content:flex-end}.stack-weight-toggle{touch-action:manipulation}.stack-weight-toggle em{pointer-events:none}.stack-weight-toggle.weight-heavy{transform:scale(1.02)}.stack-weight-toggle.weight-flash{outline:2px solid #0a7a4b;outline-offset:1px}
+.malathion-add-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding-top:2px}.malathion-add-btn{font-size:12px!important;padding:8px 11px!important}.malathion-entry-box{max-width:520px!important}.malathion-entry-form{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.malathion-entry-form label{display:grid;gap:4px;font-size:11px;font-weight:800}.malathion-entry-form input,.malathion-entry-form select{width:100%;padding:9px;border:1px solid #cbd9d3;border-radius:8px;background:#fff}.commodity-toggle{border:1px solid #8bb5d5;border-radius:8px;padding:9px;background:#e8f3ff;color:#246a9d;font-weight:900}.commodity-toggle.wheat{background:#fff2d8;border-color:#d8b66c;color:#9a6500}.commodity-toggle.rice{background:#e8f3ff;border-color:#8bb5d5;color:#246a9d}.mal-consumption-preview{grid-column:1/-1;background:#f3f8f5;border:1px solid #d8e6df;border-radius:8px;padding:9px;font-size:12px}.malathion-entry-actions{justify-content:flex-end}.stack-weight-toggle{touch-action:manipulation}.stack-weight-toggle em{pointer-events:none}.stack-weight-toggle.weight-heavy{transform:scale(1.02)}.stack-weight-toggle.weight-heavy em{color:#c62828!important;font-weight:900!important}.stack-weight-toggle:not(.weight-heavy) em{color:#168a45!important;font-weight:900!important}.stack-weight-toggle.weight-flash{outline:2px solid #0a7a4b;outline-offset:1px}
 @media(max-width:560px){.malathion-entry-form{grid-template-columns:1fr}.mal-consumption-preview{grid-column:auto}}
 </style>
