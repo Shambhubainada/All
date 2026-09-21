@@ -1836,32 +1836,11 @@ document.addEventListener('DOMContentLoaded',function(){
   /* Rebuild stack buttons with data attributes; this avoids unreliable inline handlers on Android. */
   const oldStackCommodityCell=stackCommodityCell;
   window.__buildReliableStackButtons=function(){
-    const cells=document.querySelectorAll('.chem-register-table .stack-weight-toggle');
-    cells.forEach(btn=>{
-      if(btn.dataset.fhBound==='1')return;
+    /* The stack button already has one authoritative inline toggleStackWeight()
+       handler. Do not attach a second click handler here: on Android a tap
+       would toggle FEW -> HEAVY -> FEW and appear unchanged. */
+    document.querySelectorAll('.chem-register-table .stack-weight-toggle').forEach(btn=>{
       btn.dataset.fhBound='1';
-      btn.addEventListener('click',function(ev){
-        ev.preventDefault(); ev.stopPropagation(); ev.stopImmediatePropagation();
-        const date=this.dataset.weightDate||'';
-        const st=this.dataset.weightStack||'';
-        if(!date||!st)return;
-        let v='FEW';
-        const key='shambhuChemicalStackWeight_'+date+'_'+st;
-        try{v=JSON.parse(localStorage.getItem(key)||'"FEW"')}catch(e){}
-        v=v==='HEAVY'?'FEW':'HEAVY';
-        localStorage.setItem(key,JSON.stringify(v));
-        try{
-          const ovs=JSON.parse(localStorage.getItem('shambhuALPOverridesV1')||'{}');
-          if(ovs[date] && ovs[date].locked){
-            ovs[date].stackWeights=ovs[date].stackWeights||{};
-            ovs[date].stackWeights[st]=v;
-            localStorage.setItem('shambhuALPOverridesV1',JSON.stringify(ovs));
-          }
-        }catch(e){}
-        const em=this.querySelector('em'); if(em)em.textContent=v;
-        this.classList.toggle('weight-heavy',v==='HEAVY');
-        this.setAttribute('aria-label',v);
-      },{passive:false});
     });
   };
 
