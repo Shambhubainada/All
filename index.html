@@ -462,6 +462,14 @@ body.dashboard-open .final-quick-row{display:none!important}
 /* Only requested: Receipt Date, Crop Year, Auto RMC, Manual RMC and Current RMC stay out of the main page; Add New Stack popup keeps its fields. */
 .moisture-focused-page .mo-stack-details{display:none!important}
 </style>
+
+<style id="alp-delta-report-indicator-final">
+.alp-report-box,.alp-indicator-outside,.delta-indicator-outside{display:block!important;width:100%!important;box-sizing:border-box!important;visibility:visible!important;opacity:1!important}
+.alp-indicator-outside,.delta-indicator-outside{margin:8px 0 4px!important;padding:0!important}
+.alp-indicator-outside .report-summary-row,.delta-indicator-outside .report-summary-row{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:3px!important}
+.alp-indicator-outside .report-summary-row>div,.delta-indicator-outside .report-summary-row>div{min-width:0!important;white-space:normal!important;font-size:8px!important;line-height:1.15!important;padding:5px 2px!important}
+.alp-indicator-outside .report-summary-row b,.delta-indicator-outside .report-summary-row b{display:block!important;font-size:8px!important}
+</style>
 </head>
 <body>
 <div class="pin-screen" id="pinScreen">
@@ -1752,21 +1760,35 @@ document.addEventListener('DOMContentLoaded',function(){
 </style>
 </html>`;}
   window.renderChemicalReport=function(){
-    try{
-      const box=document.getElementById(activeChemicalFolder==='Malathion'?'chemSummary':activeChemicalFolder==='Delta'?'deltaReportSummary':'alpReportSummary');
-      if(!box)return;
-      const r=reportData();
-      if(activeChemicalFolder==='ALP'){
-        const wm=r.mm.reduce((s,x)=>s+Number(x.wheat||0),0), rm=r.mm.reduce((s,x)=>s+Number(x.rice||0),0);
-        box.innerHTML=`<div class="report-summary-row"><div><b>WHEAT FUMIGATION</b><br>${wm} stacks · ${Math.round(r.wheatQty)} MT</div><div><b>RICE FUMIGATION</b><br>${rm} stacks · ${Math.round(r.riceQty)} MT</div><div><b>TOTAL FUMIGATION</b><br>${Math.round(r.wheatQty+r.riceQty)} MT</div><div><b>TOTAL ALP USED</b><br>${r.mm.reduce((s,x)=>s+chemNum(x.consumption),0).toFixed(3)} kg</div></div>`;
-      }else if(activeChemicalFolder==='Delta'){
-        box.innerHTML=`<div class="report-summary-row"><div><b>WHEAT DELTA SPRAY</b><br>${Math.round(r.wheatQty||0)} MT</div><div><b>RICE DELTA SPRAY</b><br>${Math.round(r.riceQty||0)} MT</div><div><b>TOTAL DELTA SPRAY</b><br>${Math.round((r.wheatQty||0)+(r.riceQty||0))} MT</div><div><b>TOTAL DELTA USED TILL DATE</b><br>${chemNum(r.allTotalDelta).toFixed(3)} kg</div></div>`;
-      }else if(activeChemicalFolder==='Malathion'){
-        const t=r.monthWheatQty+r.monthRiceQty, target=t*0.20, done=r.mm.reduce((s,x)=>s+Math.round(chemNum(x.qty)),0), remain=Math.max(0,target-done), pct=target>0?Math.min(100,done/target*100):0;
-        box.innerHTML=`<div class="mal-20-report-indicator"><b>20% MALATHION REQUIREMENT</b><br>Target ${target.toFixed(2)} MT · Done ${done.toFixed(2)} MT · <strong>Baki ${remain.toFixed(2)} MT</strong> · ${pct.toFixed(0)}% complete</div>`;
-      }
-    }catch(e){console.error('Chemical report render error',e);}
-  };
+  try{
+    const id=activeChemicalFolder==='Malathion'?'chemSummary':activeChemicalFolder==='Delta'?'deltaReportSummary':'alpReportSummary';
+    const box=document.getElementById(id); if(!box)return;
+    const r=reportData();
+    const now=new Date(), y=now.getFullYear(), mo=String(now.getMonth()+1).padStart(2,'0');
+    const monthFrom=y+'-'+mo+'-01', today=y+'-'+mo+'-'+String(now.getDate()).padStart(2,'0');
+    const tillDate=a=>Array.isArray(a)?a.filter(x=>{const d=chemISODateValue(x.date);return d>=monthFrom&&d<=today;}):[];
+    if(activeChemicalFolder==='ALP'){
+      const till=tillDate(r.total);
+      const wheatMt=till.reduce((s,x)=>s+chemNum(x.wheatMt||0),0), riceMt=till.reduce((s,x)=>s+chemNum(x.riceMt||0),0);
+      const totalMt=wheatMt+riceMt, usedTill=till.reduce((s,x)=>s+chemNum(x.consumption),0);
+      box.innerHTML=`<div class="report-summary-row"><div><b>TOTAL ALP FUMIGATION</b><br>${Math.round(totalMt)} MT</div><div><b>WHEAT FUMIGATION</b><br>${Math.round(wheatMt)} MT</div><div><b>RICE FUMIGATION</b><br>${Math.round(riceMt)} MT</div><div><b>TOTAL ALP USED</b><br>${usedTill.toFixed(3)} kg</div></div>`;
+    }else if(activeChemicalFolder==='Delta'){
+      const till=tillDate(r.total), wheatMt=till.reduce((s,x)=>s+chemNum(x.wheatMt||0),0), riceMt=till.reduce((s,x)=>s+chemNum(x.riceMt||0),0);
+      const wheatStacks=till.reduce((s,x)=>s+Number(x.wheat||0),0), riceStacks=till.reduce((s,x)=>s+Number(x.rice||0),0), totalStacks=wheatStacks+riceStacks, totalMt=wheatMt+riceMt;
+      const currentKg=till.reduce((s,x)=>s+chemNum(x.consumption),0);
+      box.innerHTML=`<div class="report-summary-row"><div><b>TOTAL DELTA SPRAY</b><br>${Math.round(totalMt)} MT · ${totalStacks} stacks</div><div><b>WHEAT DELTA</b><br>${Math.round(wheatMt)} MT · ${wheatStacks} stacks</div><div><b>RICE DELTA</b><br>${Math.round(riceMt)} MT · ${riceStacks} stacks</div><div><b>DELTA USED</b><br>${currentKg.toFixed(3)} kg</div></div>`;
+    }else if(activeChemicalFolder==='Malathion'){
+      const malAll=Array.isArray(r.total)?r.total:[], malTill=tillDate(malAll);
+      const alpTill=tillDate(alpAutoGroups());
+      const alpMt=alpTill.reduce((s,x)=>s+chemNum(x.wheatMt||0)+chemNum(x.riceMt||0),0);
+      const required=alpMt*0.20;
+      const actual=malTill.reduce((s,x)=>s+chemNum(x.qty),0);
+      const due=Math.max(0,required-actual);
+      const usedL=malTill.reduce((s,x)=>s+chemNum(x.consumption),0);
+      box.innerHTML=`<div class="report-summary-row"><div><b>REQUIRED MALATHION</b><br>${required.toFixed(2)} MT</div><div><b>ACTUAL MALATHION SPRAY</b><br>${actual.toFixed(2)} MT</div><div><b>DUE MALATHION</b><br>${due.toFixed(2)} MT</div><div><b>MALATHION USED</b><br>${usedL.toFixed(3)} Ltr</div></div>`;
+    }
+  }catch(e){console.error('Chemical report render error',e);}
+};
   window.viewChemicalReport=function(){const w=window.open('','_blank');if(!w){alert('Popup blocked. Allow popups for View Report.');return}w.document.write(activeChemicalFolder==='ALP'?alpReportHtml():activeChemicalFolder==='Delta'?deltaReportHtml():activeChemicalFolder==='Malathion'?malathionReportHtml():reportHtml());w.document.close();};
   window.downloadChemicalPDF=function(){const w=window.open('','_blank');if(!w){alert('Popup blocked.');return}w.document.write((activeChemicalFolder==='ALP'?alpReportHtml():activeChemicalFolder==='Delta'?deltaReportHtml():activeChemicalFolder==='Malathion'?malathionReportHtml():reportHtml()).replace('</body>','<script>window.onload=function(){setTimeout(function(){window.print()},300)}<\\/script></body>'));w.document.close();};
   window.downloadChemicalExcel=function(){const r=reportData(),html=activeChemicalFolder==='ALP'?alpReportHtml():activeChemicalFolder==='Delta'?deltaReportHtml():activeChemicalFolder==='Malathion'?malathionReportHtml():reportHtml();const blob=new Blob([html],{type:'application/vnd.ms-excel'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='SHAMBHU_SHED_Chemical_Report_'+r.m+'.xls';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);};
