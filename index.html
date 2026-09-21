@@ -1684,7 +1684,7 @@ document.addEventListener('DOMContentLoaded',function(){
     if(folder==='Malathion'){
       return `<div class="panel"><div class="panelhead"><button class="pill" onclick="openChemicalFolders()">← CHEMICAL FOLDERS</button> &nbsp; 🧴 MALATHION REGISTER</div>
         <div class="malathion-add-row"><button class="chem-save malathion-add-btn" onclick="openMalathionEntry()">➕ ADD NEW ENTRY</button><span class="smallmuted">0.061 Ltr per stack</span></div>
-        ${malathionProgressHtml()}
+        ${typeof window.malathionProgressHtml==='function'?window.malathionProgressHtml():'<div class="mal-20-indicator"><div class="mal-20-title">20% MALATHION REQUIREMENT</div><div class="mal-20-grid"><div><small>TOTAL ALP MT STOCK — ALP REPORT</small><b>0 MT</b></div><div><small>20% MALATHION REQUIRED</small><b>0.00 MT</b></div><div><small>ACTUALLY MALATHION DONE</small><b>0.00 MT</b></div><div class="mal-20-baki"><small>MALATHION DUE</small><b>0.00 MT</b></div></div><div class="mal-20-all"><b>ACTUAL MALATHION CONSUMPTION:</b> 0.000 Ltr</div></div>'}
       </div>
       <div class="panel"><div class="panelhead">📒 MALATHION CONSUMPTION REGISTER</div>
         <div class="chem-register-wrap"><table class="chem-table chem-register-table"><thead><tr><th>Sr No.</th><th>Date</th><th>Stack Number</th><th>Qty (MT)</th><th>Consumption</th><th>Progressive Consumption</th><th>Commodity</th><th>Action</th></tr></thead><tbody id="chemRows">${malathionTableRows()}</tbody></table></div><div class="chemical-actions chem-register-downloads"><button class="chem-orange" onclick="downloadChemicalRegisterExcel('Malathion')">📊 REGISTER EXCEL</button><button class="chem-red" onclick="downloadChemicalRegisterPDF('Malathion')">📄 REGISTER PDF</button></div>
