@@ -1846,54 +1846,41 @@ document.addEventListener('DOMContentLoaded',function(){
 <script id="chemical-final-interaction-fix-js">
 (function(){
   /* Malathion progress block was referenced by chemicalPage() but was missing in some builds. */
-  window.malathionProgressHtml=function(){try{
-    const alp=typeof alpAutoGroups==='function'?alpAutoGroups():[], mal=typeof malathionEntries==='function'?malathionEntries():[], del=typeof deltaAutoGroups==='function'?deltaAutoGroups():[];
-    const total=alp.reduce((sum,x)=>sum+chemNum(x.wheatMt)+chemNum(x.riceMt),0);
-    const targetMal=total*0.20, targetDelta=total*0.80;
-    let deltaDone=0; const seenDelta=new Set();
-    const sourceRows=typeof activeRows==='function'?activeRows():rows;
-    const qtyByStack=new Map(); sourceRows.forEach(r=>{const st=String(stack(r)||'').trim();if(st&&!qtyByStack.has(st))qtyByStack.set(st,chemNum(qty(r)));});
-    del.forEach(g=>String(g.stackText||'').split(',').map(x=>x.trim()).filter(Boolean).forEach(st=>{if(!seenDelta.has(st)){seenDelta.add(st);deltaDone+=chemNum(qtyByStack.get(st)||0);}}));
-    const malDone=mal.reduce((sum,x)=>sum+chemNum(x.qty),0), malDue=Math.max(0,targetMal-malDone), deltaDue=Math.max(0,targetDelta-deltaDone);
-    const deltaPct=total>0?Math.min(100,deltaDone/total*100):0, malPct=total>0?Math.min(100,malDone/total*100):0;
-    const consumption=mal.reduce((sum,x)=>sum+chemNum(x.consumption),0);
-    return '<div class="mal-20-indicator '+((malDue>0||deltaDue>0)?'mal-20-blink':'')+'"><div class="mal-20-title">ALP / DELTA / MALATHION STOCK STATUS</div><div class="mal-20-grid"><div><small>TOTAL ALP STOCK</small><b>'+Math.round(total)+' MT</b></div><div><small>DELTA DONE</small><b>'+deltaPct.toFixed(1)+'% · '+Math.round(deltaDone)+' MT</b></div><div><small>MALATHION DONE</small><b>'+malPct.toFixed(1)+'% · '+Math.round(malDone)+' MT</b></div><div class="mal-20-baki"><small>MALATHION 20% — TO DO</small><b>'+malDue.toFixed(2)+' MT</b></div><div class="mal-20-baki"><small>DELTA 80% — TO DO</small><b>'+deltaDue.toFixed(2)+' MT</b></div><div><small>MALATHION REQUIRED (20%)</small><b>'+targetMal.toFixed(2)+' MT</b></div><div><small>DELTA REQUIRED (80%)</small><b>'+targetDelta.toFixed(2)+' MT</b></div></div><div class="mal-20-all"><b>ACTUAL MALATHION CONSUMPTION:</b> '+consumption.toFixed(3)+' Ltr</div></div>';
-  }catch(e){console.error('Malathion indicator error',e);return '<div class="note">Malathion stock indicator unavailable.</div>';}};
-})();
-</script>
-</body></html>
-<style>
-/* FINAL NOTEPAD UPPERCASE DISPLAY */
-.notepad-shell,.notes-grid .pending-work-panel,.notes-grid .note-entry-panel{ text-transform:uppercase; }
-.notepad-shell .notepad-help,.pending-work-panel #noteList,.note-entry-panel .note-form,.notification-permission{ text-transform:uppercase; }
-.pending-work-panel .note-item .smallmuted{ text-transform:uppercase; }
-.note-entry-panel textarea{ text-transform:uppercase; }
-</style>
-<style id="moisture-add-stack-popup-final-fix">
-/* Add New Stack: keep all entry details inside the popup, not on the main screen. */
-.moisture-focused-page .mo-stack-details{display:none!important}
-/* Keep the Add New Stack dialog at the top so Android keyboard cannot cover its fields. */
-#modal.mo-add-stack-modal-fix{align-items:flex-start!important;justify-content:center!important;overflow-y:auto!important;padding:8px 10px max(8px,env(safe-area-inset-bottom))!important}
-#modal.mo-add-stack-modal-fix .modalbox{margin-top:max(8px,env(safe-area-inset-top));margin-bottom:8px;width:min(680px,100%);max-height:calc(100dvh - 16px);overflow-y:auto;-webkit-overflow-scrolling:touch}
-#modal.mo-add-stack-modal-fix .mo-add-stack-box{padding-bottom:4px}
-@media(max-width:560px){
-  #modal.mo-add-stack-modal-fix{padding:6px 7px max(6px,env(safe-area-inset-bottom))!important}
-  #modal.mo-add-stack-modal-fix .modalbox{margin-top:max(6px,env(safe-area-inset-top));max-height:calc(100dvh - 12px);padding:12px}
-  #modal.mo-add-stack-modal-fix input,#modal.mo-add-stack-modal-fix select{font-size:16px!important}
-}
-</style>
-<script>
-(function(){
-  const oldOpenAdd=window.openAddMoistureStackModal;
-  if(typeof oldOpenAdd!=='function') return;
-  window.openAddMoistureStackModal=function(){
-    oldOpenAdd();
-    const m=document.getElementById('modal');
-    if(m) m.classList.add('mo-add-stack-modal-fix');
-    requestAnimationFrame(function(){
-      const s=document.getElementById('newMoStack');
-      if(s){s.focus({preventScroll:true}); s.scrollIntoView({block:'nearest'});}
-    });
+  window.malathionProgressHtml=function(){
+    try{
+      const mal=typeof malathionEntries==='function'?malathionEntries():[];
+      const del=typeof deltaAutoGroups==='function'?deltaAutoGroups():[];
+      let total=0;
+      try{
+        const rr=typeof reportData==='function'?reportData():null;
+        if(rr && rr.allWheatQty!=null && rr.allRiceQty!=null) total=Number(rr.allWheatQty||0)+Number(rr.allRiceQty||0);
+      }catch(e){}
+      if(!Number.isFinite(total)||total<=0){
+        try{
+          const alp=typeof alpAutoGroups==='function'?alpAutoGroups():[];
+          total=alp.reduce((sum,x)=>sum+Number(x.wheatMt||0)+Number(x.riceMt||0),0);
+        }catch(e){ total=0; }
+      }
+      const targetMal=total*0.20, targetDelta=total*0.80;
+      let deltaDone=0; const seenDelta=new Set();
+      const sourceRows=typeof activeRows==='function'?activeRows():((typeof rows!=='undefined'&&Array.isArray(rows))?rows:[]);
+      const qtyByStack=new Map();
+      sourceRows.forEach(r=>{const st=String(typeof stack==='function'?stack(r):'').trim();if(st&&!qtyByStack.has(st))qtyByStack.set(st,Number(typeof qty==='function'?qty(r):0)||0);});
+      del.forEach(g=>String(g.stackText||'').split(',').map(x=>x.trim()).filter(Boolean).forEach(st=>{if(!seenDelta.has(st)){seenDelta.add(st);deltaDone+=Number(qtyByStack.get(st)||0);}}));
+      let malDone=0;
+      mal.forEach(x=>{
+        const ss=typeof malEntryStacks==='function'?malEntryStacks(x):[];
+        if(ss.length) malDone+=ss.reduce((sum,v)=>sum+Number(v.qty||0),0);
+        else malDone+=Number(x.qty||0);
+      });
+      const malDue=Math.max(0,targetMal-malDone), deltaDue=Math.max(0,targetDelta-deltaDone);
+      const deltaPct=total>0?Math.min(100,deltaDone/total*100):0, malPct=total>0?Math.min(100,malDone/total*100):0;
+      const consumption=mal.reduce((sum,x)=>sum+(Number(x.consumption)||0),0);
+      return '<div class="mal-20-indicator '+((malDue>0||deltaDue>0)?'mal-20-blink':'')+'"><div class="mal-20-title">ALP / DELTA / MALATHION STOCK STATUS</div><div class="mal-20-grid"><div><small>TOTAL ALP STOCK</small><b>'+Math.round(total)+' MT</b></div><div><small>DELTA DONE</small><b>'+deltaPct.toFixed(1)+'% · '+Math.round(deltaDone)+' MT</b></div><div><small>MALATHION DONE</small><b>'+malPct.toFixed(1)+'% · '+Math.round(malDone)+' MT</b></div><div class="mal-20-baki"><small>MALATHION 20% — TO DO</small><b>'+malDue.toFixed(2)+' MT</b></div><div class="mal-20-baki"><small>DELTA 80% — TO DO</small><b>'+deltaDue.toFixed(2)+' MT</b></div><div><small>MALATHION REQUIRED (20%)</small><b>'+targetMal.toFixed(2)+' MT</b></div><div><small>DELTA REQUIRED (80%)</small><b>'+targetDelta.toFixed(2)+' MT</b></div></div><div class="mal-20-all"><b>ACTUAL MALATHION CONSUMPTION:</b> '+consumption.toFixed(3)+' Ltr</div></div>';
+    }catch(e){
+      console.error('Malathion indicator error',e);
+      return '<div class="mal-20-indicator"><div class="mal-20-title">ALP / DELTA / MALATHION STOCK STATUS</div><div class="mal-20-grid"><div><small>TOTAL ALP STOCK</small><b>0 MT</b></div><div><small>DELTA DONE</small><b>0.0% · 0 MT</b></div><div><small>MALATHION DONE</small><b>0.0% · 0 MT</b></div><div class="mal-20-baki"><small>MALATHION 20% — TO DO</small><b>0.00 MT</b></div><div class="mal-20-baki"><small>DELTA 80% — TO DO</small><b>0.00 MT</b></div></div></div>';
+    }
   };
   const oldClose=window.closeModal;
   if(typeof oldClose==='function'){
