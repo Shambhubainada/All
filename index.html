@@ -1780,7 +1780,7 @@ document.addEventListener('DOMContentLoaded',function(){
       const till=tillDate(r.total), wheatMt=till.reduce((s,x)=>s+chemNum(x.wheatMt||0),0), riceMt=till.reduce((s,x)=>s+chemNum(x.riceMt||0),0);
       const wheatStacks=till.reduce((s,x)=>s+Number(x.wheat||0),0), riceStacks=till.reduce((s,x)=>s+Number(x.rice||0),0), totalStacks=wheatStacks+riceStacks, totalMt=wheatMt+riceMt;
       const currentKg=till.reduce((s,x)=>s+chemNum(x.consumption),0);
-      box.innerHTML=`<div class="report-summary-row"><div><b>TOTAL DELTA SPRAY</b><br>${Math.round(totalMt)} MT · ${totalStacks} stacks</div><div><b>WHEAT DELTA</b><br>${Math.round(wheatMt)} MT · ${wheatStacks} stacks</div><div><b>RICE DELTA</b><br>${Math.round(riceMt)} MT · ${riceStacks} stacks</div><div><b>DELTA USED</b><br>${currentKg.toFixed(3)} kg</div></div>`;
+      box.innerHTML=`<div class="report-summary-row"><div><b>TOTAL DELTA SPRAY</b><br>${Math.round(totalMt)} MT · ${totalStacks} stacks</div><div><b>WHEAT DELTA</b><br>${Math.round(wheatMt)} MT · ${wheatStacks} stacks</div><div><b>RICE DELTA</b><br>${Math.round(riceMt)} MT · ${riceStacks} stacks</div><div><b>TOTAL DELTA USED</b><br>${currentKg.toFixed(3)} kg</div></div>`;
     }else if(activeChemicalFolder==='Malathion'){
       const malAll=Array.isArray(r.total)?r.total:[], malTill=tillDate(malAll);
       const alpTill=tillDate(alpAutoGroups());
@@ -1944,7 +1944,7 @@ function malathionEntries(){
         const a=deltaAutoGroups().filter(x=>inMonth(x.date));
         const w=a.reduce((s,x)=>s+chemNum(x.wheatMt||0),0), r=a.reduce((s,x)=>s+chemNum(x.riceMt||0),0);
         const used=a.reduce((s,x)=>s+chemNum(x.consumption||0),0), box=document.getElementById('deltaReportSummary');
-        if(box) box.innerHTML='<div class="report-summary-row"><div><b>TOTAL DELTA SPRAY</b><br>'+Math.round(w+r)+' MT</div><div><b>WHEAT SPRAY</b><br>'+Math.round(w)+' MT</div><div><b>RICE SPRAY</b><br>'+Math.round(r)+' MT</div><div><b>TOTAL CONSUMPTION</b><br>'+used.toFixed(3)+' kg</div></div>';
+        if(box) box.innerHTML='<div class="report-summary-row"><div><b>TOTAL DELTA SPRAY</b><br>'+Math.round(w+r)+' MT</div><div><b>WHEAT DELTA SPRAY</b><br>'+Math.round(w)+' MT</div><div><b>RICE DELTA SPRAY</b><br>'+Math.round(r)+' MT</div><div><b>TOTAL DELTA USED</b><br>'+used.toFixed(3)+' kg</div></div>';
       }else if(activeChemicalFolder==='Malathion'){
         const mal=malathionEntries().filter(x=>inMonth(x.date));
         const alp=alpAutoGroups().filter(x=>inMonth(x.date));
