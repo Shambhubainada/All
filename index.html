@@ -1871,14 +1871,14 @@ function malathionEntries(){
       return `<div class="panel"><div class="panelhead"><button class="pill" onclick="openChemicalFolders()">← CHEMICAL FOLDERS</button> &nbsp; 💊 ALP REGISTER</div></div>
       <div class="panel"><div class="panelhead">📒 ALP CONSUMPTION REGISTER</div>
         <div class="chem-register-wrap"><table class="chem-table chem-register-table"><thead><tr><th>Sr No.</th><th>Date</th><th class="stack-number-head" onclick="toggleChemicalStackDetails(event)" title="Tap to show/hide MT and FEW/HEAVY for all stacks">Stack Number</th><th>Total Qty (MT)</th><th>Consumption (kg)</th><th>Progressive Consumption (kg)</th><th><div class="treatment-head"><span>Wheat</span><i></i><span>Rice</span></div><small>Treatment Qty (MT)</small></th><th>Action</th></tr></thead><tbody id="chemRows">${alpTableRows()}</tbody></table></div><div class="chemical-actions chem-register-downloads"><button class="chem-orange" onclick="downloadChemicalRegisterExcel('ALP')">📊 REGISTER EXCEL</button><button class="chem-red" onclick="downloadChemicalRegisterPDF('ALP')">📄 REGISTER PDF</button></div>
-        ${reportFolder('alpReportFolder','ALP REPORT',`${reportControls}${reportActions}`)}<div id="alpReportSummary" class="alp-report-box alp-indicator-outside"></div>
+        <div id="alpReportSummary" class="alp-report-box alp-indicator-outside"></div>${reportFolder('alpReportFolder','ALP REPORT',`${reportControls}${reportActions}`)}
       </div>`;
     }
     if(folder==='Delta'){
       return `<div class="panel"><div class="panelhead"><button class="pill" onclick="openChemicalFolders()">← CHEMICAL FOLDERS</button> &nbsp; 🧪 DELTA REGISTER</div></div>
       <div class="panel"><div class="panelhead">📒 DELTA CONSUMPTION REGISTER</div>
         <div class="chem-register-wrap"><table class="chem-table chem-register-table"><thead><tr><th>Sr No.</th><th>Entry Date</th><th>Stack Number</th><th>Consumption (kg)</th><th>Progressive Consumption (kg)</th><th>Fumigated Stacks</th><th>Action</th></tr></thead><tbody id="chemRows">${deltaTableRows()}</tbody></table></div><div class="chemical-actions chem-register-downloads"><button class="chem-orange" onclick="downloadChemicalRegisterExcel('Delta')">📊 REGISTER EXCEL</button><button class="chem-red" onclick="downloadChemicalRegisterPDF('Delta')">📄 REGISTER PDF</button></div>
-        ${reportFolder('deltaReportFolder','DELTA REPORT',`${reportControls}${reportActions}`)}<div id="deltaReportSummary" class="alp-report-box delta-indicator-outside"></div>
+        <div id="deltaReportSummary" class="alp-report-box delta-indicator-outside"></div>${reportFolder('deltaReportFolder','DELTA REPORT',`${reportControls}${reportActions}`)}
       </div>`;
     }
     if(folder==='Malathion'){
@@ -1888,7 +1888,7 @@ function malathionEntries(){
       <div class="panel"><div class="panelhead">📒 MALATHION CONSUMPTION REGISTER</div>
         <div class="chem-register-wrap"><table class="chem-table chem-register-table"><thead><tr><th>Sr No.</th><th>Date</th><th>Stack Number</th><th>Qty (MT)</th><th>Consumption</th><th>Progressive Consumption</th><th>Commodity</th><th>Action</th></tr></thead><tbody id="chemRows">${malathionTableRows()}</tbody></table></div><div class="chemical-actions chem-register-downloads"><button class="chem-orange" onclick="downloadChemicalRegisterExcel('Malathion')">📊 REGISTER EXCEL</button><button class="chem-red" onclick="downloadChemicalRegisterPDF('Malathion')">📄 REGISTER PDF</button></div>
         ${typeof window.malathionProgressHtml==='function'?window.malathionProgressHtml():''}
-        ${reportFolder('malathionReportFolder','MALATHION REPORT',`${reportControls}<div id="chemSummary"></div>${reportActions}`)}
+        <div id="chemSummary" class="alp-report-box mal-20-indicator alp-indicator-outside"></div>${reportFolder('malathionReportFolder','MALATHION REPORT',`${reportControls}${reportActions}`)}
       </div>`;
     }
     return `<div class="panel"><div class="panelhead"><button class="pill" onclick="openChemicalFolders()">← CHEMICAL FOLDERS</button> &nbsp; 🧪 ${folder.toUpperCase()} REGISTER</div></div>`;
