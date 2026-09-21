@@ -450,15 +450,6 @@ body.dashboard-open .final-quick-row{display:none!important}
 @media(max-width:700px){.mir-grid{grid-template-columns:repeat(2,1fr)}.mir-card b{font-size:19px}.mir-actions button{flex:1}.mir-folder>summary{font-size:12px}}
 </style><style id="pin-date-modal-fix">
 #qcPinModal,#qcDateModal{position:fixed;inset:0;background:#001c1288;display:none;align-items:center;justify-content:center;padding:18px;z-index:200000}#qcPinModal.show,#qcDateModal.show{display:flex}.qc-secure-box{width:min(380px,100%);background:#fff;border-radius:16px;padding:18px;box-shadow:0 20px 70px #0008}.qc-secure-box h3{margin:0 0 6px}.qc-secure-box p{margin:0 0 12px;color:#687b74;font-size:12px}.qc-secure-box input{width:100%;box-sizing:border-box;border:2px solid #cbd9d3;border-radius:10px;padding:13px;font-size:22px;letter-spacing:6px;text-align:center;outline:none}.qc-secure-box input:focus{border-color:#0a7a4b;box-shadow:0 0 0 3px #0a7a4b22}.qc-secure-actions{display:flex;gap:8px;margin-top:12px}.qc-secure-actions button{flex:1;border:0;border-radius:9px;padding:11px;font-weight:900}.qc-secure-ok{background:#0a7a4b;color:#fff}.qc-secure-cancel{background:#eef3f0;color:#17332b}.qc-alert-sound{border:0;border-radius:7px;background:#fff;color:#b31827;padding:5px 9px;font-weight:900;margin:0 0 8px}.work-alert.is-muted{border-color:#9aa8a2!important;background:#eef2f0!important}.work-alert.is-muted .pending-summary-row{color:#596861}.qc-date-input{letter-spacing:0;text-align:left;font-size:18px!important;padding:11px!important}
-<style id="device-access-style">
-#deviceAccessScreen{position:fixed;inset:0;background:#032b21;display:none;align-items:center;justify-content:center;z-index:99998;padding:18px}
-#deviceAccessScreen.show{display:flex}.device-access-box{width:min(430px,100%);background:#fff;border-radius:16px;padding:20px;box-shadow:0 20px 70px #0008;text-align:center}.device-access-box h2{margin:4px 0 8px;color:#073d2c}.device-access-box p{color:#687b74;font-size:13px;line-height:1.5}.device-id{background:#eef6f2;border:1px dashed #9dbdb0;border-radius:9px;padding:9px;font-size:11px;word-break:break-all;margin:12px 0}.device-access-box button{width:100%;border:0;border-radius:9px;padding:11px;margin-top:8px;font-weight:900}.access-primary{background:#0a7a4b;color:#fff}.access-secondary{background:#eef3f0;color:#17332b}.access-status{font-size:12px;font-weight:800;margin-top:10px}.access-pending{color:#9a6400}.access-approved{color:#08733f}.access-denied{color:#c52635}
-#deviceAccessModal{position:fixed;inset:0;background:#001c1288;display:none;align-items:center;justify-content:center;padding:16px;z-index:200010}.device-access-modal-box{width:min(720px,100%);max-height:85vh;overflow:auto;background:#fff;border-radius:14px;padding:15px}.device-access-modal-head{display:flex;justify-content:space-between;align-items:center;gap:10px}.access-request-card{border:1px solid #dce7e2;border-radius:10px;padding:10px;margin:8px 0;background:#f8fbf9}.access-request-card b{display:block}.access-request-actions{display:flex;gap:7px;margin-top:8px}.access-request-actions button{flex:1;border:0;border-radius:8px;padding:9px;font-weight:900}.access-allow{background:#0a7a4b;color:#fff}.access-deny{background:#c52635;color:#fff}.access-revoke{background:#e39a18;color:#fff}.access-empty{padding:20px;text-align:center;color:#687b74}
-</style>
-<style id="master-permission-lock-style">
-#permissionLockScreen{position:fixed;inset:0;background:rgba(3,43,33,.96);display:none;align-items:center;justify-content:center;z-index:999999;padding:18px}
-#permissionLockScreen.show{display:flex}.permission-lock-box{width:min(430px,100%);background:#fff;border-radius:18px;padding:24px 20px;text-align:center;box-shadow:0 20px 80px #0009}.permission-lock-icon{font-size:42px}.permission-lock-title{font-size:24px;font-weight:1000;color:#b31827;margin:8px 0}.permission-lock-text{font-size:14px;color:#40564e;line-height:1.55;margin:0 0 14px}.permission-lock-box button{width:100%;border:0;border-radius:10px;padding:13px;margin-top:8px;font-weight:1000;font-size:14px}.permission-request-btn{background:#0a7a4b;color:#fff}.permission-retry-btn{background:#eef3f0;color:#17332b}
-</style>
 </head>
 <body>
 <div class="pin-screen" id="pinScreen">
@@ -472,16 +463,6 @@ body.dashboard-open .final-quick-row{display:none!important}
     <button class="pin-change" onclick="changePin()">⚙ CHANGE PIN</button>
   </div>
 </div>
-<div id="permissionLockScreen" aria-modal="true">
-  <div class="permission-lock-box">
-    <div class="permission-lock-icon">🔒</div>
-    <div class="permission-lock-title">NEED PERMISSION FROM SHAMBHU BAINDA</div>
-    <p class="permission-lock-text" id="permissionLockText">Is phone ko use karne ke liye Master Phone se permission required hai.</p>
-    <button class="permission-request-btn" id="permissionRequestBtn" onclick="requestAccessFromLock()">📲 REQUEST PERMISSION</button>
-    <button class="permission-retry-btn" onclick="retryAccessFromLock()">↻ RETRY / CHECK PERMISSION</button>
-  </div>
-</div>
-<div id="deviceAccessModal"><div class="device-access-modal-box"><div class="device-access-modal-head"><div><b style="font-size:18px">🔐 DEVICE ACCESS</b><div class="smallmuted">New phone / desktop permission requests</div></div><button class="close" onclick="closeDeviceAccess()">✕</button></div><div id="deviceAccessList"></div></div></div>
 <div id="qcPinModal" aria-hidden="true"><div class="qc-secure-box"><h3 id="qcPinTitle">🔐 PIN Required</h3><p>PIN enter karein. Mobile number keyboard automatically open hoga.</p><input id="qcPinInput" type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="off" enterkeyhint="done"><div id="qcPinError" style="min-height:18px;color:#c52635;font-size:11px;font-weight:800;margin-top:6px"></div><div class="qc-secure-actions"><button class="qc-secure-cancel" id="qcPinCancel">Cancel</button><button class="qc-secure-ok" id="qcPinOk">✓ Verify</button></div></div></div>
 <div id="qcDateModal" aria-hidden="true"><div class="qc-secure-box"><h3 id="qcDateTitle">📅 Select Date</h3><p>Date select karein.</p><input id="qcDateInput" class="qc-date-input" type="date"><div class="qc-secure-actions"><button class="qc-secure-cancel" id="qcDateCancel">Cancel</button><button class="qc-secure-ok" id="qcDateOk">✓ Select</button></div></div></div>
 
@@ -611,7 +592,7 @@ body.dashboard-open .final-quick-row{display:none!important}
     <div class="settings-section"><h3>🎨 Theme</h3><label class="setting-row"><span>Website Theme</span><select id="websiteTheme"><option value="light">Light</option><option value="dark">Dark</option><option value="system">System</option></select></label><label class="setting-row"><span>App Theme</span><select id="appTheme"><option value="light">Light</option><option value="dark">Dark</option><option value="system">System</option></select></label></div>
     <div class="settings-section"><h3>🌐 Language</h3><div class="seg" id="langSeg"><button data-lang="en">English</button><button data-lang="hi">हिन्दी</button></div><div class="setting-note">Language setting is saved separately for Website and installed App.</div></div>
     <div class="settings-section"><h3>🔐 Security</h3><label class="setting-row"><span>PIN Lock</span><input type="checkbox" id="pinToggle"></label><label class="setting-row"><span>Device Biometric / Fingerprint</span><input type="checkbox" id="bioToggle"></label><button class="settings-action" onclick="setupDeviceBiometric()">👆 Set up biometric</button><div id="bioStatus" class="setting-note"></div><label class="setting-row"><span>Auto Lock</span><select id="autoLock"><option value="0">Off</option><option value="300000">5 minutes</option><option value="600000">10 minutes</option></select></label></div>
-    <div class="settings-section" id="deviceAccessSettingsSection"><h3>🔐 Device Permission</h3><div class="setting-note">New phone / desktop ki access request yahin milegi. Home par alag button nahi dikhega.</div><button class="settings-action" id="settingsDeviceAccessBtn" onclick="openDeviceAccessFromSettings()">🔐 DEVICE ACCESS / REQUESTS <span id="settingsAccessCount"></span></button><button class="settings-action" id="settingsMakeMasterBtn" style="margin-top:7px;background:#6b4bb7" onclick="claimThisDeviceAsMaster()">👑 MAKE THIS PHONE MASTER</button></div><div class="settings-section"><h3>🔄 Data Refresh</h3><label class="setting-row"><span>Auto Refresh</span><select id="refreshRate"><option value="15000">15 seconds</option><option value="30000">30 seconds</option><option value="60000">60 seconds</option></select></label><div class="setting-note" id="refreshStatus">Auto refresh: 30 seconds</div></div>
+    <div class="settings-section"><h3>🔄 Data Refresh</h3><label class="setting-row"><span>Auto Refresh</span><select id="refreshRate"><option value="15000">15 seconds</option><option value="30000">30 seconds</option><option value="60000">60 seconds</option></select></label><div class="setting-note" id="refreshStatus">Auto refresh: 30 seconds</div></div>
     <div class="settings-actions"><button onclick="saveSettings()">✓ Save Settings</button><button class="secondary" onclick="resetSettings()">Reset</button></div>
   </div>
 </div>
@@ -1162,7 +1143,7 @@ function renderMoistureActivityOnLoad(){if(currentMoistureStack()){renderMoistur
 
 // PIN lock. Default PIN = 9001; changeable from the lock screen.
 function getSitePin(){return localStorage.getItem('shambhuSitePin')||'9001'}
-async function unlockSite(){const v=$('sitePin').value;if(v===getSitePin()){$('pinScreen').style.display='none';sessionStorage.setItem('shambhuUnlocked','1');try{await shambhuEnsureDeviceAccess();}catch(e){console.warn('Device access check failed',e);setTimeout(()=>shambhuEnsureDeviceAccess(),1500)}}else{$('pinError').textContent='Wrong PIN. Try again.';$('sitePin').value='';}}
+async function unlockSite(){const v=$('sitePin').value;if(v===getSitePin()){$('pinScreen').style.display='none';sessionStorage.setItem('shambhuUnlocked','1');resetShambhuIdleTimer();}else{$('pinError').textContent='Wrong PIN. Try again.';$('sitePin').value='';}}
 async function changePin(){const old=await qcPinPrompt('Current PIN enter karein');if(old===null)return;if(old!==getSitePin()){alert('Current PIN galat hai.');return}const np=await qcPinPrompt('New PIN (4–6 digits)');if(np===null)return;if(!/^\d{4,6}$/.test(np||'')){alert('PIN 4–6 digits ka hona chahiye.');return}localStorage.setItem('shambhuSitePin',np);alert('PIN changed successfully.');}
 if(sessionStorage.getItem('shambhuUnlocked')==='1')document.addEventListener('DOMContentLoaded',()=>{$('pinScreen').style.display='none'});else document.addEventListener('DOMContentLoaded',()=>{setTimeout(()=>{$('sitePin')?.focus();},120)});
 // Auto-lock after 5 minutes without user activity.
@@ -1178,88 +1159,9 @@ const _oldRenderPage=renderPage;
 renderPage=function(page){if(page==='moisture'){document.querySelector('#dynamicPage').innerHTML=moisturePage();const savedStack=localStorage.getItem('shambhuSelectedMoistureStack')||'';if($('mStack')&&savedStack&&[...$('mStack').options].some(o=>o.value===savedStack)){$('mStack').value=savedStack;loadMoistureStack();}else{renderMoistureStackStatus();}if($('mUpdateDate'))$('mUpdateDate').value=dateText(new Date());if($('mUpdateTime'))$('mUpdateTime').value=new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});if($('moTruckRows')&&savedStack==='')$('moTruckRows').innerHTML='<tr><td colspan="7" class="empty">Select a stack to view moisture entries.</td></tr>';return;}if(page==='moistureHistory'){document.querySelector('#dynamicPage').innerHTML=moistureHistoryPage();renderMoistureHistory();return;}if(page==='moistureReports'){document.querySelector('#dynamicPage').innerHTML=moistureReportsPage();return;}return _oldRenderPage(page)};
 
 /* FIREBASE MULTI-PHONE SYNC — V10 BASE + PER-STACK MOISTURE SYNC */
-/* DEVICE ACCESS CONTROL: first device becomes Master; other devices request approval. */
-const SHAMBHU_ACCESS_COLLECTION='shambhuAccessRequests';
-const SHAMBHU_ACCESS_CONTROL='shambhuAccess/control';
-const SHAMBHU_EXISTING_DEVICE_ID=localStorage.getItem('shambhuDeviceAccessId')||'';
-const SHAMBHU_DEVICE_ID=(()=>{let x=SHAMBHU_EXISTING_DEVICE_ID;if(!x){x='DEV-'+Date.now().toString(36).toUpperCase()+'-'+Math.random().toString(36).slice(2,7).toUpperCase();localStorage.setItem('shambhuDeviceAccessId',x)}return x})();
-let shambhuAccessUnsub=null,shambhuAccessReady=false,shambhuIsMaster=false,shambhuAccessRetryTimer=null;
-function showDeviceAccessScreen(msg){
- const x=document.getElementById('settingsAccessCount');if(x&&!shambhuIsMaster)x.textContent='';
- const lock=document.getElementById('permissionLockScreen');if(lock && !shambhuIsMaster && !shambhuAccessReady){lock.classList.add('show');}
- const tx=document.getElementById('permissionLockText');if(tx && msg)tx.textContent=msg;
- console.warn(msg||'Permission required.');
-}
-function hideDeviceAccessScreen(){const lock=document.getElementById('permissionLockScreen');if(lock)lock.classList.remove('show');}
-async function requestAccessFromLock(){
- const b=document.getElementById('permissionRequestBtn');if(b)b.disabled=true;
- try{await requestDeviceAccess();}finally{if(b)b.disabled=false;}
-}
-async function retryAccessFromLock(){try{await shambhuEnsureDeviceAccess();}catch(e){console.warn(e)}}
-function shambhuSetAccessAlert(n){const c=Math.max(0,Number(n)||0);updateAlertBadge(c);const x=document.getElementById('settingsAccessCount');if(x)x.textContent=c?`(${c} pending)`:'';const m=document.getElementById('settingsMakeMasterBtn');if(m)m.style.display=shambhuIsMaster?'none':'block'}
-function shambhuAlertClick(){if(shambhuIsMaster && shambhuAccessReady){openDeviceAccess();}else{openDeviceAccessFromSettings();}}
-function openDeviceAccessFromSettings(){if(shambhuIsMaster){openDeviceAccess();}else{alert('Device Access permission Master Phone se approve hoti hai.')}}
-async function requestDeviceAccess(){if(!window.shambhuDB){showDeviceAccessScreen('Server connection ready nahi hai. Internet check karke Retry karein.');return false}if(!(await shambhuFirebaseEnsureAuth())){showDeviceAccessScreen('Firebase login/permission ready nahi hai. Anonymous sign-in enable karke Retry karein.');return false}const btn=document.getElementById('accessRequestBtn');if(btn)btn.disabled=true;try{await shambhuDB.collection(SHAMBHU_ACCESS_COLLECTION).doc(SHAMBHU_DEVICE_ID).set({deviceId:SHAMBHU_DEVICE_ID,deviceName:(navigator.userAgent||'').slice(0,90),platform:navigator.platform||'',status:'pending',requestedAt:Date.now(),lastSeen:Date.now()},{merge:true});document.getElementById('accessStatus').textContent='Request sent. Master Phone approval ka wait karein.';document.getElementById('accessStatus').className='access-status access-pending';return true}catch(e){console.warn('Device access request failed',e);document.getElementById('accessStatus').textContent='Server se connect nahi hua. Retry karein.';document.getElementById('accessStatus').className='access-status access-pending';return false}finally{if(btn)btn.disabled=false}}
-async function shambhuEnsureDeviceAccess(){
- const meRef=window.shambhuDB?shambhuDB.collection(SHAMBU_ACCESS_COLLECTION).doc(SHAMBU_DEVICE_ID):null;
- try{
-   if(!window.shambhuDB){showDeviceAccessScreen('Server connection ready ho raha hai… Settings → Device Access me Retry karein.');return false}
-   const authOk=await shambhuFirebaseEnsureAuth();
-   if(!authOk){showDeviceAccessScreen('Firebase login/permission ready nahi hai. Firebase Authentication me Anonymous sign-in enable karke Retry karein.');return false}
-
-   // Master status is controlled by the shared Firestore control document.
-   // A local flag alone must NEVER grant Master access on another phone.
-   let control=null;
-   try{const cs=await shambhuDB.doc(SHAMBU_ACCESS_CONTROL).get();control=cs.exists?(cs.data()||{}):null}catch(e){console.warn('Master control read failed',e)}
-
-   if(control && control.masterClientId){
-     if(control.masterClientId===SHAMBHU_DEVICE_ID){
-       shambhuIsMaster=true;shambhuAccessReady=true;localStorage.setItem('shambhuIsMaster','1');localStorage.setItem('shambhuMasterInitialized','1');
-       hideDeviceAccessScreen();shambhuStartAccessListener();return true;
-     }
-     // This device is NOT the shared Master, even if an old local flag exists.
-     shambhuIsMaster=false;shambhuAccessReady=false;localStorage.removeItem('shambhuIsMaster');localStorage.setItem('shambhuMasterInitialized','1');
-     const me=await meRef.get();
-     if(me.exists && me.data().status==='approved'){shambhuAccessReady=true;hideDeviceAccessScreen();shambhuStartAccessListener();return true}
-     const ok=await requestDeviceAccess();shambhuStartAccessListener();return ok;
-   }
-
-   // No Master is registered yet. Only the device that already existed before
-   // this permission feature was installed may initialize itself as Master.
-   if(SHAMBU_EXISTING_DEVICE_ID && !localStorage.getItem('shambhuMasterInitialized')){
-     shambhuIsMaster=true;shambhuAccessReady=true;localStorage.setItem('shambhuIsMaster','1');localStorage.setItem('shambhuMasterInitialized','1');
-     try{await shambhuDB.doc(SHAMBU_ACCESS_CONTROL).set({masterClientId:SHAMBU_DEVICE_ID,masterChangedAt:Date.now(),masterChangedBy:SHAMBU_DEVICE_ID},{merge:true});}catch(e){console.warn('Master server sync failed',e);}
-     hideDeviceAccessScreen();shambhuStartAccessListener();return true;
-   }
-
-   // First-time/new devices cannot become Master automatically.
-   shambhuIsMaster=false;shambhuAccessReady=false;localStorage.removeItem('shambhuIsMaster');localStorage.setItem('shambhuMasterInitialized','1');
-   const me=await meRef.get();
-   if(me.exists && me.data().status==='approved'){shambhuAccessReady=true;hideDeviceAccessScreen();shambhuStartAccessListener();return true}
-   const ok=await requestDeviceAccess();shambhuStartAccessListener();return ok;
- }catch(e){console.warn('Access init',e);shambhuIsMaster=false;shambhuAccessReady=false;localStorage.removeItem('shambhuIsMaster');showDeviceAccessScreen('Server se connect nahi hua. Retry karein.');if(!shambhuAccessRetryTimer)shambhuAccessRetryTimer=setTimeout(()=>{shambhuAccessRetryTimer=null;if(window.shambhuDB)shambhuEnsureDeviceAccess()},5000);return false}
-}
-async function claimThisDeviceAsMaster(){
- if(!confirm('Is phone ko Master Phone banana hai?'))return;
- try{
-   if(!window.shambhuDB){alert('Server connection abhi ready nahi hai. Internet check karke Retry karein.');return}
-   if(!(await shambhuFirebaseEnsureAuth())){alert('Firebase login/permission ready nahi hai. Firebase Authentication me Anonymous sign-in enable karke Retry karein.');return}
-   const cs=await shambhuDB.doc(SHAMBU_ACCESS_CONTROL).get();
-   if(cs.exists && (cs.data()||{}).masterClientId && cs.data().masterClientId!==SHAMBHU_DEVICE_ID){alert('Master Phone pehle se set hai. Is phone ko pehle permission request bhejni hogi.');return}
-   await shambhuDB.doc(SHAMBU_ACCESS_CONTROL).set({masterClientId:SHAMBHU_DEVICE_ID,masterChangedAt:Date.now(),masterChangedBy:SHAMBHU_DEVICE_ID},{merge:true});
-   await shambhuDB.collection(SHAMBU_ACCESS_COLLECTION).doc(SHAMBU_DEVICE_ID).set({deviceId:SHAMBHU_DEVICE_ID,status:'approved',approvedAt:Date.now(),approvedBy:SHAMBHU_DEVICE_ID},{merge:true});
-   shambhuIsMaster=true;shambhuAccessReady=true;localStorage.setItem('shambhuIsMaster','1');localStorage.setItem('shambhuMasterInitialized','1');
-   alert('✓ Ye phone ab Master Phone hai.');hideDeviceAccessScreen();shambhuStartAccessListener();renderDeviceAccessList();
- }catch(e){console.warn('Master claim failed',e);const code=e&&e.code?e.code:'';alert('Master setting save nahi hui. Firebase permission/server check karein.'+(code?'\n\nError: '+code:''))}
-}
-
-function shambhuStartAccessListener(){if(shambhuAccessUnsub||!window.shambhuDB)return;if(shambhuIsMaster){shambhuAccessUnsub=shambhuDB.collection(SHAMBU_ACCESS_COLLECTION).where('status','==','pending').onSnapshot(s=>{shambhuSetAccessAlert(s.size);renderDeviceAccessList()},e=>{console.warn('Access listener',e);shambhuSetAccessAlert(0)})}else{shambhuAccessUnsub=shambhuDB.collection(SHAMBU_ACCESS_COLLECTION).doc(SHAMBU_DEVICE_ID).onSnapshot(s=>{const d=s.exists?s.data()||{}:{};if(d.status==='approved'){shambhuAccessReady=true;hideDeviceAccessScreen();sessionStorage.setItem('shambhuAccessApproved','1')}else if(d.status==='denied'){showDeviceAccessScreen('Permission denied. Master Phone se dobara permission lein.')}})}}
-async function approveDeviceDevice(id){if(!shambhuIsMaster)return;try{await shambhuDB.collection(SHAMBU_ACCESS_COLLECTION).doc(id).set({status:'approved',approvedAt:Date.now(),approvedBy:SHAMBHU_DEVICE_ID},{merge:true});await renderDeviceAccessList()}catch(e){alert('Approval save nahi hua. Internet/server check karein.')}}
-async function denyDeviceDevice(id){if(!shambhuIsMaster)return;try{await shambhuDB.collection(SHAMBU_ACCESS_COLLECTION).doc(id).set({status:'denied',deniedAt:Date.now(),deniedBy:SHAMBHU_DEVICE_ID},{merge:true});await renderDeviceAccessList()}catch(e){alert('Deny save nahi hua. Internet/server check karein.')}}
-async function revokeDeviceDevice(id){if(!shambhuIsMaster)return;try{await shambhuDB.collection(SHAMBU_ACCESS_COLLECTION).doc(id).set({status:'denied',revokedAt:Date.now(),revokedBy:SHAMBHU_DEVICE_ID},{merge:true});await renderDeviceAccessList()}catch(e){alert('Revoke save nahi hua. Internet/server check karein.')}}
-async function openDeviceAccess(){if(!shambhuIsMaster)return;document.getElementById('deviceAccessModal').style.display='flex';await renderDeviceAccessList()}
-function closeDeviceAccess(){document.getElementById('deviceAccessModal').style.display='none'}
-async function renderDeviceAccessList(){const el=document.getElementById('deviceAccessList');if(!el||!window.shambhuDB||!shambhuIsMaster)return;try{const snap=await shambhuDB.collection(SHAMBU_ACCESS_COLLECTION).get();const docs=snap.docs.filter(d=>['pending','approved'].includes((d.data()||{}).status)).sort((a,b)=>(b.data().requestedAt||0)-(a.data().requestedAt||0));shambhuSetAccessAlert(snap.docs.filter(d=>(d.data()||{}).status==='pending').length);if(!docs.length){el.innerHTML='<div class="access-empty">No device requests.</div>';return}el.innerHTML=docs.map(d=>{const x=d.data()||{},pending=x.status==='pending';return `<div class="access-request-card"><b>${pending?'🟡 New Request':'🟢 Approved Device'}</b><span class="smallmuted">${esc(d.id)} · ${esc(x.platform||'Device')}</span><div class="smallmuted">Requested: ${x.requestedAt?new Date(x.requestedAt).toLocaleString():''}</div><div class="access-request-actions">${pending?`<button class="access-allow" onclick="approveDeviceDevice('${esc(d.id)}')">✓ ALLOW</button><button class="access-deny" onclick="denyDeviceDevice('${esc(d.id)}')">✕ DENY</button>`:`<button class="access-revoke" onclick="revokeDeviceDevice('${esc(d.id)}')">⛔ REVOKE</button>`}</div></div>`}).join('')}catch(e){console.warn('Device access list failed',e);el.innerHTML='<div class="access-empty">Requests load nahi ho rahi. Retry karein.</div>'}}
+/* Phone Master / Device Access feature removed. Firebase is used only for data sync. */
+function shambhuAlertClick(){openPage('notepad');setTimeout(()=>{const el=document.querySelector('.pending-work-panel');if(el)el.scrollIntoView({behavior:'smooth',block:'start'});},80);}
+async function shambhuEnsureDeviceAccess(){return true;}
 const SHAMBHU_FIREBASE_CONFIG={
   apiKey:"AIzaSyBF3soiMUaZFqf_z9p4AiljHfwE5PKwv40",
   authDomain:"shambhu-shed.firebaseapp.com",
@@ -1288,7 +1190,7 @@ async function shambhuFirebaseInit(){
     window.shambhuDB=firebase.firestore();
     try{shambhuDB.settings({experimentalForceLongPolling:true,useFetchStreams:false});}catch(e){}
     shambhuFirebaseReady=true;
-    if(sessionStorage.getItem('shambhuUnlocked')==='1'){shambhuEnsureDeviceAccess();}
+    if(sessionStorage.getItem('shambhuUnlocked')==='1'){/* device access removed */}
 
     /* Shared non-moisture data keeps timestamped whole-key sync. */
     const sharedRef=shambhuDB.collection('shambhuSync').doc('shared');
