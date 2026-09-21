@@ -1501,10 +1501,14 @@ document.addEventListener('DOMContentLoaded',function(){
   }
   function stackWeightKey(x,o){return 'shambhuChemicalStackWeight_'+String(x.date||'')+'_'+String(o.stack||'').trim();}
   function stackWeightValue(x,o){let v='FEW';try{const m=JSON.parse(localStorage.getItem(stackWeightKey(x,o))||'"FEW"');if(m==='HEAVY')v='HEAVY';}catch(e){}return v;}
+  window.__lastFewHeavyTap={key:'',time:0};
   window.toggleStackWeight=function(date,stack,btn){
     const d=String(date||''), k=String(stack||'').trim();
     if(!d||!k)return false;
     const key='shambhuChemicalStackWeight_'+d+'_'+k;
+    const now=Date.now();
+    if(window.__lastFewHeavyTap.key===key && now-window.__lastFewHeavyTap.time<280)return false;
+    window.__lastFewHeavyTap={key:key,time:now};
     let v='FEW'; try{v=JSON.parse(localStorage.getItem(key)||'"FEW"')}catch(e){}
     v=v==='HEAVY'?'FEW':'HEAVY';
     localStorage.setItem(key,JSON.stringify(v));
