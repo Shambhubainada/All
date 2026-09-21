@@ -1688,6 +1688,7 @@ document.addEventListener('DOMContentLoaded',function(){
       </div>
       <div class="panel"><div class="panelhead">📒 MALATHION CONSUMPTION REGISTER</div>
         <div class="chem-register-wrap"><table class="chem-table chem-register-table"><thead><tr><th>Sr No.</th><th>Date</th><th>Stack Number</th><th>Qty (MT)</th><th>Consumption</th><th>Progressive Consumption</th><th>Commodity</th><th>Action</th></tr></thead><tbody id="chemRows">${malathionTableRows()}</tbody></table></div><div class="chemical-actions chem-register-downloads"><button class="chem-orange" onclick="downloadChemicalRegisterExcel('Malathion')">📊 REGISTER EXCEL</button><button class="chem-red" onclick="downloadChemicalRegisterPDF('Malathion')">📄 REGISTER PDF</button></div>
+        ${typeof window.malathionProgressHtml==='function'?window.malathionProgressHtml():''}
         ${reportFolder('malathionReportFolder','MALATHION REPORT',`${reportControls}<div id="chemSummary"></div>${reportActions}`)}
       </div>`;
     }
@@ -1845,68 +1846,19 @@ document.addEventListener('DOMContentLoaded',function(){
 <script id="chemical-final-interaction-fix-js">
 (function(){
   /* Malathion progress block was referenced by chemicalPage() but was missing in some builds. */
-  window.malathionProgressHtml=function(){try{const mal=typeof malathionEntries==='function'?malathionEntries():[];let total=0;try{const all=typeof alpAutoGroups==='function'?alpAutoGroups():[];total=all.reduce((sum,x)=>sum+chemNum(x.wheatMt)+chemNum(x.riceMt),0);}catch(e){total=0;}const target=total*0.20,done=mal.reduce((sum,x)=>sum+chemNum(x.qty),0),due=Math.max(0,target-done),actualConsumption=mal.reduce((sum,x)=>sum+chemNum(x.consumption),0),today=new Date().toISOString().slice(0,10),progressive=mal.filter(x=>String(x.date||'').slice(0,10)<=today).reduce((sum,x)=>sum+chemNum(x.consumption),0),pct=target>0?Math.min(100,done/target*100):0;return '<div class="mal-20-indicator '+(due>0?'mal-20-blink':'')+'"><div class="mal-20-title">20% MALATHION REQUIREMENT</div><div class="mal-20-grid"><div><small>TOTAL ALP MT STOCK — ALP REPORT</small><b>'+Math.round(total)+' MT</b></div><div><small>20% MALATHION REQUIRED</small><b>'+target.toFixed(2)+' MT</b></div><div><small>ACTUALLY MALATHION DONE</small><b>'+done.toFixed(2)+' MT</b></div><div class="mal-20-baki"><small>MALATHION DUE</small><b>'+due.toFixed(2)+' MT</b></div></div><div class="mal-20-all"><b>ACTUAL MALATHION CONSUMPTION:</b> '+actualConsumption.toFixed(3)+' Ltr &nbsp; · &nbsp; <b>Progressive:</b> '+progressive.toFixed(3)+' Ltr &nbsp; · &nbsp; '+pct.toFixed(0)+'% covered</div></div>';}catch(e){console.error('Malathion indicator error',e);return '<div class="note">Malathion 20% indicator will appear after ALP REPORT data is available.</div>';}};
-  /* Single delegated FEW/HEAVY handler. No inline touch/click handler is used, so one phone tap = one toggle. */
-  function addStackData(){
-    document.querySelectorAll('.chem-register-table .stack-weight-toggle').forEach(btn=>{
-      btn.dataset.fhBound='1';
-      if(!btn.dataset.weightStack){const st=btn.querySelector('span')?.textContent?.trim()||'';if(st)btn.dataset.weightStack=st;}
-    });
-  }
-  if(!window.__fewHeavyDelegatedBound){
-    window.__fewHeavyDelegatedBound=true;
-    document.addEventListener('click',function(ev){
-      const btn=ev.target && ev.target.closest ? ev.target.closest('.chem-register-table .stack-weight-toggle') : null;
-      if(!btn)return;
-      ev.preventDefault();
-      ev.stopPropagation();
-      const d=btn.dataset.weightDate||'';
-      const k=btn.dataset.weightStack||'';
-      if(!d||!k)return;
-      toggleStackWeight(d,k,btn);
-    },true);
-  }
-  setTimeout(addStackData,0);
-  document.addEventListener('click',function(ev){
-    const btn=ev.target && ev.target.closest ? ev.target.closest('.chem-register-table .stack-weight-toggle') : null;
-    if(btn)ev.stopPropagation();
-  },false);
-
-  const oldOpen=window.openChemicalFolder;
-  if(typeof oldOpen==='function' && !window.__chemOpenPatched){
-    window.__chemOpenPatched=true;
-    window.openChemicalFolder=function(name){
-      try{const out=oldOpen.apply(this,arguments);setTimeout(addStackData,0);return out;}catch(e){
-        console.error('Chemical folder open error',e);
-        activeChemicalFolder=String(name||'');
-        localStorage.setItem('shambhuChemicalFolder',activeChemicalFolder);
-        const dp=document.getElementById('dynamicPage');
-        if(dp){dp.innerHTML=chemicalPage();setTimeout(addStackData,0);}
-      }
-    };
-  }
-  const oldRenderPage=window.renderPage;
-  if(typeof oldRenderPage==='function' && !window.__chemRenderPatched){
-    window.__chemRenderPatched=true;
-    window.renderPage=function(page){const out=oldRenderPage.apply(this,arguments);if(page==='chemical')setTimeout(addStackData,0);return out;};
-  }
-  setTimeout(addStackData,50);
-})();
-</script>
-<script id="page-isolation-final-fix">
-(function(){
-  const originalOpenPage=window.openPage;
-  if(typeof originalOpenPage!=='function' || window.__pageIsolationFixed)return;
-  window.__pageIsolationFixed=true;
-  window.openPage=function(page){
-    originalOpenPage.apply(this,arguments);
-    const isDash=page==='dashboard';
-    document.body.classList.toggle('dashboard-open',isDash);
-    document.body.classList.toggle('page-open',!isDash);
-    const dash=document.getElementById('dashboardPage'), dyn=document.getElementById('dynamicPage');
-    if(dash)dash.style.display=isDash?'':'none';
-    if(dyn)dyn.style.display=isDash?'none':'';
-  };
+  window.malathionProgressHtml=function(){try{
+    const alp=typeof alpAutoGroups==='function'?alpAutoGroups():[], mal=typeof malathionEntries==='function'?malathionEntries():[], del=typeof deltaAutoGroups==='function'?deltaAutoGroups():[];
+    const total=alp.reduce((sum,x)=>sum+chemNum(x.wheatMt)+chemNum(x.riceMt),0);
+    const targetMal=total*0.20, targetDelta=total*0.80;
+    let deltaDone=0; const seenDelta=new Set();
+    const sourceRows=typeof activeRows==='function'?activeRows():rows;
+    const qtyByStack=new Map(); sourceRows.forEach(r=>{const st=String(stack(r)||'').trim();if(st&&!qtyByStack.has(st))qtyByStack.set(st,chemNum(qty(r)));});
+    del.forEach(g=>String(g.stackText||'').split(',').map(x=>x.trim()).filter(Boolean).forEach(st=>{if(!seenDelta.has(st)){seenDelta.add(st);deltaDone+=chemNum(qtyByStack.get(st)||0);}}));
+    const malDone=mal.reduce((sum,x)=>sum+chemNum(x.qty),0), malDue=Math.max(0,targetMal-malDone), deltaDue=Math.max(0,targetDelta-deltaDone);
+    const deltaPct=total>0?Math.min(100,deltaDone/total*100):0, malPct=total>0?Math.min(100,malDone/total*100):0;
+    const consumption=mal.reduce((sum,x)=>sum+chemNum(x.consumption),0);
+    return '<div class="mal-20-indicator '+((malDue>0||deltaDue>0)?'mal-20-blink':'')+'"><div class="mal-20-title">ALP / DELTA / MALATHION STOCK STATUS</div><div class="mal-20-grid"><div><small>TOTAL ALP STOCK</small><b>'+Math.round(total)+' MT</b></div><div><small>DELTA DONE</small><b>'+deltaPct.toFixed(1)+'% · '+Math.round(deltaDone)+' MT</b></div><div><small>MALATHION DONE</small><b>'+malPct.toFixed(1)+'% · '+Math.round(malDone)+' MT</b></div><div class="mal-20-baki"><small>MALATHION 20% — TO DO</small><b>'+malDue.toFixed(2)+' MT</b></div><div class="mal-20-baki"><small>DELTA 80% — TO DO</small><b>'+deltaDue.toFixed(2)+' MT</b></div><div><small>MALATHION REQUIRED (20%)</small><b>'+targetMal.toFixed(2)+' MT</b></div><div><small>DELTA REQUIRED (80%)</small><b>'+targetDelta.toFixed(2)+' MT</b></div></div><div class="mal-20-all"><b>ACTUAL MALATHION CONSUMPTION:</b> '+consumption.toFixed(3)+' Ltr</div></div>';
+  }catch(e){console.error('Malathion indicator error',e);return '<div class="note">Malathion stock indicator unavailable.</div>';}};
 })();
 </script>
 </body></html>
