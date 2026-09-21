@@ -1770,6 +1770,39 @@ document.addEventListener('DOMContentLoaded',function(){
   window.viewChemicalReport=function(){const w=window.open('','_blank');if(!w){alert('Popup blocked. Allow popups for View Report.');return}w.document.write(activeChemicalFolder==='ALP'?alpReportHtml():activeChemicalFolder==='Delta'?deltaReportHtml():activeChemicalFolder==='Malathion'?malathionReportHtml():reportHtml());w.document.close();};
   window.downloadChemicalPDF=function(){const w=window.open('','_blank');if(!w){alert('Popup blocked.');return}w.document.write((activeChemicalFolder==='ALP'?alpReportHtml():activeChemicalFolder==='Delta'?deltaReportHtml():activeChemicalFolder==='Malathion'?malathionReportHtml():reportHtml()).replace('</body>','<script>window.onload=function(){setTimeout(function(){window.print()},300)}<\\/script></body>'));w.document.close();};
   window.downloadChemicalExcel=function(){const r=reportData(),html=activeChemicalFolder==='ALP'?alpReportHtml():activeChemicalFolder==='Delta'?deltaReportHtml():activeChemicalFolder==='Malathion'?malathionReportHtml():reportHtml();const blob=new Blob([html],{type:'application/vnd.ms-excel'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='SHAMBHU_SHED_Chemical_Report_'+r.m+'.xls';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);};
+function chemicalPage(){
+    const now=new Date(), folder=activeChemicalFolder;
+    if(!folder) return chemicalFolderPage();
+    const reportFolder=(id,title,body)=>`<details id="${id}" data-chem-report="${id}" class="chem-report-folder"><summary>📁 ${title}</summary><div class="chem-report-folder-body">${body}</div></details>`;
+    const reportControls=`<div class="chem-report-filter"><label>From Date<input id="chemFromDate" type="date" onchange="renderChemicalReport()"></label><label>To Date<input id="chemToDate" type="date" onchange="renderChemicalReport()"></label><button class="pill" onclick="setCurrentChemicalMonth()">Current Month</button><details class="chem-history"><summary>📅 History — Month Wise</summary><label>Month<input id="chemHistoryMonth" type="month" onchange="setHistoryChemicalMonth(this.value)"></label></details></div>`;
+    const reportActions=`<div class="chemical-actions chem-register-downloads"><button class="chem-blue" onclick="viewChemicalReport()">👁 VIEW REPORT</button><button class="chem-orange" onclick="downloadChemicalExcel()">📊 EXCEL</button><button class="chem-red" onclick="downloadChemicalPDF()">📄 PDF</button></div>`;
+    if(folder==='ALP'){
+      return `<div class="panel"><div class="panelhead"><button class="pill" onclick="openChemicalFolders()">← CHEMICAL FOLDERS</button> &nbsp; 💊 ALP REGISTER</div></div>
+      <div class="panel"><div class="panelhead">📒 ALP CONSUMPTION REGISTER</div>
+        <div class="chem-register-wrap"><table class="chem-table chem-register-table"><thead><tr><th>Sr No.</th><th>Date</th><th class="stack-number-head" onclick="toggleChemicalStackDetails(event)" title="Tap to show/hide MT and FEW/HEAVY for all stacks">Stack Number</th><th>Total Qty (MT)</th><th>Consumption (kg)</th><th>Progressive Consumption (kg)</th><th><div class="treatment-head"><span>Wheat</span><i></i><span>Rice</span></div><small>Treatment Qty (MT)</small></th><th>Action</th></tr></thead><tbody id="chemRows">${alpTableRows()}</tbody></table></div><div class="chemical-actions chem-register-downloads"><button class="chem-orange" onclick="downloadChemicalRegisterExcel('ALP')">📊 REGISTER EXCEL</button><button class="chem-red" onclick="downloadChemicalRegisterPDF('ALP')">📄 REGISTER PDF</button></div>
+        ${reportFolder('alpReportFolder','ALP REPORT',`${reportControls}<div id="alpReportSummary" class="alp-report-box"></div>${reportActions}`)}
+      </div>`;
+    }
+    if(folder==='Delta'){
+      return `<div class="panel"><div class="panelhead"><button class="pill" onclick="openChemicalFolders()">← CHEMICAL FOLDERS</button> &nbsp; 🧪 DELTA REGISTER</div></div>
+      <div class="panel"><div class="panelhead">📒 DELTA CONSUMPTION REGISTER</div>
+        <div class="chem-register-wrap"><table class="chem-table chem-register-table"><thead><tr><th>Sr No.</th><th>Entry Date</th><th>Stack Number</th><th>Consumption (kg)</th><th>Progressive Consumption (kg)</th><th>Fumigated Stacks</th><th>Action</th></tr></thead><tbody id="chemRows">${deltaTableRows()}</tbody></table></div><div class="chemical-actions chem-register-downloads"><button class="chem-orange" onclick="downloadChemicalRegisterExcel('Delta')">📊 REGISTER EXCEL</button><button class="chem-red" onclick="downloadChemicalRegisterPDF('Delta')">📄 REGISTER PDF</button></div>
+        ${reportFolder('deltaReportFolder','DELTA REPORT',`${reportControls}<div id="deltaReportSummary" class="alp-report-box"></div>${reportActions}`)}
+      </div>`;
+    }
+    if(folder==='Malathion'){
+      return `<div class="panel"><div class="panelhead"><button class="pill" onclick="openChemicalFolders()">← CHEMICAL FOLDERS</button> &nbsp; 🧴 MALATHION REGISTER</div>
+        <div class="malathion-add-row"><button class="chem-save malathion-add-btn" onclick="openMalathionEntry()">➕ ADD NEW ENTRY</button><span class="smallmuted">0.061 Ltr per stack</span></div>
+      </div>
+      <div class="panel"><div class="panelhead">📒 MALATHION CONSUMPTION REGISTER</div>
+        <div class="chem-register-wrap"><table class="chem-table chem-register-table"><thead><tr><th>Sr No.</th><th>Date</th><th>Stack Number</th><th>Qty (MT)</th><th>Consumption</th><th>Progressive Consumption</th><th>Commodity</th><th>Action</th></tr></thead><tbody id="chemRows">${malathionTableRows()}</tbody></table></div><div class="chemical-actions chem-register-downloads"><button class="chem-orange" onclick="downloadChemicalRegisterExcel('Malathion')">📊 REGISTER EXCEL</button><button class="chem-red" onclick="downloadChemicalRegisterPDF('Malathion')">📄 REGISTER PDF</button></div>
+        ${typeof window.malathionProgressHtml==='function'?window.malathionProgressHtml():''}
+        ${reportFolder('malathionReportFolder','MALATHION REPORT',`${reportControls}<div id="chemSummary"></div>${reportActions}`)}
+      </div>`;
+    }
+    return `<div class="panel"><div class="panelhead"><button class="pill" onclick="openChemicalFolders()">← CHEMICAL FOLDERS</button> &nbsp; 🧪 ${folder.toUpperCase()} REGISTER</div></div>`;
+  }
+
   // Chemical folder navigation: keep ALP, Delta and Malathion independently accessible.
   window.openChemicalFolder=function(name){
     name=String(name||'');
