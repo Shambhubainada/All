@@ -1025,9 +1025,9 @@ function addSelectedMoistureStack(){
   localStorage.setItem('shambhuSelectedMoistureStack',st);
   closeModal();renderMoistureStackStatus();const sel=$('mStack');if(sel)sel.value=st;loadMoistureStack();
 }
-function deleteMoistureStackWithPin(st){
+async function deleteMoistureStackWithPin(st){
   const rec=moistureStore()[st];if(!rec)return;
-  const pin=prompt('Stack delete karne ke liye current PIN enter karein:');if(pin===null)return;
+  const pin=await qcPinPrompt('Stack delete karne ke liye current PIN enter karein');if(pin===null)return;
   if(pin!==getSitePin()){alert('Wrong PIN. Stack delete nahi hua.');return}
   if(!confirm('Stack '+st+' ko Moisture Under Issue se delete karein? Is stack ki saved moisture entries bhi delete ho jayengi.'))return;
   const all=moistureStore();delete all[st];saveMoistureStore(all);
@@ -1189,7 +1189,7 @@ function renderMoistureHistory(){
 
 function viewMoistureHistory(id){const h=JSON.parse(localStorage.getItem('shambhuMoistureHistory')||'[]'),x=h.find(a=>a.id===id);if(!x){const st=h[0];if(!st)return;x=st}const wt=stackWtTotal(x),entries=(x.activities&&x.activities.length?x.activities:(x.truckEntries||x.entries||[])),bags=entries.reduce((s,e)=>s+num(e.bags),0),imc=bags?wt/bags:0; $('modalTitle').textContent=`Moisture History — Stack ${x.stack}`;$('modalBody').innerHTML=`<div class="smallmuted">${esc(x.commodity)} · Crop ${esc(x.cropYear||'—')} · Completed ${esc(x.completedAt||'—')} · RMC ${num(x.rmc).toFixed(2)}%</div>${table('MOISTURE ENTRY DETAILS',['Sr','Bags','Moisture %','Updated On'],entries.map((e,i)=>`<tr><td>${i+1}</td><td>${num(e.bags).toLocaleString()}</td><td>${esc(e.moisture)}</td><td>${esc(e.date||e.updatedAt||'—')}</td></tr>`).join(''))}<div class="note">IMC = Total (Bags × Moisture) ÷ Moisture Updated Bags = ${imc.toFixed(2)}% · RMC − IMC = ${(imc-num(x.rmc)>=0?'+':'')+(imc-num(x.rmc)).toFixed(2)}</div>`;$('modal').classList.add('show')}
 async function downloadMoistureHistoryExcel(which){const h=JSON.parse(localStorage.getItem('shambhuMoistureHistory')||'[]');const match=which==='wheat'?h.filter(x=>/wheat/i.test(x.commodity||'')):h.filter(x=>/rice|frk|rra|rrc/i.test(x.commodity||''));if(!match.length){alert('Is category ki completed history available nahi hai.');return}const data=[['SHAMBHU SHED — COMPLETED MOISTURE HISTORY'],[which==='wheat'?'WHEAT':'FRK / RRA / RRC'],[],['Sr No.','Stack Number','Receipt Date','Commodity','Storage Period (Days)','RMC','IMC / DMC','Difference (IMC-RMC)','Completed On','Bags','Moisture %']];let sr=1;match.forEach(x=>{const es=(x.activities||x.truckEntries||x.entries||[]);es.forEach(e=>data.push([sr++,x.stack,x.receipt,x.commodity,x.storageDays,num(x.rmc).toFixed(2),num(x.imc!=null?x.imc:x.dmc).toFixed(2),(num(x.imc!=null?x.imc:x.dmc)-num(x.rmc)).toFixed(2),x.completedAt,num(e.bags),e.moisture]));});await makeWorkbook([{name:which==='wheat'?'Wheat':'FRK_RRA_RRC',data,widths:[8,18,15,20,20,10,10,18,22,10,12]}],`SHAMBHU_SHED_Moisture_History_${which}.xlsx`)}
-function clearMoistureReportWithPin(){const pin=prompt('Moisture Report clear karne ke liye PIN enter karein:');if(pin===null)return;if(String(pin)!==String(getSitePin())){alert('Wrong PIN. Moisture Report clear nahi hua.');return}const h=JSON.parse(localStorage.getItem('shambhuMoistureHistory')||'[]');if(!h.length){alert('Moisture Report already empty hai.');return}if(!confirm('PIN verified. Puri completed Moisture Report/History clear karein?'))return;localStorage.removeItem('shambhuMoistureHistory');renderMoistureHistory();if(currentPage==='moistureReports')renderPage('moistureReports');alert('Moisture Report clear ho gaya.');}
+async function clearMoistureReportWithPin(){const pin=await qcPinPrompt('Moisture Report clear karne ke liye PIN enter karein');if(pin===null)return;if(String(pin)!==String(getSitePin())){alert('Wrong PIN. Moisture Report clear nahi hua.');return}const h=JSON.parse(localStorage.getItem('shambhuMoistureHistory')||'[]');if(!h.length){alert('Moisture Report already empty hai.');return}if(!confirm('PIN verified. Puri completed Moisture Report/History clear karein?'))return;localStorage.removeItem('shambhuMoistureHistory');renderMoistureHistory();if(currentPage==='moistureReports')renderPage('moistureReports');alert('Moisture Report clear ho gaya.');}
 function clearMoistureHistory(){if(!confirm('Puri completed Moisture History delete karein?'))return;localStorage.removeItem('shambhuMoistureHistory');renderMoistureHistory();}
 function exportMoisture(){const h=JSON.parse(localStorage.getItem('shambhuMoistureHistory')||'[]');if(!h.length){alert('History empty.');return}let csv='Completed,Stack,Shed,Commodity,Crop Year,Truck,Bags,Moisture %,Updated On,RMC %,IMC %,IMC-RMC\n';h.forEach(x=>{const bags=(x.truckEntries||x.entries||[]).reduce((s,e)=>s+num(e.bags),0)+(x.activities||[]).reduce((s,e)=>s+num(e.bags),0),wt=stackWtTotal(x),imc=bags?wt/bags:0;(x.truckEntries||x.entries||[]).forEach(e=>csv+=`"${x.completedAt}","${x.stack}","${x.shed}","${x.commodity}","${x.cropYear}","${e.truck}","${e.bags}","${e.moisture}","${e.updatedAt}","${x.rmc}","${imc.toFixed(2)}","${(imc-num(x.rmc)).toFixed(2)}"\n`);(x.activities||[]).forEach(e=>csv+=`"${x.completedAt}","${x.stack}","${x.shed}","${x.commodity}","${x.cropYear}","MOISTURE ACTIVITY","${e.bags}","${e.moisture}","${e.date}","${x.rmc}","${imc.toFixed(2)}","${(imc-num(x.rmc)).toFixed(2)}"\n`)});const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='SHAMBHU_SHED_Moisture_History.csv';a.click();}
 function renderMoistureActivityOnLoad(){if(currentMoistureStack()){renderMoistureActivity();}}
@@ -1197,7 +1197,7 @@ function renderMoistureActivityOnLoad(){if(currentMoistureStack()){renderMoistur
 // PIN lock. Default PIN = 9001; changeable from the lock screen.
 function getSitePin(){return localStorage.getItem('shambhuSitePin')||'9001'}
 function unlockSite(){const v=$('sitePin').value;if(v===getSitePin()){$('pinScreen').style.display='none';sessionStorage.setItem('shambhuUnlocked','1');}else{$('pinError').textContent='Wrong PIN. Try again.';$('sitePin').value='';}}
-function changePin(){const old=prompt('Current PIN enter karein:');if(old!==getSitePin()){alert('Current PIN galat hai.');return}const np=prompt('New PIN (4–6 digits):');if(!/^\d{4,6}$/.test(np||'')){alert('PIN 4–6 digits ka hona chahiye.');return}localStorage.setItem('shambhuSitePin',np);alert('PIN changed successfully.');}
+async function changePin(){const old=await qcPinPrompt('Current PIN enter karein');if(old!==getSitePin()){alert('Current PIN galat hai.');return}const np=await qcPinPrompt('New PIN (4–6 digits)');if(!/^\d{4,6}$/.test(np||'')){alert('PIN 4–6 digits ka hona chahiye.');return}localStorage.setItem('shambhuSitePin',np);alert('PIN changed successfully.');}
 if(sessionStorage.getItem('shambhuUnlocked')==='1')document.addEventListener('DOMContentLoaded',()=>{$('pinScreen').style.display='none'});else document.addEventListener('DOMContentLoaded',()=>{setTimeout(()=>{$('sitePin')?.focus();},120)});
 // Auto-lock after 5 minutes without user activity.
 const SHAMBHU_IDLE_LIMIT=5*60*1000;let shambhuIdleTimer=null;
@@ -1650,16 +1650,36 @@ document.addEventListener('DOMContentLoaded',function(){
       const all0=deltaAutoGroups();
       const mapStacks=a=>a.map(g=>{
         const ws=[],rs=[];
-        const stList=String(g.stackText||'').split(',').map(v=>v.trim()).filter(Boolean);
-        stList.forEach(st=>{
-          const rr=rows.find(row=>String(stack(row)||'').trim()===st && String(deltaDateText(String(val(row,'Fumigation Date')).trim()))===String(g.date));
-          if(rr){if(isWheat(rr)&&!ws.includes(st))ws.push(st); else if(isRice(rr)&&!rs.includes(st))rs.push(st);}
-        });
-        return {...g,stacksWheat:ws,stacksRice:rs};
+        const ov=(function(){try{return JSON.parse(localStorage.getItem('shambhuDeltaOverridesV1')||'{}')[String(g.date)]||{}}catch(e){return {}}})();
+        const locked=!!ov.locked;
+        // Locked Delta rows are the source of truth for View Report. Keep their
+        // saved stack numbers/MT even when the original fumigation stack is later deleted.
+        if(locked){
+          (Array.isArray(ov.wheatStacks)?ov.wheatStacks:[]).map(String).forEach(st=>{if(st&&!ws.includes(st))ws.push(st)});
+          (Array.isArray(ov.riceStacks)?ov.riceStacks:[]).map(String).forEach(st=>{if(st&&!rs.includes(st))rs.push(st)});
+          if(!ws.length&&!rs.length){
+            const stList=String(ov.stackText??g.stackText??'').split(',').map(v=>v.trim()).filter(Boolean);
+            const wCount=Number(ov.wheat||g.wheat||0), rCount=Number(ov.rice||g.rice||0);
+            stList.forEach((st,i)=>{if(i<wCount)ws.push(st);else if(i<wCount+rCount)rs.push(st);});
+          }
+        }else{
+          const stList=String(g.stackText||'').split(',').map(v=>v.trim()).filter(Boolean);
+          stList.forEach(st=>{
+            const rr=rows.find(row=>String(stack(row)||'').trim()===st && String(deltaDateText(String(val(row,'Fumigation Date')).trim()))===String(g.date));
+            if(rr){if(isWheat(rr)&&!ws.includes(st))ws.push(st); else if(isRice(rr)&&!rs.includes(st))rs.push(st);}
+          });
+        }
+        return {...g,stacksWheat:ws,stacksRice:rs,_locked:locked,_override:ov};
       });
       const all=mapStacks(all0).map(g=>{
-        const wheatMt=(g.stacksWheat||[]).reduce((sum,st)=>{const rr=rows.find(row=>String(stack(row)||'').trim()===String(st).trim() && String(deltaDateText(String(val(row,'Fumigation Date')).trim()))===String(g.date));return sum+(rr?chemNum(qty(rr)):0)},0);
-        const riceMt=(g.stacksRice||[]).reduce((sum,st)=>{const rr=rows.find(row=>String(stack(row)||'').trim()===String(st).trim() && String(deltaDateText(String(val(row,'Fumigation Date')).trim()))===String(g.date));return sum+(rr?chemNum(qty(rr)):0)},0);
+        let wheatMt=0,riceMt=0;
+        if(g._locked){
+          wheatMt=chemNum(g._override.wheatMt??g.wheatMt??0);
+          riceMt=chemNum(g._override.riceMt??g.riceMt??0);
+        }else{
+          wheatMt=(g.stacksWheat||[]).reduce((sum,st)=>{const rr=rows.find(row=>String(stack(row)||'').trim()===String(st).trim() && String(deltaDateText(String(val(row,'Fumigation Date')).trim()))===String(g.date));return sum+(rr?chemNum(qty(rr)):0)},0);
+          riceMt=(g.stacksRice||[]).reduce((sum,st)=>{const rr=rows.find(row=>String(stack(row)||'').trim()===String(st).trim() && String(deltaDateText(String(val(row,'Fumigation Date')).trim()))===String(g.date));return sum+(rr?chemNum(qty(rr)):0)},0);
+        }
         return {...g,wheatMt,riceMt};
       }),mm=all.filter(x=>inChemRange(x.date,from,to));
       return {m,from,to,mm,total:all,wheatDelta:mm.reduce((s,x)=>s+Number(x.wheat||0),0),riceDelta:mm.reduce((s,x)=>s+Number(x.rice||0),0),wheatQty:mm.reduce((s,x)=>s+chemNum(x.wheatMt),0),riceQty:mm.reduce((s,x)=>s+chemNum(x.riceMt),0),allWheatQty:all.reduce((s,x)=>s+chemNum(x.wheatMt),0),allRiceQty:all.reduce((s,x)=>s+chemNum(x.riceMt),0),allWheatDelta:all.reduce((s,x)=>s+Number(x.wheat||0),0),allRiceDelta:all.reduce((s,x)=>s+Number(x.rice||0),0),totalDelta:mm.reduce((s,x)=>s+chemNum(x.consumption),0),allTotalDelta:all.reduce((s,x)=>s+chemNum(x.consumption),0)};
@@ -1721,7 +1741,7 @@ document.addEventListener('DOMContentLoaded',function(){
     document.getElementById('chemRows').innerHTML=chemTableRows();renderChemicalReport();clearChemicalForm();
     alert(editId?'Chemical entry updated.':'Chemical entry saved.');
   };
-  window.editChemicalEntry=function(id){const pin=prompt('Edit ke liye PIN enter karein:');if(pin===null||String(pin)!==String(getSitePin())){if(pin!==null)alert('Wrong PIN.');return;}
+  window.editChemicalEntry=async function(id){const pin=await qcPinPrompt('Edit ke liye PIN enter karein');if(pin===null||String(pin)!==String(getSitePin())){if(pin!==null)alert('Wrong PIN.');return;}
     const x=chemRead().find(v=>String(v.id)===String(id)); if(!x)return;
     document.getElementById('chemEditId').value=x.id; document.getElementById('chemDate').value=String(x.date||'').slice(0,10); document.getElementById('chemStack').value=x.stack||''; document.getElementById('chemCommodity').value=x.commodity||'Wheat';
     const q=chemNum(x.qty)*(String(x.unit||'MT').toLowerCase()==='kg'?0.001:1); document.getElementById('chemQty').value=q.toFixed(3); document.getElementById('chemRemarks').value=x.remarks||'';
@@ -1730,7 +1750,7 @@ document.addEventListener('DOMContentLoaded',function(){
     document.getElementById('chemDate').scrollIntoView({behavior:'smooth',block:'center'});
   };
   window.clearChemicalForm=function(){['chemStack','chemQty','chemRemarks'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});const id=document.getElementById('chemEditId');if(id)id.value='';const t=document.getElementById('chemFormTitle');if(t)t.textContent='New '+activeChemicalFolder+' Entry';const b=document.querySelector('.chem-save');if(b)b.innerHTML='💾 SAVE ENTRY';};
-  window.deleteChemicalEntry=function(id){const pin=prompt('Delete ke liye PIN enter karein:');if(pin===null||String(pin)!==String(getSitePin())){if(pin!==null)alert('Wrong PIN.');return;}if(!confirm('Delete this chemical entry?'))return;chemWrite(chemRead().filter(x=>String(x.id)!==String(id)));let ml={};try{ml=JSON.parse(localStorage.getItem('shambhuMalathionLocksV1')||'{}')}catch(e){ml={}};delete ml[String(id)];localStorage.setItem('shambhuMalathionLocksV1',JSON.stringify(ml));const r=document.getElementById('chemRows');if(r)r.innerHTML=chemTableRows();renderChemicalReport();};
+  window.deleteChemicalEntry=async function(id){const pin=await qcPinPrompt('Delete ke liye PIN enter karein');if(pin===null||String(pin)!==String(getSitePin())){if(pin!==null)alert('Wrong PIN.');return;}if(!confirm('Delete this chemical entry?'))return;chemWrite(chemRead().filter(x=>String(x.id)!==String(id)));let ml={};try{ml=JSON.parse(localStorage.getItem('shambhuMalathionLocksV1')||'{}')}catch(e){ml={}};delete ml[String(id)];localStorage.setItem('shambhuMalathionLocksV1',JSON.stringify(ml));const r=document.getElementById('chemRows');if(r)r.innerHTML=chemTableRows();renderChemicalReport();};
   function alpReportHtml(){const r=reportData(),month=new Date(r.m+'-01T00:00:00').toLocaleDateString('en-IN',{month:'long',year:'numeric'});let progMT=0,progCons=0;const rows=r.mm.map((x,i)=>{const w=chemNum(x.wheatMt||0),ri=chemNum(x.riceMt||0),c=chemNum(x.consumption);progMT+=w+ri;progCons+=c;return `<tr><td>${i+1}</td><td>${chemDate(x.date)}</td><td>${escC(x.stackText)}</td><td>${Math.round(x.mt)}</td><td>${Math.round(w)}</td><td>${Math.round(ri)}</td><td><b>${Math.round(progMT)}</b></td><td>${c.toFixed(3)}</td><td><b>${progCons.toFixed(3)}</b></td></tr>`}).join('');return `<!doctype html><html><head><meta charset="utf-8"><title>ALP Report</title><style>body{font-family:Arial;margin:28px;color:#172d25}h1{text-align:center;margin:0;font-size:24px}h2{text-align:center;margin:5px 0 18px;font-size:18px}table{border-collapse:collapse;width:100%;font-size:12px}th,td{border:1px solid #999;padding:7px;text-align:center}th{background:#073d2c;color:white}@media(max-width:700px){body{margin:12px}table{font-size:10px}th,td{padding:5px}}</style></head><body><h1>SHED NO. 9 / 14 / 18 / 20</h1><h2>ALP CONSUMPTION REPORT — ${month}</h2><table><thead><tr><th>Sr No</th><th>Fumigation Date</th><th>Stack Number</th><th>Total MT</th><th>Wheat Fumigation MT</th><th>Rice Fumigation MT</th><th>Progressive Wheat/Rice Total MT</th><th>Consumption (kg)</th><th>Consumption Progressive (kg)</th></tr></thead><tbody>${rows||'<tr><td colspan="9">No saved ALP entries for this month.</td></tr>'}</tbody></table></body><style id="moisture-update-rmc-hide-only">
 /* Only requested Moisture Update change: keep Add New Stack, hide Manual/Current RMC cards. */
 .moisture-focused-page .mo-stack-details{display:none!important}
@@ -1860,7 +1880,7 @@ function malathionEntries(){
     const pin=await qcPinPrompt('Edit ke liye PIN enter karein');if(pin===null||String(pin)!==String(getSitePin())){if(pin!==null)alert('Wrong PIN.');return;}
     openMalathionEntry(id);
   };
-  window.deleteMalathionEntry=function(id){const pin=prompt('Delete ke liye PIN enter karein:');if(pin===null||String(pin)!==String(getSitePin())){if(pin!==null)alert('Wrong PIN.');return;}if(!confirm('Delete this Malathion entry?'))return;chemWrite(chemRead().filter(x=>String(x.id)!==String(id)));const r=document.getElementById('chemRows');if(r)r.innerHTML=malathionTableRows();renderChemicalReport();};
+  window.deleteMalathionEntry=async function(id){const pin=await qcPinPrompt('Delete ke liye PIN enter karein');if(pin===null||String(pin)!==String(getSitePin())){if(pin!==null)alert('Wrong PIN.');return;}if(!confirm('Delete this Malathion entry?'))return;chemWrite(chemRead().filter(x=>String(x.id)!==String(id)));const r=document.getElementById('chemRows');if(r)r.innerHTML=malathionTableRows();renderChemicalReport();};
   
   function alpIndicatorHtml(){
     try{
