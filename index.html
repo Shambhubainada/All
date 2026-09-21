@@ -1872,6 +1872,18 @@ function malathionEntries(){
       return '<div class="report-summary-row"><div><b>TOTAL FUMIGATION</b><br>'+Math.round(wheat+rice)+' MT</div><div><b>WHEAT FUMIGATION</b><br>'+Math.round(wheat)+' MT</div><div><b>RICE FUMIGATION</b><br>'+Math.round(rice)+' MT</div><div><b>TOTAL ALP USED</b><br>'+used.toFixed(3)+' kg</div></div>';
     }catch(e){return '<div class="report-summary-row"><div><b>TOTAL FUMIGATION</b><br>0 MT</div><div><b>WHEAT FUMIGATION</b><br>0 MT</div><div><b>RICE FUMIGATION</b><br>0 MT</div><div><b>TOTAL ALP USED</b><br>0.000 kg</div></div>';}
   }
+  function deltaIndicatorHtml(){
+    try{
+      const now=new Date(), y=now.getFullYear(), mo=String(now.getMonth()+1).padStart(2,'0');
+      const from=y+'-'+mo+'-01', to=y+'-'+mo+'-'+String(now.getDate()).padStart(2,'0');
+      const inMonth=d=>{const v=chemISODateValue(d);return v>=from&&v<=to;};
+      const a=deltaAutoGroups().filter(x=>inMonth(x.date));
+      const wheat=a.reduce((sum,x)=>sum+chemNum(x.wheatMt||0),0);
+      const rice=a.reduce((sum,x)=>sum+chemNum(x.riceMt||0),0);
+      const used=a.reduce((sum,x)=>sum+chemNum(x.consumption||0),0);
+      return '<div class="report-summary-row"><div><b>TOTAL DELTA SPRAY</b><br>'+Math.round(wheat+rice)+' MT</div><div><b>WHEAT DELTA SPRAY</b><br>'+Math.round(wheat)+' MT</div><div><b>RICE DELTA SPRAY</b><br>'+Math.round(rice)+' MT</div><div><b>TOTAL DELTA USED</b><br>'+used.toFixed(3)+' kg</div></div>';
+    }catch(e){return '<div class="report-summary-row"><div><b>TOTAL DELTA SPRAY</b><br>0 MT</div><div><b>WHEAT DELTA SPRAY</b><br>0 MT</div><div><b>RICE DELTA SPRAY</b><br>0 MT</div><div><b>TOTAL DELTA USED</b><br>0.000 kg</div></div>';}
+  }
   function chemicalPage(){
     const now=new Date(), folder=activeChemicalFolder;
     if(!folder) return chemicalFolderPage();
@@ -1889,7 +1901,7 @@ function malathionEntries(){
       return `<div class="panel"><div class="panelhead"><button class="pill" onclick="openChemicalFolders()">← CHEMICAL FOLDERS</button> &nbsp; 🧪 DELTA REGISTER</div></div>
       <div class="panel"><div class="panelhead">📒 DELTA CONSUMPTION REGISTER</div>
         <div class="chem-register-wrap"><table class="chem-table chem-register-table"><thead><tr><th>Sr No.</th><th>Entry Date</th><th>Stack Number</th><th>Consumption (kg)</th><th>Progressive Consumption (kg)</th><th>Fumigated Stacks</th><th>Action</th></tr></thead><tbody id="chemRows">${deltaTableRows()}</tbody></table></div><div class="chemical-actions chem-register-downloads"><button class="chem-orange" onclick="downloadChemicalRegisterExcel('Delta')">📊 REGISTER EXCEL</button><button class="chem-red" onclick="downloadChemicalRegisterPDF('Delta')">📄 REGISTER PDF</button></div>
-        <div id="deltaReportSummary" class="alp-report-box delta-indicator-outside"></div>${reportFolder('deltaReportFolder','DELTA REPORT',`${reportControls}${reportActions}`)}
+        <div id="deltaReportSummary" class="alp-report-box delta-indicator-outside">${deltaIndicatorHtml()}</div>${reportFolder('deltaReportFolder','DELTA REPORT',`${reportControls}${reportActions}`)}
       </div>`;
     }
     if(folder==='Malathion'){
