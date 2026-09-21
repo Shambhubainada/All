@@ -470,6 +470,7 @@ body.dashboard-open .final-quick-row{display:none!important}
 .alp-indicator-outside .report-summary-row>div,.delta-indicator-outside .report-summary-row>div{min-width:0!important;white-space:normal!important;font-size:8px!important;line-height:1.15!important;padding:5px 2px!important}
 .alp-indicator-outside .report-summary-row b,.delta-indicator-outside .report-summary-row b{display:block!important;font-size:8px!important}
 </style>
+<style id="malathion-row-lock-fix">.alp-row-locked td{background:#f8fbf9}.alp-lock-badge{display:inline-block;font-size:10px;font-weight:900;background:#eef3f0;color:#35594b;border:1px solid #cbd9d3;border-radius:999px;padding:4px 7px;white-space:nowrap}</style>
 </head>
 <body>
 <div class="pin-screen" id="pinScreen">
@@ -1776,7 +1777,7 @@ document.addEventListener('DOMContentLoaded',function(){
       const till=tillDate(r.total), wheatMt=till.reduce((s,x)=>s+chemNum(x.wheatMt||0),0), riceMt=till.reduce((s,x)=>s+chemNum(x.riceMt||0),0);
       const wheatStacks=till.reduce((s,x)=>s+Number(x.wheat||0),0), riceStacks=till.reduce((s,x)=>s+Number(x.rice||0),0), totalStacks=wheatStacks+riceStacks, totalMt=wheatMt+riceMt;
       const currentKg=till.reduce((s,x)=>s+chemNum(x.consumption),0);
-      box.innerHTML=`<div class="report-summary-row"><div><b>TOTAL DELTA SPRAY</b><br>${Math.round(totalMt)} MT · ${totalStacks} stacks</div><div><b>WHEAT DELTA</b><br>${Math.round(wheatMt)} MT · ${wheatStacks} stacks</div><div><b>RICE DELTA</b><br>${Math.round(riceMt)} MT · ${riceStacks} stacks</div><div><b>DELTA USED</b><br>${currentKg.toFixed(3)} kg</div></div>`;
+      box.innerHTML=`<div class="report-summary-row"><div><b>TOTAL DELTA SPRAY</b><br>${Math.round(totalMt)} MT · ${totalStacks} stacks</div><div><b>WHEAT SPRAY</b><br>${Math.round(wheatMt)} MT · ${wheatStacks} stacks</div><div><b>RICE SPRAY</b><br>${Math.round(riceMt)} MT · ${riceStacks} stacks</div><div><b>TOTAL CONSUMPTION DELTA</b><br>${currentKg.toFixed(3)} kg</div></div>`;
     }else if(activeChemicalFolder==='Malathion'){
       const malAll=Array.isArray(r.total)?r.total:[], malTill=tillDate(malAll);
       const alpTill=tillDate(alpAutoGroups());
@@ -1808,7 +1809,10 @@ function malathionEntries(){
       const groups={Wheat:[],Rice:[]}; ss.forEach(v=>(groups[v.commodity==='Wheat'?'Wheat':'Rice']).push(v));
       const stackHtml=['Wheat','Rice'].map(c=>groups[c].length?`<div class="mal-stack-group ${c==='Wheat'?'mal-wheat':'mal-rice'}"><b>${c}</b><span>${groups[c].map(v=>escC(v.stack)).join(', ')}</span></div>`:'').join('');
       const commodity=groups.Wheat.length&&groups.Rice.length?'Wheat + Rice':(groups.Wheat.length?'Wheat':'Rice');
-      return `<tr><td>${i+1}</td><td>${chemDate(x.date)}</td><td class="mal-stack-cell">${stackHtml||escC(x.stack||'—')}</td><td>${qty}</td><td>${cons.toFixed(3)} Ltr</td><td><b>${progressive.toFixed(3)} Ltr</b></td><td><span class="commodity-badge ${commodity==='Wheat'?'wheat':commodity==='Rice'?'rice':'mix'}">${commodity}</span></td><td><div class="chem-action-group"><button class="pill chem-edit-btn" onclick="editMalathionEntry('${String(x.id)}')">✏️ Edit</button><button class="pill chem-delete-btn" onclick="deleteMalathionEntry('${String(x.id)}')">🗑 Delete</button></div></td></tr>`;
+      let locks={}; try{locks=JSON.parse(localStorage.getItem('shambhuMalathionLocksV1')||'{}')}catch(e){}
+      const isLocked=locks[String(x.id)]!==false;
+      const action=`<div class="chem-action-group"><span class="alp-lock-badge">🔒 Locked</span><button class="pill chem-edit-btn" onclick="editMalathionEntry('${String(x.id)}')">✏️ Edit</button><button class="pill chem-delete-btn" onclick="deleteMalathionEntry('${String(x.id)}')">🗑 Delete</button></div>`;
+      return `<tr class="${isLocked?'alp-row-locked':''}"><td>${i+1}</td><td>${chemDate(x.date)}</td><td class="mal-stack-cell">${stackHtml||escC(x.stack||'—')}</td><td>${qty}</td><td>${cons.toFixed(3)} Ltr</td><td><b>${progressive.toFixed(3)} Ltr</b></td><td><span class="commodity-badge ${commodity==='Wheat'?'wheat':commodity==='Rice'?'rice':'mix'}">${commodity}</span></td><td>${action}</td></tr>`;
     }).join(''):'<tr><td colspan="8" class="empty">No Malathion entries saved yet.</td></tr>';
   }
   function malathionStackOptions(){
@@ -1847,12 +1851,15 @@ function malathionEntries(){
   };
   window.closeMalathionEntry=function(){const m=document.getElementById('malathionEntryModal');if(m)m.remove();};
   window.toggleMalathionCommodity=function(){};
-  window.saveMalathionEntry=function(editId){try{const d=document.getElementById('malEntryDate')?.value||'',stacks=malathionSelectedValues();if(!d){alert('Date select karein.');return}if(!stacks.length){alert('Kam se kam 1 stack select karein.');return}let a=chemRead();if(!Array.isArray(a))a=[];const id=editId?String(editId):('MAL-'+Date.now()+'-'+Math.random().toString(36).slice(2,8));const clean=stacks.map(x=>({stack:String(x.stack||''),commodity:String(x.commodity||'Rice'),qty:Math.round(chemNum(x.qty))})).filter(x=>x.stack);if(!clean.length){alert('Stack select karein.');return}const totalQty=clean.reduce((n,x)=>n+x.qty,0),cons=clean.length*0.061;const record={id,chemical:'Malathion',date:String(d).slice(0,10),stacks:clean,stack:clean.map(x=>x.stack).join(', '),commodity:clean.every(x=>x.commodity==='Wheat')?'Wheat':clean.every(x=>x.commodity==='Rice')?'Rice':'Wheat + Rice',qty:totalQty,unit:'MT',consumption:cons,remarks:''};const ix=a.findIndex(v=>String(v.id)===id);if(ix>=0)a[ix]={...a[ix],...record,id:a[ix].id};else a.push(record);chemWrite(a);if(!chemRead().some(v=>String(v.id)===String(record.id))){alert('Entry save nahi hui.');return}closeMalathionEntry();const dp=document.getElementById('dynamicPage');if(dp){dp.innerHTML=chemicalPage();if(typeof restoreChemicalReportState==='function')restoreChemicalReportState();renderChemicalReport();setTimeout(renderChemicalReport,50)} }catch(e){console.error(e);alert('Malathion entry save nahi hui. Dobara try karein.')}};
-  window.editMalathionEntry=function(id){
-    const pin=prompt('Edit ke liye PIN enter karein:');if(pin===null||String(pin)!==String(getSitePin())){if(pin!==null)alert('Wrong PIN.');return;}
+  window.saveMalathionEntry=function(editId){try{const d=document.getElementById('malEntryDate')?.value||'',stacks=malathionSelectedValues();if(!d){alert('Date select karein.');return}if(!stacks.length){alert('Kam se kam 1 stack select karein.');return}let a=chemRead();if(!Array.isArray(a))a=[];const id=editId?String(editId):('MAL-'+Date.now()+'-'+Math.random().toString(36).slice(2,8));const clean=stacks.map(x=>({stack:String(x.stack||''),commodity:String(x.commodity||'Rice'),qty:Math.round(chemNum(x.qty))})).filter(x=>x.stack);if(!clean.length){alert('Stack select karein.');return}const totalQty=clean.reduce((n,x)=>n+x.qty,0),cons=clean.length*0.061;const record={id,chemical:'Malathion',date:String(d).slice(0,10),stacks:clean,stack:clean.map(x=>x.stack).join(', '),commodity:clean.every(x=>x.commodity==='Wheat')?'Wheat':clean.every(x=>x.commodity==='Rice')?'Rice':'Wheat + Rice',qty:totalQty,unit:'MT',consumption:cons,remarks:''};const ix=a.findIndex(v=>String(v.id)===id);if(ix>=0)a[ix]={...a[ix],...record,id:a[ix].id};else a.push(record);chemWrite(a);if(!chemRead().some(v=>String(v.id)===String(record.id))){alert('Entry save nahi hui.');return}let locks={};try{locks=JSON.parse(localStorage.getItem('shambhuMalathionLocksV1')||'{}')}catch(e){}locks[String(record.id)]=true;localStorage.setItem('shambhuMalathionLocksV1',JSON.stringify(locks));closeMalathionEntry();const dp=document.getElementById('dynamicPage');if(dp){dp.innerHTML=chemicalPage();if(typeof restoreChemicalReportState==='function')restoreChemicalReportState();renderChemicalReport();setTimeout(renderChemicalReport,50)} }catch(e){console.error(e);alert('Malathion entry save nahi hui. Dobara try karein.')}};
+  window.editMalathionEntry=async function(id){
+    const pin=await qcPinPrompt('Edit ke liye PIN enter karein');
+    if(pin===null||String(pin)!==String(getSitePin())){if(pin!==null)alert('Wrong PIN.');return;}
+    let locks={};try{locks=JSON.parse(localStorage.getItem('shambhuMalathionLocksV1')||'{}')}catch(e){}
+    locks[String(id)]=false;localStorage.setItem('shambhuMalathionLocksV1',JSON.stringify(locks));
     openMalathionEntry(id);
   };
-  window.deleteMalathionEntry=function(id){const pin=prompt('Delete ke liye PIN enter karein:');if(pin===null||String(pin)!==String(getSitePin())){if(pin!==null)alert('Wrong PIN.');return;}if(!confirm('Delete this Malathion entry?'))return;chemWrite(chemRead().filter(x=>String(x.id)!==String(id)));const r=document.getElementById('chemRows');if(r)r.innerHTML=malathionTableRows();renderChemicalReport();};
+  window.deleteMalathionEntry=function(id){const pin=prompt('Delete ke liye PIN enter karein:');if(pin===null||String(pin)!==String(getSitePin())){if(pin!==null)alert('Wrong PIN.');return;}if(!confirm('Delete this Malathion entry?'))return;chemWrite(chemRead().filter(x=>String(x.id)!==String(id)));let locks={};try{locks=JSON.parse(localStorage.getItem('shambhuMalathionLocksV1')||'{}')}catch(e){}delete locks[String(id)];localStorage.setItem('shambhuMalathionLocksV1',JSON.stringify(locks));const r=document.getElementById('chemRows');if(r)r.innerHTML=malathionTableRows();renderChemicalReport();};
   
   function chemicalPage(){
     const now=new Date(), folder=activeChemicalFolder;
