@@ -1684,7 +1684,6 @@ document.addEventListener('DOMContentLoaded',function(){
     if(folder==='Malathion'){
       return `<div class="panel"><div class="panelhead"><button class="pill" onclick="openChemicalFolders()">← CHEMICAL FOLDERS</button> &nbsp; 🧴 MALATHION REGISTER</div>
         <div class="malathion-add-row"><button class="chem-save malathion-add-btn" onclick="openMalathionEntry()">➕ ADD NEW ENTRY</button><span class="smallmuted">0.061 Ltr per stack</span></div>
-        ${typeof window.malathionProgressHtml==='function'?window.malathionProgressHtml():'<div class="mal-20-indicator"><div class="mal-20-title">20% MALATHION REQUIREMENT</div><div class="mal-20-grid"><div><small>TOTAL ALP MT STOCK — ALP REPORT</small><b>0 MT</b></div><div><small>20% MALATHION REQUIRED</small><b>0.00 MT</b></div><div><small>ACTUALLY MALATHION DONE</small><b>0.00 MT</b></div><div class="mal-20-baki"><small>MALATHION DUE</small><b>0.00 MT</b></div></div><div class="mal-20-all"><b>ACTUAL MALATHION CONSUMPTION:</b> 0.000 Ltr</div></div>'}
       </div>
       <div class="panel"><div class="panelhead">📒 MALATHION CONSUMPTION REGISTER</div>
         <div class="chem-register-wrap"><table class="chem-table chem-register-table"><thead><tr><th>Sr No.</th><th>Date</th><th>Stack Number</th><th>Qty (MT)</th><th>Consumption</th><th>Progressive Consumption</th><th>Commodity</th><th>Action</th></tr></thead><tbody id="chemRows">${malathionTableRows()}</tbody></table></div><div class="chemical-actions chem-register-downloads"><button class="chem-orange" onclick="downloadChemicalRegisterExcel('Malathion')">📊 REGISTER EXCEL</button><button class="chem-red" onclick="downloadChemicalRegisterPDF('Malathion')">📄 REGISTER PDF</button></div>
@@ -1848,38 +1847,50 @@ document.addEventListener('DOMContentLoaded',function(){
   /* Malathion progress block was referenced by chemicalPage() but was missing in some builds. */
   window.malathionProgressHtml=function(){
     try{
-      const mal=typeof malathionEntries==='function'?malathionEntries():[];
+      // ALP report: all Wheat + Rice treatment MT, from the locked ALP register/report data.
+      const alp=typeof alpAutoGroups==='function'?alpAutoGroups():[];
+      const total=alp.reduce((sum,x)=>sum+Number(x.wheatMt||0)+Number(x.riceMt||0),0);
+
+      // Build current stock quantity map from Master Stock so Delta/Malathion treatment
+      // is counted in MT, not by chemical consumption litres/kg.
+      const sourceRows=(typeof rows!=='undefined'&&Array.isArray(rows))?rows:[];
+      const qtyByStack=new Map(), commodityByStack=new Map();
+      sourceRows.forEach(r=>{
+        const st=String(typeof stack==='function'?stack(r):'').trim();
+        if(!st)return;
+        const q=Number(typeof qty==='function'?qty(r):0)||0;
+        if(!qtyByStack.has(st)) qtyByStack.set(st,q);
+        if(!commodityByStack.has(st)) commodityByStack.set(st,isWheat(r)?'Wheat':(isRice(r)?'Rice':''));
+      });
+
+      // Delta report data: unique fumigated stacks, with their actual stock MT.
       const del=typeof deltaAutoGroups==='function'?deltaAutoGroups():[];
-      let total=0;
-      try{
-        const rr=typeof reportData==='function'?reportData():null;
-        if(rr && rr.allWheatQty!=null && rr.allRiceQty!=null) total=Number(rr.allWheatQty||0)+Number(rr.allRiceQty||0);
-      }catch(e){}
-      if(!Number.isFinite(total)||total<=0){
-        try{
-          const alp=typeof alpAutoGroups==='function'?alpAutoGroups():[];
-          total=alp.reduce((sum,x)=>sum+Number(x.wheatMt||0)+Number(x.riceMt||0),0);
-        }catch(e){ total=0; }
-      }
-      const targetMal=total*0.20, targetDelta=total*0.80;
-      let deltaDone=0; const seenDelta=new Set();
-      const sourceRows=typeof activeRows==='function'?activeRows():((typeof rows!=='undefined'&&Array.isArray(rows))?rows:[]);
-      const qtyByStack=new Map();
-      sourceRows.forEach(r=>{const st=String(typeof stack==='function'?stack(r):'').trim();if(st&&!qtyByStack.has(st))qtyByStack.set(st,Number(typeof qty==='function'?qty(r):0)||0);});
-      del.forEach(g=>String(g.stackText||'').split(',').map(x=>x.trim()).filter(Boolean).forEach(st=>{if(!seenDelta.has(st)){seenDelta.add(st);deltaDone+=Number(qtyByStack.get(st)||0);}}));
-      let malDone=0;
+      const deltaSeen=new Set(); let deltaDone=0;
+      del.forEach(g=>String(g.stackText||'').split(',').map(x=>x.trim()).filter(Boolean).forEach(st=>{
+        if(deltaSeen.has(st))return; deltaSeen.add(st); deltaDone+=Number(qtyByStack.get(st)||0);
+      }));
+
+      // Malathion report data: actual treated stock MT saved in each Malathion entry.
+      const mal=typeof malathionEntries==='function'?malathionEntries():[];
+      const malSeen=new Set(); let malDone=0;
       mal.forEach(x=>{
         const ss=typeof malEntryStacks==='function'?malEntryStacks(x):[];
-        if(ss.length) malDone+=ss.reduce((sum,v)=>sum+Number(v.qty||0),0);
-        else malDone+=Number(x.qty||0);
+        if(ss.length){
+          ss.forEach(v=>{const st=String(v.stack||'').trim();if(!st||malSeen.has(st))return;malSeen.add(st);malDone+=Number(v.qty||0)||0;});
+        }else{
+          String(x.stack||'').split(',').map(v=>v.trim()).filter(Boolean).forEach(st=>{if(malSeen.has(st))return;malSeen.add(st);malDone+=Number(qtyByStack.get(st)||0);});
+        }
       });
+
+      const targetMal=total*0.20, targetDelta=total*0.80;
       const malDue=Math.max(0,targetMal-malDone), deltaDue=Math.max(0,targetDelta-deltaDone);
-      const deltaPct=total>0?Math.min(100,deltaDone/total*100):0, malPct=total>0?Math.min(100,malDone/total*100):0;
+      const deltaPct=total>0?Math.min(100,deltaDone/total*100):0;
+      const malPct=total>0?Math.min(100,malDone/total*100):0;
       const consumption=mal.reduce((sum,x)=>sum+(Number(x.consumption)||0),0);
-      return '<div class="mal-20-indicator '+((malDue>0||deltaDue>0)?'mal-20-blink':'')+'"><div class="mal-20-title">ALP / DELTA / MALATHION STOCK STATUS</div><div class="mal-20-grid"><div><small>TOTAL ALP STOCK</small><b>'+Math.round(total)+' MT</b></div><div><small>DELTA DONE</small><b>'+deltaPct.toFixed(1)+'% · '+Math.round(deltaDone)+' MT</b></div><div><small>MALATHION DONE</small><b>'+malPct.toFixed(1)+'% · '+Math.round(malDone)+' MT</b></div><div class="mal-20-baki"><small>MALATHION 20% — TO DO</small><b>'+malDue.toFixed(2)+' MT</b></div><div class="mal-20-baki"><small>DELTA 80% — TO DO</small><b>'+deltaDue.toFixed(2)+' MT</b></div><div><small>MALATHION REQUIRED (20%)</small><b>'+targetMal.toFixed(2)+' MT</b></div><div><small>DELTA REQUIRED (80%)</small><b>'+targetDelta.toFixed(2)+' MT</b></div></div><div class="mal-20-all"><b>ACTUAL MALATHION CONSUMPTION:</b> '+consumption.toFixed(3)+' Ltr</div></div>';
+      return '<div class="mal-20-indicator '+((malDue>0||deltaDue>0)?'mal-20-blink':'')+'"><div class="mal-20-title">ALP / DELTA / MALATHION STOCK STATUS</div><div class="mal-20-grid"><div><small>TOTAL ALP STOCK (ALP REPORT)</small><b>'+Math.round(total)+' MT</b></div><div><small>DELTA DONE (DELTA REPORT)</small><b>'+deltaPct.toFixed(1)+'% · '+Math.round(deltaDone)+' MT</b></div><div><small>MALATHION DONE (MALATHION REPORT)</small><b>'+malPct.toFixed(1)+'% · '+Math.round(malDone)+' MT</b></div><div class="mal-20-baki"><small>MALATHION 20% — TO DO</small><b>'+malDue.toFixed(2)+' MT</b></div><div class="mal-20-baki"><small>DELTA 80% — TO DO</small><b>'+deltaDue.toFixed(2)+' MT</b></div><div><small>MALATHION REQUIRED (20%)</small><b>'+targetMal.toFixed(2)+' MT</b></div><div><small>DELTA REQUIRED (80%)</small><b>'+targetDelta.toFixed(2)+' MT</b></div></div><div class="mal-20-all"><b>ACTUAL MALATHION CONSUMPTION:</b> '+consumption.toFixed(3)+' Ltr</div></div>';
     }catch(e){
       console.error('Malathion indicator error',e);
-      return '<div class="mal-20-indicator"><div class="mal-20-title">ALP / DELTA / MALATHION STOCK STATUS</div><div class="mal-20-grid"><div><small>TOTAL ALP STOCK</small><b>0 MT</b></div><div><small>DELTA DONE</small><b>0.0% · 0 MT</b></div><div><small>MALATHION DONE</small><b>0.0% · 0 MT</b></div><div class="mal-20-baki"><small>MALATHION 20% — TO DO</small><b>0.00 MT</b></div><div class="mal-20-baki"><small>DELTA 80% — TO DO</small><b>0.00 MT</b></div></div></div>';
+      return '<div class="mal-20-indicator"><div class="mal-20-title">ALP / DELTA / MALATHION STOCK STATUS</div><div class="mal-20-grid"><div><small>TOTAL ALP STOCK (ALP REPORT)</small><b>0 MT</b></div><div><small>DELTA DONE (DELTA REPORT)</small><b>0.0% · 0 MT</b></div><div><small>MALATHION DONE (MALATHION REPORT)</small><b>0.0% · 0 MT</b></div><div class="mal-20-baki"><small>MALATHION 20% — TO DO</small><b>0.00 MT</b></div><div class="mal-20-baki"><small>DELTA 80% — TO DO</small><b>0.00 MT</b></div></div></div>';
     }
   };
   const oldClose=window.closeModal;
