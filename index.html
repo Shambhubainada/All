@@ -1872,27 +1872,9 @@ document.addEventListener('DOMContentLoaded',function(){
     /* Replace the internal function is not possible through lexical binding; delegation below handles current/future buttons. */
   }
 
-  /* Document-level fallback catches taps even if a parent handler interferes. */
-  document.addEventListener('click',function(ev){
-    const btn=ev.target && ev.target.closest ? ev.target.closest('.chem-register-table .stack-weight-toggle'):null;
-    if(!btn)return;
-    if(btn.dataset.fhDelegated==='1')return;
-    ev.preventDefault(); ev.stopPropagation();
-    const text=btn.querySelector('span')?.textContent?.trim()||'';
-    const cell=btn.closest('.stack-number-cell');
-    const row=btn.closest('tr');
-    const date=row?.querySelector('td:nth-child(2)')?.textContent?.trim()||'';
-    /* Prefer explicit data attributes when available; otherwise use button's existing inline handler target by reading date/stack from text. */
-    const d=btn.dataset.weightDate||date;
-    const st=btn.dataset.weightStack||text;
-    if(!d||!st)return;
-    const key='shambhuChemicalStackWeight_'+d+'_'+st;
-    let v='FEW';try{v=JSON.parse(localStorage.getItem(key)||'"FEW"')}catch(e){}
-    v=v==='HEAVY'?'FEW':'HEAVY';localStorage.setItem(key,JSON.stringify(v));
-    try{const ovs=JSON.parse(localStorage.getItem('shambhuALPOverridesV1')||'{}');if(ovs[d]&&ovs[d].locked){ovs[d].stackWeights=ovs[d].stackWeights||{};ovs[d].stackWeights[st]=v;localStorage.setItem('shambhuALPOverridesV1',JSON.stringify(ovs));}}catch(e){}
-    const em=btn.querySelector('em');if(em)em.textContent=v;btn.classList.toggle('weight-heavy',v==='HEAVY');btn.setAttribute('aria-label',v);
-  },true);
-
+  /* The button listener above is the single FEW/HEAVY toggle handler.
+     Do not add a second document-level toggle here: on Android that would
+     toggle twice and make FEW/HEAVY appear unchanged. */
   function addStackData(){
     document.querySelectorAll('.chem-register-table .stack-weight-toggle').forEach(btn=>{
       if(btn.dataset.weightStack)return;
