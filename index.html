@@ -1628,13 +1628,18 @@ document.addEventListener('DOMContentLoaded',function(){
     try{
       const d=document.getElementById('malEntryDate')?.value, stacks=malathionSelectedValues();
       if(!d||!stacks.length){alert('Date aur kam se kam 1 stack select karein.');return;}
-      const a=Array.isArray(chemRead())?chemRead():[], totalQty=stacks.reduce((s,x)=>s+Math.round(Number(x.qty||0)),0), cons=stacks.length*0.061;
-      const record={id:editId?Number(editId):Date.now(),date:d,stacks,stack:stacks.map(x=>x.stack).join(', '),commodity:stacks.every(x=>x.commodity==='Wheat')?'Wheat':stacks.every(x=>x.commodity==='Rice')?'Rice':'Wheat + Rice',qty:totalQty,unit:'MT',consumption:cons,remarks:''};
-      if(editId){const ix=a.findIndex(v=>String(v.id)===String(editId));if(ix<0){alert('Entry nahi mili.');return}a[ix]=record;}else a.push(record);
-      chemWrite(a);
-      const saved=chemRead().some(v=>String(v.id)===String(record.id));
-      if(!saved){alert('Entry save nahi hui.');return;}
+      let a=chemRead(); if(!Array.isArray(a)) a=[];
+      const totalQty=stacks.reduce((s,x)=>s+Math.round(Number(x.qty||0)),0), cons=stacks.length*0.061;
+      const record={id:editId?String(editId):('MAL-'+Date.now()+'-'+Math.random().toString(36).slice(2,7)),date:String(d).slice(0,10),stacks:stacks.map(x=>({stack:String(x.stack),commodity:String(x.commodity||'Rice'),qty:Math.round(Number(x.qty||0))})),stack:stacks.map(x=>x.stack).join(', '),commodity:stacks.every(x=>x.commodity==='Wheat')?'Wheat':stacks.every(x=>x.commodity==='Rice')?'Rice':'Wheat + Rice',qty:totalQty,unit:'MT',consumption:cons,remarks:''};
+      if(editId){const ix=a.findIndex(v=>String(v.id)===String(editId));if(ix<0){alert('Entry nahi mili.');return}a[ix]={...a[ix],...record,id:a[ix].id};}
+      else a.push(record);
+      localStorage.setItem(CKEY,JSON.stringify(a));
+      const verify=JSON.parse(localStorage.getItem(CKEY)||'[]');
+      if(!Array.isArray(verify)||!verify.some(v=>String(v.id)===String(record.id))){alert('Entry save nahi hui.');return;}
       const r=document.getElementById('chemRows');if(r)r.innerHTML=malathionTableRows();
+      const indicator=typeof malathionProgressHtml==='function'?malathionProgressHtml():'';
+      const panel=document.getElementById('chemRows')?.closest('.panel');
+      const oldInd=panel?.querySelector('.mal-20-indicator'); if(oldInd)oldInd.outerHTML=indicator;
       try{renderChemicalReport();}catch(e){console.error(e)}
       closeMalathionEntry();
     }catch(e){console.error('Malathion save error',e);alert('Malathion entry save nahi hui. Dobara try karein.');}
@@ -1748,7 +1753,7 @@ document.addEventListener('DOMContentLoaded',function(){
   window.qcDatePrompt=function(label,value){return new Promise(function(resolve){
     const old=document.getElementById('qcDatePrompt');if(old)old.remove();
     const modal=document.createElement('div');modal.id='qcDatePrompt';modal.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:100000;padding:16px;';
-    const box=document.createElement('div');box.style.cssText='background:#fff;border-radius:12px;padding:12px;width:min(300px,88vw);box-shadow:0 10px 35px rgba(0,0,0,.3);';
+    const box=document.createElement('div');box.style.cssText='background:#fff;border-radius:12px;padding:12px;width:min(250px,82vw);box-shadow:0 10px 35px rgba(0,0,0,.3);';
     const lab=document.createElement('label');lab.textContent=label;lab.style.cssText='display:block;font-weight:700;margin-bottom:8px;';
     const input=document.createElement('input');input.type='date';input.value=value?String(value).slice(0,10):new Date().toISOString().slice(0,10);input.style.cssText='box-sizing:border-box;width:100%;font-size:16px;padding:8px;border:1px solid #bbb;border-radius:8px;margin-bottom:10px;';
     const actions=document.createElement('div');actions.style.cssText='display:flex;gap:8px;justify-content:flex-end;';
@@ -1762,7 +1767,7 @@ document.addEventListener('DOMContentLoaded',function(){
   window.qcPinPrompt=function(label){return new Promise(function(resolve){
     const old=document.getElementById('qcPinPrompt');if(old)old.remove();
     const modal=document.createElement('div');modal.id='qcPinPrompt';modal.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:100000;padding:16px;';
-    const box=document.createElement('div');box.style.cssText='background:#fff;border-radius:12px;padding:12px;width:min(300px,88vw);box-shadow:0 10px 35px rgba(0,0,0,.3);';
+    const box=document.createElement('div');box.style.cssText='background:#fff;border-radius:12px;padding:12px;width:min(250px,82vw);box-shadow:0 10px 35px rgba(0,0,0,.3);';
     const lab=document.createElement('label');lab.textContent=label;lab.style.cssText='display:block;font-weight:700;margin-bottom:8px;';
     const input=document.createElement('input');input.type='number';input.inputMode='numeric';input.pattern='[0-9]*';input.autocomplete='off';input.maxLength=20;input.placeholder='PIN';input.style.cssText='box-sizing:border-box;width:100%;font-size:20px;padding:9px;border:1px solid #bbb;border-radius:8px;margin-bottom:10px;';
     const actions=document.createElement('div');actions.style.cssText='display:flex;gap:8px;justify-content:flex-end;';const cancel=document.createElement('button');cancel.type='button';cancel.textContent='Cancel';const ok=document.createElement('button');ok.type='button';ok.textContent='OK';
@@ -1770,7 +1775,7 @@ document.addEventListener('DOMContentLoaded',function(){
     function done(v){modal.remove();resolve(v)}cancel.onclick=function(){done(null)};ok.onclick=function(){done(input.value)};input.onkeydown=function(e){if(e.key==='Enter')ok.click();if(e.key==='Escape')cancel.click()};
     actions.append(cancel,ok);box.append(lab,input,actions);modal.append(box);document.body.append(modal);input.focus();try{input.click();}catch(_){}
   })};
-  window.deltaSecurePrompt=function(label,value,type){return new Promise(function(resolve){const old=document.getElementById('deltaSecurePrompt');if(old)old.remove();const modal=document.createElement('div');modal.id='deltaSecurePrompt';modal.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:99999;padding:16px;';const box=document.createElement('div');box.style.cssText='background:#fff;border-radius:14px;padding:18px;width:min(360px,94vw);box-shadow:0 10px 35px rgba(0,0,0,.3);';const lab=document.createElement('label');lab.textContent=label;lab.style.cssText='display:block;font-weight:700;margin-bottom:8px;';const input=document.createElement('input');input.type=type==='date'?'date':(type==='pin'?'number':'text');if(type==='pin'){input.inputMode='numeric';input.pattern='[0-9]*';input.autocomplete='off';input.maxLength=20;}input.value=value==null?'':String(value);input.style.cssText='box-sizing:border-box;width:100%;font-size:18px;padding:11px;border:1px solid #bbb;border-radius:9px;margin-bottom:12px;';if(type==='date'){const openCal=function(){try{if(typeof input.showPicker==='function')input.showPicker();else input.click();}catch(_){input.focus();}};input.addEventListener('click',openCal);}const actions=document.createElement('div');actions.style.cssText='display:flex;gap:8px;justify-content:flex-end;';const cancel=document.createElement('button');cancel.type='button';cancel.textContent='Cancel';const ok=document.createElement('button');ok.type='button';ok.textContent='OK';[cancel,ok].forEach(b=>{b.style.cssText='padding:9px 16px;border-radius:9px;border:1px solid #aaa;background:#f5f5f5;font-weight:700;';});function done(v){modal.remove();resolve(v);}cancel.onclick=function(){done(null)};ok.onclick=function(){done(input.value)};input.onkeydown=function(e){if(e.key==='Enter')ok.click();if(e.key==='Escape')cancel.click()};actions.append(cancel,ok);box.append(lab,input,actions);modal.append(box);document.body.append(modal);input.focus();if(type==='date'){try{if(typeof input.showPicker==='function')input.showPicker();else input.click();}catch(_){} }else if(input.type==='text')input.select();});};
+  window.deltaSecurePrompt=function(label,value,type){return new Promise(function(resolve){const old=document.getElementById('deltaSecurePrompt');if(old)old.remove();const modal=document.createElement('div');modal.id='deltaSecurePrompt';modal.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:99999;padding:16px;';const box=document.createElement('div');box.style.cssText='background:#fff;border-radius:14px;padding:18px;width:min(270px,84vw);box-shadow:0 10px 35px rgba(0,0,0,.3);';const lab=document.createElement('label');lab.textContent=label;lab.style.cssText='display:block;font-weight:700;margin-bottom:8px;';const input=document.createElement('input');input.type=type==='date'?'date':(type==='pin'?'number':'text');if(type==='pin'){input.inputMode='numeric';input.pattern='[0-9]*';input.autocomplete='off';input.maxLength=20;}input.value=value==null?'':String(value);input.style.cssText='box-sizing:border-box;width:100%;font-size:18px;padding:11px;border:1px solid #bbb;border-radius:9px;margin-bottom:12px;';if(type==='date'){const openCal=function(){try{if(typeof input.showPicker==='function')input.showPicker();else input.click();}catch(_){input.focus();}};input.addEventListener('click',openCal);}const actions=document.createElement('div');actions.style.cssText='display:flex;gap:8px;justify-content:flex-end;';const cancel=document.createElement('button');cancel.type='button';cancel.textContent='Cancel';const ok=document.createElement('button');ok.type='button';ok.textContent='OK';[cancel,ok].forEach(b=>{b.style.cssText='padding:9px 16px;border-radius:9px;border:1px solid #aaa;background:#f5f5f5;font-weight:700;';});function done(v){modal.remove();resolve(v);}cancel.onclick=function(){done(null)};ok.onclick=function(){done(input.value)};input.onkeydown=function(e){if(e.key==='Enter')ok.click();if(e.key==='Escape')cancel.click()};actions.append(cancel,ok);box.append(lab,input,actions);modal.append(box);document.body.append(modal);input.focus();if(type==='date'){try{if(typeof input.showPicker==='function')input.showPicker();else input.click();}catch(_){} }else if(input.type==='text')input.select();});};
   window.saveDeltaAuto=function(dateKey){const g=deltaAutoGroups().find(x=>x.date===dateKey);if(!g)return;let o={};try{o=JSON.parse(localStorage.getItem('shambhuDeltaOverridesV1')||'{}')}catch(e){};const old=o[g.date]&&o[g.date].locked?o[g.date]:{};o[g.date]={...old,date:g.date,fumDate:g.fumDate||old.fumDate||'',stackText:String(g.stackText??old.stackText??''),count:Number(g.count??old.count??0),wheat:Number(g.wheat??old.wheat??0),rice:Number(g.rice??old.rice??0),consumption:chemNum(g.count??old.count??0)*0.650,locked:true,sourceLockedAt:old.sourceLockedAt||new Date().toISOString()};localStorage.setItem('shambhuDeltaOverridesV1',JSON.stringify(o));const r=document.getElementById('chemRows');if(r)r.innerHTML=deltaTableRows();renderChemicalReport();};
   window.editDeltaAuto=async function(dateKey){const pin=await deltaSecurePrompt('Edit ke liye PIN enter karein:', '', 'pin');if(pin===null||String(pin)!==String(getSitePin())){if(pin!==null)alert('Wrong PIN.');return;}const g=deltaAutoGroups().find(x=>x.date===dateKey);if(!g)return;const newDate=await deltaSecurePrompt('Entry Date select karein:',g.date,'date');if(newDate===null)return;if(!/^\d{4}-\d{2}-\d{2}$/.test(newDate))return;const stacks=await deltaSecurePrompt('Stack Number(s):',g.stackText,'text');if(stacks===null)return;const count=await deltaSecurePrompt('Number of stacks:',g.count,'number');if(count===null)return;let o={};try{o=JSON.parse(localStorage.getItem('shambhuDeltaOverridesV1')||'{}')}catch(e){}const n=Math.max(0,Math.round(chemNum(count)));if(newDate!==g.date)delete o[g.date];o[newDate]={date:newDate,fumDate:g.fumDate,stackText:stacks,count:n,wheat:Number(g.wheat||0),rice:Number(g.rice||0),consumption:n*0.650,locked:true,sourceLockedAt:(o[g.date]&&o[g.date].sourceLockedAt)||new Date().toISOString()};localStorage.setItem('shambhuDeltaOverridesV1',JSON.stringify(o));const r=document.getElementById('chemRows');if(r)r.innerHTML=deltaTableRows();renderChemicalReport();};
   window.deleteDeltaAuto=async function(dateKey){const pin=await deltaSecurePrompt('Delete ke liye PIN enter karein:', '', 'pin');if(pin===null||String(pin)!==String(getSitePin())){if(pin!==null)alert('Wrong PIN.');return;}if(!confirm('Delete saved Delta register entry? Automatic fumigation data will remain available.'))return;let o={};try{o=JSON.parse(localStorage.getItem('shambhuDeltaOverridesV1')||'{}')}catch(e){}delete o[dateKey];localStorage.setItem('shambhuDeltaOverridesV1',JSON.stringify(o));const r=document.getElementById('chemRows');if(r)r.innerHTML=deltaTableRows();renderChemicalReport();};
@@ -1856,20 +1861,18 @@ document.addEventListener('DOMContentLoaded',function(){
   if(typeof window.malathionProgressHtml!=='function'){
     window.malathionProgressHtml=function(){
       try{
-        const r=reportData();
-        const total=chemNum(r.monthWheatQty)+chemNum(r.monthRiceQty);
+        const alp=typeof alpAutoGroups==='function'?alpAutoGroups():[];
+        const mal=malathionEntries();
+        const total=alp.reduce((s,x)=>s+chemNum(x.mt),0);
         const target=total*0.20;
-        const done=(r.mm||[]).reduce((s,x)=>s+chemNum(x.qty),0);
+        const done=mal.reduce((s,x)=>s+chemNum(x.qty),0);
         const remain=Math.max(0,target-done);
+        const progressive=mal.reduce((s,x)=>s+chemNum(x.consumption),0);
         const pct=target>0?Math.min(100,done/target*100):0;
-        const allTotal=chemNum(r.allWheatQty)+chemNum(r.allRiceQty);
-        const allTarget=allTotal*0.20;
-        const allDone=(r.total||[]).reduce((s,x)=>s+chemNum(x.qty),0);
-        const allRemain=Math.max(0,allTarget-allDone);
-        return '<div class="mal-20-indicator '+(remain>0?'mal-20-blink':'')+'"><div class="mal-20-title">20% MALATHION REQUIREMENT</div><div class="mal-20-grid"><div><small>ALP TOTAL</small><b>'+Math.round(total)+' MT</b></div><div><small>20% TARGET</small><b>'+target.toFixed(2)+' MT</b></div><div><small>DONE</small><b>'+done.toFixed(2)+' MT</b></div><div class="mal-20-baki"><small>BAKI</small><b>'+remain.toFixed(2)+' MT</b></div></div><div class="mal-20-all"><b>Progress:</b> '+pct.toFixed(0)+'% · Abhi tak total ALP '+Math.round(allTotal)+' MT · 20% Target '+allTarget.toFixed(2)+' MT · Done '+allDone.toFixed(2)+' MT · <b>Baki '+allRemain.toFixed(2)+' MT</b></div></div>';
+        return '<div class="mal-20-indicator '+(remain>0?'mal-20-blink':'')+'"><div class="mal-20-title">20% MALATHION REQUIREMENT</div><div class="mal-20-grid"><div><small>TOTAL ALP MT STOCK</small><b>'+Math.round(total)+' MT</b></div><div><small>20% MALATHION REQUIRED</small><b>'+target.toFixed(2)+' MT</b></div><div><small>ACTUALLY DONE</small><b>'+done.toFixed(2)+' MT</b></div><div class="mal-20-baki"><small>DUE</small><b>'+remain.toFixed(2)+' MT</b></div></div><div class="mal-20-all"><b>Progressive Malathion Consumption till date:</b> '+progressive.toFixed(3)+' Ltr · '+pct.toFixed(0)+'% stock covered</div></div>';
       }catch(e){return '<div class="note">Malathion 20% indicator will appear after ALP data is available.</div>';}
     };
-  }
+  }}
 
   /* Single delegated FEW/HEAVY handler. No inline touch/click handler is used, so one phone tap = one toggle. */
   function addStackData(){
