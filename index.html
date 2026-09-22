@@ -472,7 +472,43 @@ body.dashboard-open .final-quick-row{display:none!important}
 </style>
 <script id="qc-prompt-keyboard-position-final">(function(){
 function fitQc(){const ov=document.getElementById('qcInputPrompt');if(!ov)return;const vv=window.visualViewport;const h=vv?vv.height:window.innerHeight;const kb=Math.max(0,window.innerHeight-h);const shift=Math.min(260,Math.max(120,Math.round(kb*0.45)));ov.style.transform='translateY(-'+shift+'px)';}
-window.addEventListener('resize',fitQc,{passive:true});window.addEventListener('orientationchange',fitQc,{passive:true});if(window.visualViewport)window.visualViewport.addEventListener('resize',fitQc,{passive:true});document.addEventListener('focusin',function(e){if(e.target&&e.target.closest&&e.target.closest('#qcInputPrompt'))setTimeout(fitQc,50);});})();</script></head>
+window.addEventListener('resize',fitQc,{passive:true});window.addEventListener('orientationchange',fitQc,{passive:true});if(window.visualViewport)window.visualViewport.addEventListener('resize',fitQc,{passive:true});document.addEventListener('focusin',function(e){if(e.target&&e.target.closest&&e.target.closest('#qcInputPrompt'))setTimeout(fitQc,50);});})();</script>
+<style id="alp-delta-indicator-visible-final">
+/* Restore the requested ALP + Delta current-month indicators. */
+.alp-indicator-outside,.delta-indicator-outside{display:block!important;visibility:visible!important;opacity:1!important;width:100%!important;min-height:48px!important;margin:10px 0 8px!important;padding:7px!important;border:1px solid #cfded6!important;border-radius:9px!important;background:#f8fbf9!important;box-sizing:border-box!important}
+.alp-indicator-outside .report-summary-row,.delta-indicator-outside .report-summary-row{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:5px!important;width:100%!important}
+.alp-indicator-outside .report-summary-row>div,.delta-indicator-outside .report-summary-row>div{display:block!important;min-height:40px!important;padding:7px 4px!important;border:1px solid #d6b656!important;border-radius:7px!important;background:#fff7d6!important;color:#243126!important;font-size:10px!important;line-height:1.2!important;text-align:center!important;white-space:normal!important;overflow:visible!important}
+.alp-indicator-outside .report-summary-row b,.delta-indicator-outside .report-summary-row b{display:block!important;font-size:9px!important;line-height:1.15!important;margin-bottom:3px!important}
+@media(max-width:600px){.alp-indicator-outside,.delta-indicator-outside{padding:5px!important}.alp-indicator-outside .report-summary-row,.delta-indicator-outside .report-summary-row{grid-template-columns:repeat(2,minmax(0,1fr))!important}.alp-indicator-outside .report-summary-row>div,.delta-indicator-outside .report-summary-row>div{min-height:38px!important;font-size:10px!important}}
+</style>
+<script id="alp-delta-indicator-hard-fix">
+(function(){
+  function paint(){
+    try{
+      if(typeof activeChemicalFolder==='undefined') return;
+      if(activeChemicalFolder==='ALP'){
+        const box=document.getElementById('alpReportSummary'); if(!box)return;
+        const all=typeof alpAutoGroups==='function'?alpAutoGroups():[];
+        const now=new Date(), ym=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
+        const arr=all.filter(x=>String(x.date||'').slice(0,7)===ym);
+        const w=arr.reduce((s,x)=>s+chemNum(x.wheatMt||0),0), r=arr.reduce((s,x)=>s+chemNum(x.riceMt||0),0), used=arr.reduce((s,x)=>s+chemNum(x.consumption),0);
+        box.innerHTML='<div class="report-summary-row"><div><b>TOTAL ALP FUMIGATION</b>'+Math.round(w+r)+' MT</div><div><b>WHEAT FUMIGATION</b>'+Math.round(w)+' MT</div><div><b>RICE FUMIGATION</b>'+Math.round(r)+' MT</div><div><b>TOTAL ALP USED</b>'+used.toFixed(3)+' kg</div></div>';
+      } else if(activeChemicalFolder==='Delta'){
+        const box=document.getElementById('deltaReportSummary'); if(!box)return;
+        const all=typeof deltaAutoGroups==='function'?deltaAutoGroups():[];
+        const now=new Date(), ym=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
+        const arr=all.filter(x=>String(x.date||'').slice(0,7)===ym);
+        const w=arr.reduce((s,x)=>s+chemNum(x.wheatMt||0),0), r=arr.reduce((s,x)=>s+chemNum(x.riceMt||0),0), ws=arr.reduce((s,x)=>s+Number(x.wheat||0),0), rs=arr.reduce((s,x)=>s+Number(x.rice||0),0), used=arr.reduce((s,x)=>s+chemNum(x.consumption),0);
+        box.innerHTML='<div class="report-summary-row"><div><b>TOTAL DELTA SPRAY</b>'+Math.round(w+r)+' MT · '+(ws+rs)+' stacks</div><div><b>WHEAT DELTA</b>'+Math.round(w)+' MT · '+ws+' stacks</div><div><b>RICE DELTA</b>'+Math.round(r)+' MT · '+rs+' stacks</div><div><b>DELTA USED</b>'+used.toFixed(3)+' kg</div></div>';
+      }
+    }catch(e){console.error('ALP/Delta indicator hard-fix',e)}
+  }
+  window.__paintALPDeltaIndicator=paint;
+  document.addEventListener('DOMContentLoaded',function(){setTimeout(paint,150);setTimeout(paint,600);});
+  setInterval(function(){if(document.getElementById('alpReportSummary')||document.getElementById('deltaReportSummary'))paint()},1500);
+})();
+</script>
+</head>
 <body>
 <div class="pin-screen" id="pinScreen">
   <div class="pin-box">
@@ -1878,6 +1914,7 @@ document.addEventListener('DOMContentLoaded',function(){
       box.innerHTML=`<div class="report-summary-row"><div><b>REQUIRED MALATHION</b><br>${required.toFixed(2)} MT</div><div><b>ACTUAL MALATHION SPRAY</b><br>${actual.toFixed(2)} MT</div><div><b>DUE MALATHION</b><br>${due.toFixed(2)} MT</div><div><b>MALATHION USED</b><br>${usedL.toFixed(3)} Ltr</div></div>`;
     }
   }catch(e){console.error('Chemical report render error',e);}
+  try{if(typeof window.__paintALPDeltaIndicator==='function')setTimeout(window.__paintALPDeltaIndicator,20)}catch(e){}
 };
   window.viewChemicalReport=function(){const w=window.open('','_blank');if(!w){alert('Popup blocked. Allow popups for View Report.');return}w.document.write(activeChemicalFolder==='ALP'?alpReportHtml():activeChemicalFolder==='Delta'?deltaReportHtml():activeChemicalFolder==='Malathion'?malathionReportHtml():reportHtml());w.document.close();};
   window.downloadChemicalPDF=function(){const w=window.open('','_blank');if(!w){alert('Popup blocked.');return}w.document.write((activeChemicalFolder==='ALP'?alpReportHtml():activeChemicalFolder==='Delta'?deltaReportHtml():activeChemicalFolder==='Malathion'?malathionReportHtml():reportHtml()).replace('</body>','<script>window.onload=function(){setTimeout(function(){window.print()},300)}<\\/script></body>'));w.document.close();};
