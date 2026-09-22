@@ -144,7 +144,7 @@ async function mirHistoryEdit(k){if(!await mirHistoryPin())return;const d=mirDat
 async function mirHistoryDelete(k){if(!await mirHistoryPin())return;if(!confirm('Is MIR History entry ko delete karein? Stack dobara eligible ho jayega.'))return;const d=mirData();for(const m of Object.keys(d.history||{})){d.history[m]=(d.history[m]||[]).filter(x=>x.stackKey!==k);if(d.months?.[m])d.months[m]=(d.months[m]||[]).filter(x=>x.stackKey!==k)}saveMirData(d);renderPage('mir')}
 function mirHistoryHtml(d){const all=[];Object.keys(d.history||{}).sort().forEach(m=>(d.history[m]||[]).forEach(x=>all.push({...x,month:m})));all.sort((a,b)=>String(b.mirDate||'').localeCompare(String(a.mirDate||'')));if(!all.length)return '<div class="mir-empty">Abhi MIR History nahi hai.</div>';return `<div class="mir-table"><table><thead><tr><th>Month</th><th>MIR Date</th><th>Shed</th><th>Stack</th><th>Receipt Date</th><th>Bags</th><th>Commodity / Crop Year</th><th>Qty MT</th><th>Infestation</th><th>Fumigation Status</th><th>Fumigation Date</th><th>Action</th></tr></thead><tbody>${all.map(x=>`<tr><td>${esc(mirMonthLabel(x.month))}</td><td>${dateText(x.mirDate)}</td><td>${esc(x.shed)}</td><td><b>${esc(x.stack)}</b></td><td>${dateText(x.receiptDate)}</td><td>${num(x.bags)||0}</td><td>${esc(x.commodity||'')} ${x.cropYear?'/ '+esc(x.cropYear):''}</td><td>${num(x.qty).toFixed(3)}</td><td>${x.infested==='YES'?'🔴 YES':'NO'}</td><td><span class="badge ${x.fumigationStatus==='Done'?'ok':'soon'}">${x.infested==='YES'?(x.fumigationStatus||'Pending'):'—'}</span></td><td>${x.fumigationDate?dateText(x.fumigationDate):'—'}</td><td><button class="pill" onclick="mirHistoryEdit('${esc(x.stackKey)}')">✏️ Edit</button> <button class="pill" onclick="mirHistoryDelete('${esc(x.stackKey)}')">🗑 Delete</button></td></tr>`).join('')}</tbody></table></div>`}
 function mirPage(a){
-  const d=mirEnsureMonth(a),mk=mirMonthKey(),sel=mirMonthRecords(d,mk),done=sel.filter(x=>x.status==='Completed').length;
+  const d=mirEnsureMonth(a),mk=mirMonthKey(),allSel=mirMonthRecords(d,mk),done=allSel.filter(x=>x.status==='Completed').length,sel=allSel.filter(x=>x.status!=='Completed');
   const eligible=mirEligible(a,d),w=eligible.filter(isWheat),r=eligible.filter(isRice);
   const hist=[];Object.values(d.history||{}).forEach(arr=>(arr||[]).forEach(x=>hist.push(x)));
   const wDone=hist.filter(x=>/rice|frk|rra/i.test(String(x.commodity||''))===false && /wheat/i.test(String(x.commodity||''))).length;
@@ -615,7 +615,7 @@ const SHAMBHU_FIREBASE_CONFIG={
 /* Moisture Active is deliberately NOT synced as one large document.
    Each stack gets its own Firestore document so two phones can update
    different stacks without overwriting each other. */
-const SHAMBHU_SHARED_KEYS=['shambhuMoistureHistory','shambhuWorkNotes','shambhuChemicalRegisterV1','shambhuMIRDataV1'];
+const SHAMBHU_SHARED_KEYS=['shambhuMoistureHistory','shambhuWorkNotes','shambhuChemicalRegisterV1','shambhuMIRDataV1','shambhuALPOverridesV1','shambhuDeltaOverridesV1','shambhuMalathionLocksV1'];
 const SHAMBHU_CLIENT_ID=(()=>{let x=localStorage.getItem('shambhuSyncClientId');if(!x){x='c_'+Date.now()+'_'+Math.random().toString(36).slice(2);localStorage.setItem('shambhuSyncClientId',x)}return x})();
 let shambhuFirebaseReady=false,shambhuFirebaseBusy=false,shambhuSharedUnsub=null,shambhuMoistureUnsub=null;
 const shambhuPendingShared=new Map(),shambhuSharedRev=new Map(),shambhuMoistureRev=new Map();
