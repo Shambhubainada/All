@@ -1,3 +1,0 @@
-(function(){
-function fitQc(){const ov=document.getElementById('qcInputPrompt');if(!ov)return;const vv=window.visualViewport;const h=vv?vv.height:window.innerHeight;const kb=Math.max(0,window.innerHeight-h);const shift=Math.min(260,Math.max(120,Math.round(kb*0.45)));ov.style.transform='translateY(-'+shift+'px)';}
-window.addEventListener('resize',fitQc,{passive:true});window.addEventListener('orientationchange',fitQc,{passive:true});if(window.visualViewport)window.visualViewport.addEventListener('resize',fitQc,{passive:true});document.addEventListener('focusin',function(e){if(e.target&&e.target.closest&&e.target.closest('#qcInputPrompt'))setTimeout(fitQc,50);});})();
