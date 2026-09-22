@@ -1260,13 +1260,41 @@ function shambhuFirebaseInit(){
       if(sharedFirst){
         sharedFirst=false;
         const out={};
+        const mergeShared=(key,localVal,remoteVal)=>{
+          if(remoteVal===undefined)return localVal;
+          if(localVal===null||localVal===undefined||localVal==='')return remoteVal;
+          try{
+            const l=JSON.parse(String(localVal)), r=JSON.parse(String(remoteVal));
+            // Chemical locked registers: merge entries instead of letting the first phone overwrite the other phone.
+            if(key==='shambhuChemicalRegisterV1' && Array.isArray(l) && Array.isArray(r)){
+              const m=new Map(); [...l,...r].forEach(x=>{const id=String(x.id||''); const k=id||[x.chemical,x.date,x.stack,x.commodity,x.qty].join('|'); m.set(k,x)}); return JSON.stringify([...m.values()]);
+            }
+            // ALP/Delta/Malathion locks: merge every saved row, preserving the complete locked snapshot.
+            if((key==='shambhuALPOverridesV1'||key==='shambhuDeltaOverridesV1'||key==='shambhuMalathionLocksV1') && l && r && typeof l==='object' && typeof r==='object' && !Array.isArray(l) && !Array.isArray(r)){
+              const m={...l}; Object.keys(r).forEach(k=>{m[k]={...(m[k]||{}),...(r[k]||{})};}); return JSON.stringify(m);
+            }
+            // MIR contains month/history objects; merge months and history entries by stackKey.
+            if(key==='shambhuMIRDataV1' && l && r && typeof l==='object' && typeof r==='object'){
+              const m={...l,months:{...(l.months||{})},history:{...(l.history||{})}};
+              Object.keys(r.months||{}).forEach(mon=>{const a=[...(m.months[mon]||[])]; const map=new Map(a.map(x=>[String(x.stackKey||x.id||''),x])); (r.months[mon]||[]).forEach(x=>map.set(String(x.stackKey||x.id||''),x)); m.months[mon]=[...map.values()];});
+              Object.keys(r.history||{}).forEach(mon=>{const a=[...(m.history[mon]||[])]; const map=new Map(a.map(x=>[String(x.stackKey||x.id||''),x])); (r.history[mon]||[]).forEach(x=>map.set(String(x.stackKey||x.id||''),x)); m.history[mon]=[...map.values()];});
+              return JSON.stringify(m);
+            }
+          }catch(e){}
+          return remoteVal;
+        };
+        const write={};
         SHAMBHU_SHARED_KEYS.forEach(k=>{
-          const rv=remote[k];
-          if(rv!==undefined){const d=shambhuDecode(String(rv));shambhuSharedRev.set(k,d.ts||0);out[k]=d.value;}
-          else {const lv=localStorage.getItem(k);if(lv!==null){const ts=Date.now();shambhuSharedRev.set(k,ts);shambhuPendingShared.set(k,{value:lv,ts});out[k]=lv;}}
+          const rv=remote[k], lv=localStorage.getItem(k);
+          if(rv!==undefined){const d=shambhuDecode(String(rv)); const merged=mergeShared(k,lv,d.value); const ts=Date.now(); shambhuSharedRev.set(k,Math.max(d.ts||0,ts)); out[k]=merged; shambhuPendingShared.set(k,{value:merged,ts});}
+          else if(lv!==null){const ts=Date.now();shambhuSharedRev.set(k,ts);shambhuPendingShared.set(k,{value:lv,ts});out[k]=lv;}
         });
-        const write={};Object.keys(out).forEach(k=>write[k]=shambhuEncode(out[k],shambhuSharedRev.get(k)||Date.now()));
-        if(Object.keys(write).length)try{await sharedRef.set(write,{merge:true})}catch(e){console.warn('Firebase initial shared sync failed:',e)}
+        const writeKeys=Object.keys(out);
+        writeKeys.forEach(k=>write[k]=shambhuEncode(out[k],shambhuSharedRev.get(k)||Date.now()));
+        if(writeKeys.length)try{await sharedRef.set(write,{merge:true})}catch(e){console.warn('Firebase initial shared sync failed:',e)}
+        // Apply the merged snapshot locally so the current phone immediately shows the same complete register/report.
+        writeKeys.forEach(k=>{try{localStorage.setItem(k,out[k])}catch(e){}});
+        shambhuRefreshUI();
         return;
       }
       shambhuFirebaseBusy=true;
