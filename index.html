@@ -679,24 +679,36 @@ function mirAvailable(a){const m=new Map();a.filter(r=>qty(r)>0).forEach(r=>{con
 function mirHistoryKeys(d){const out=new Set();Object.values(d.history||{}).forEach(arr=>(arr||[]).forEach(x=>out.add(String(x.stackKey))));return out}
 /* Mobile-safe PIN/date prompts: native numeric keyboard and native calendar picker. */
 function qcInputPrompt(label,value,type){return new Promise(function(resolve){
-  const old=document.getElementById('qcInputPrompt'); if(old)old.remove();
-  const modal=document.createElement('div'); modal.id='qcInputPrompt'; modal.className='qc-prompt-overlay';
+  const modal=document.createElement('div'); modal.className='qc-prompt-overlay';
   const box=document.createElement('div'); box.className='qc-prompt-box';
   const lab=document.createElement('label'); lab.className='qc-prompt-label'; lab.textContent=label;
   const input=document.createElement('input'); input.className='qc-prompt-input';
-  input.type=type==='date'?'date':type==='number'?'number':'text';
-  if(type==='number'){input.inputMode='numeric';input.pattern='[0-9]*';input.autocomplete='off';}
+  input.type=type==='date'?'date':type==='pin'?'tel':type==='number'?'number':'text';
+  if(type==='pin'){input.inputMode='numeric';input.pattern='[0-9]*';input.autocomplete='one-time-code';input.maxLength=6;}
+  else if(type==='number'){input.inputMode='numeric';input.pattern='[0-9]*';input.autocomplete='off';}
   input.value=value==null?'':String(value);
   const actions=document.createElement('div'); actions.className='qc-prompt-actions';
   const cancel=document.createElement('button'); cancel.type='button'; cancel.className='pill'; cancel.textContent='Cancel';
   const ok=document.createElement('button'); ok.type='button'; ok.className='pill'; ok.textContent='OK';
-  function finish(v){modal.remove();resolve(v)}
+  let vv=null;
+  function placeAboveKeyboard(){
+    if(!document.body.contains(modal))return;
+    const v=window.visualViewport;
+    if(v){
+      const keyboard=Math.max(0,window.innerHeight-(v.height+v.offsetTop));
+      box.style.transform='translateY(-'+Math.max(12,keyboard+10)+'px)';
+    }else{box.style.transform='translateY(-18px)';}
+  }
+  function finish(v){if(vv&&vv.removeEventListener)vv.removeEventListener('resize',placeAboveKeyboard);window.removeEventListener('resize',placeAboveKeyboard);modal.remove();resolve(v)}
   cancel.onclick=()=>finish(null); ok.onclick=()=>finish(input.value);
   input.onkeydown=e=>{if(e.key==='Enter')ok.click();if(e.key==='Escape')cancel.click()};
   actions.append(cancel,ok); box.append(lab,input,actions); modal.append(box); document.body.append(modal);
-  setTimeout(()=>{input.focus(); if(type==='date'){try{if(input.showPicker)input.showPicker()}catch(e){}}},60);
+  vv=window.visualViewport; if(vv)vv.addEventListener('resize',placeAboveKeyboard); window.addEventListener('resize',placeAboveKeyboard);
+  setTimeout(()=>{input.focus(); if(type==='date'){try{if(input.showPicker)input.showPicker()}catch(e){}} placeAboveKeyboard();},60);
+  setTimeout(placeAboveKeyboard,220);
 });}
-function qcPinPrompt(label){return qcInputPrompt(label,'','number')}
+
+function qcPinPrompt(label){return qcInputPrompt(label,'','pin')}
 function qcDatePrompt(label,value){return qcInputPrompt(label,value,'date')}
 
 function mirCompletedKeys(d){return mirHistoryKeys(d)}
@@ -1037,9 +1049,9 @@ function addSelectedMoistureStack(){
   localStorage.setItem('shambhuSelectedMoistureStack',st);
   closeModal();renderMoistureStackStatus();const sel=$('mStack');if(sel)sel.value=st;loadMoistureStack();
 }
-function deleteMoistureStackWithPin(st){
+async function deleteMoistureStackWithPin(st){
   const rec=moistureStore()[st];if(!rec)return;
-  const pin=prompt('Stack delete karne ke liye current PIN enter karein:');if(pin===null)return;
+  const pin=await qcPinPrompt('Stack delete karne ke liye current PIN enter karein');if(pin===null)return;
   if(pin!==getSitePin()){alert('Wrong PIN. Stack delete nahi hua.');return}
   if(!confirm('Stack '+st+' ko Moisture Under Issue se delete karein? Is stack ki saved moisture entries bhi delete ho jayengi.'))return;
   const all=moistureStore();delete all[st];saveMoistureStore(all);
@@ -1201,7 +1213,7 @@ function renderMoistureHistory(){
 
 function viewMoistureHistory(id){const h=JSON.parse(localStorage.getItem('shambhuMoistureHistory')||'[]'),x=h.find(a=>a.id===id);if(!x){const st=h[0];if(!st)return;x=st}const wt=stackWtTotal(x),entries=(x.activities&&x.activities.length?x.activities:(x.truckEntries||x.entries||[])),bags=entries.reduce((s,e)=>s+num(e.bags),0),imc=bags?wt/bags:0; $('modalTitle').textContent=`Moisture History — Stack ${x.stack}`;$('modalBody').innerHTML=`<div class="smallmuted">${esc(x.commodity)} · Crop ${esc(x.cropYear||'—')} · Completed ${esc(x.completedAt||'—')} · RMC ${num(x.rmc).toFixed(2)}%</div>${table('MOISTURE ENTRY DETAILS',['Sr','Bags','Moisture %','Updated On'],entries.map((e,i)=>`<tr><td>${i+1}</td><td>${num(e.bags).toLocaleString()}</td><td>${esc(e.moisture)}</td><td>${esc(e.date||e.updatedAt||'—')}</td></tr>`).join(''))}<div class="note">IMC = Total (Bags × Moisture) ÷ Moisture Updated Bags = ${imc.toFixed(2)}% · RMC − IMC = ${(imc-num(x.rmc)>=0?'+':'')+(imc-num(x.rmc)).toFixed(2)}</div>`;$('modal').classList.add('show')}
 async function downloadMoistureHistoryExcel(which){const h=JSON.parse(localStorage.getItem('shambhuMoistureHistory')||'[]');const match=which==='wheat'?h.filter(x=>/wheat/i.test(x.commodity||'')):h.filter(x=>/rice|frk|rra|rrc/i.test(x.commodity||''));if(!match.length){alert('Is category ki completed history available nahi hai.');return}const data=[['SHAMBHU SHED — COMPLETED MOISTURE HISTORY'],[which==='wheat'?'WHEAT':'FRK / RRA / RRC'],[],['Sr No.','Stack Number','Receipt Date','Commodity','Storage Period (Days)','RMC','IMC / DMC','Difference (IMC-RMC)','Completed On','Bags','Moisture %']];let sr=1;match.forEach(x=>{const es=(x.activities||x.truckEntries||x.entries||[]);es.forEach(e=>data.push([sr++,x.stack,x.receipt,x.commodity,x.storageDays,num(x.rmc).toFixed(2),num(x.imc!=null?x.imc:x.dmc).toFixed(2),(num(x.imc!=null?x.imc:x.dmc)-num(x.rmc)).toFixed(2),x.completedAt,num(e.bags),e.moisture]));});await makeWorkbook([{name:which==='wheat'?'Wheat':'FRK_RRA_RRC',data,widths:[8,18,15,20,20,10,10,18,22,10,12]}],`SHAMBHU_SHED_Moisture_History_${which}.xlsx`)}
-function clearMoistureReportWithPin(){const pin=prompt('Moisture Report clear karne ke liye PIN enter karein:');if(pin===null)return;if(String(pin)!==String(getSitePin())){alert('Wrong PIN. Moisture Report clear nahi hua.');return}const h=JSON.parse(localStorage.getItem('shambhuMoistureHistory')||'[]');if(!h.length){alert('Moisture Report already empty hai.');return}if(!confirm('PIN verified. Puri completed Moisture Report/History clear karein?'))return;localStorage.removeItem('shambhuMoistureHistory');renderMoistureHistory();if(currentPage==='moistureReports')renderPage('moistureReports');alert('Moisture Report clear ho gaya.');}
+async function clearMoistureReportWithPin(){const pin=await qcPinPrompt('Moisture Report clear karne ke liye PIN enter karein');if(pin===null)return;if(String(pin)!==String(getSitePin())){alert('Wrong PIN. Moisture Report clear nahi hua.');return}const h=JSON.parse(localStorage.getItem('shambhuMoistureHistory')||'[]');if(!h.length){alert('Moisture Report already empty hai.');return}if(!confirm('PIN verified. Puri completed Moisture Report/History clear karein?'))return;localStorage.removeItem('shambhuMoistureHistory');renderMoistureHistory();if(currentPage==='moistureReports')renderPage('moistureReports');alert('Moisture Report clear ho gaya.');}
 function clearMoistureHistory(){if(!confirm('Puri completed Moisture History delete karein?'))return;localStorage.removeItem('shambhuMoistureHistory');renderMoistureHistory();}
 function exportMoisture(){const h=JSON.parse(localStorage.getItem('shambhuMoistureHistory')||'[]');if(!h.length){alert('History empty.');return}let csv='Completed,Stack,Shed,Commodity,Crop Year,Truck,Bags,Moisture %,Updated On,RMC %,IMC %,IMC-RMC\n';h.forEach(x=>{const bags=(x.truckEntries||x.entries||[]).reduce((s,e)=>s+num(e.bags),0)+(x.activities||[]).reduce((s,e)=>s+num(e.bags),0),wt=stackWtTotal(x),imc=bags?wt/bags:0;(x.truckEntries||x.entries||[]).forEach(e=>csv+=`"${x.completedAt}","${x.stack}","${x.shed}","${x.commodity}","${x.cropYear}","${e.truck}","${e.bags}","${e.moisture}","${e.updatedAt}","${x.rmc}","${imc.toFixed(2)}","${(imc-num(x.rmc)).toFixed(2)}"\n`);(x.activities||[]).forEach(e=>csv+=`"${x.completedAt}","${x.stack}","${x.shed}","${x.commodity}","${x.cropYear}","MOISTURE ACTIVITY","${e.bags}","${e.moisture}","${e.date}","${x.rmc}","${imc.toFixed(2)}","${(imc-num(x.rmc)).toFixed(2)}"\n`)});const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='SHAMBHU_SHED_Moisture_History.csv';a.click();}
 function renderMoistureActivityOnLoad(){if(currentMoistureStack()){renderMoistureActivity();}}
@@ -1209,7 +1221,7 @@ function renderMoistureActivityOnLoad(){if(currentMoistureStack()){renderMoistur
 // PIN lock. Default PIN = 9001; changeable from the lock screen.
 function getSitePin(){return localStorage.getItem('shambhuSitePin')||'9001'}
 function unlockSite(){const v=$('sitePin').value;if(v===getSitePin()){$('pinScreen').style.display='none';sessionStorage.setItem('shambhuUnlocked','1');}else{$('pinError').textContent='Wrong PIN. Try again.';$('sitePin').value='';}}
-function changePin(){const old=prompt('Current PIN enter karein:');if(old!==getSitePin()){alert('Current PIN galat hai.');return}const np=prompt('New PIN (4–6 digits):');if(!/^\d{4,6}$/.test(np||'')){alert('PIN 4–6 digits ka hona chahiye.');return}localStorage.setItem('shambhuSitePin',np);alert('PIN changed successfully.');}
+async function changePin(){const old=await qcPinPrompt('Current PIN enter karein');if(old===null)return;if(String(old)!==String(getSitePin())){alert('Current PIN galat hai.');return}const np=await qcPinPrompt('New PIN (4–6 digits) enter karein');if(np===null)return;if(!/^\d{4,6}$/.test(String(np||''))){alert('PIN 4–6 digits ka hona chahiye.');return}localStorage.setItem('shambhuSitePin',String(np));alert('PIN changed successfully.');}
 if(sessionStorage.getItem('shambhuUnlocked')==='1')document.addEventListener('DOMContentLoaded',()=>{$('pinScreen').style.display='none'});else document.addEventListener('DOMContentLoaded',()=>{setTimeout(()=>{$('sitePin')?.focus();},120)});
 // Auto-lock after 5 minutes without user activity.
 const SHAMBHU_IDLE_LIMIT=5*60*1000;let shambhuIdleTimer=null;
@@ -1235,7 +1247,7 @@ const SHAMBHU_FIREBASE_CONFIG={
 /* Moisture Active is deliberately NOT synced as one large document.
    Each stack gets its own Firestore document so two phones can update
    different stacks without overwriting each other. */
-const SHAMBHU_SHARED_KEYS=['shambhuMoistureHistory','shambhuWorkNotes','shambhuChemicalRegisterV1','shambhuALPOverridesV1','shambhuALPEditingV1','shambhuDeltaOverridesV1','shambhuMalathionLocksV1','shambhuMIRDataV1'];
+const SHAMBHU_SHARED_KEYS=['shambhuMoistureHistory','shambhuWorkNotes','shambhuChemicalRegisterV1','shambhuALPOverridesV1','shambhuALPEditingV1','shambhuDeltaOverridesV1','shambhuMalathionLocksV1','shambhuMIRDataV1','shambhuALPStackWeightsV1'];
 const SHAMBHU_CLIENT_ID=(()=>{let x=localStorage.getItem('shambhuSyncClientId');if(!x){x='c_'+Date.now()+'_'+Math.random().toString(36).slice(2);localStorage.setItem('shambhuSyncClientId',x)}return x})();
 let shambhuFirebaseReady=false,shambhuFirebaseBusy=false,shambhuSharedUnsub=null,shambhuMoistureUnsub=null;
 const shambhuPendingShared=new Map(),shambhuSharedRev=new Map(),shambhuMoistureRev=new Map();
@@ -1571,7 +1583,7 @@ document.addEventListener('DOMContentLoaded',function(){
     }).sort((a,b)=>String(a.date).localeCompare(String(b.date)));
   }
   function stackWeightKey(x,o){return 'shambhuChemicalStackWeight_'+String(x.date||'')+'_'+String(o.stack||'').trim();}
-  function stackWeightValue(x,o){let v='FEW';try{const m=JSON.parse(localStorage.getItem(stackWeightKey(x,o))||'"FEW"');if(m==='HEAVY')v='HEAVY';}catch(e){}return v;}
+  function stackWeightValue(x,o){let v='FEW';try{const all=JSON.parse(localStorage.getItem('shambhuALPStackWeightsV1')||'{}');const key=stackWeightKey(x,o);if(all[key]==='HEAVY')v='HEAVY';else if(all[key]==='FEW')v='FEW';else{const legacy=JSON.parse(localStorage.getItem(key)||'"FEW"');if(legacy==='HEAVY')v='HEAVY';}}catch(e){}return v;}
   window.__lastFewHeavyTap={key:'',time:0};
   window.toggleStackWeight=function(date,stack,btn){
     const d=String(date||''), k=String(stack||'').trim();
@@ -1580,8 +1592,12 @@ document.addEventListener('DOMContentLoaded',function(){
     const now=Date.now();
     if(window.__lastFewHeavyTap.key===key && now-window.__lastFewHeavyTap.time<280)return false;
     window.__lastFewHeavyTap={key:key,time:now};
-    let v='FEW'; try{v=JSON.parse(localStorage.getItem(key)||'"FEW"')}catch(e){}
+    let v=stackWeightValue({date:d},{stack:k});
     v=v==='HEAVY'?'FEW':'HEAVY';
+    let all={}; try{all=JSON.parse(localStorage.getItem('shambhuALPStackWeightsV1')||'{}')}catch(e){all={}}
+    all[key]=v;
+    localStorage.setItem('shambhuALPStackWeightsV1',JSON.stringify(all));
+    /* Keep the legacy per-stack key locally for backward compatibility. */
     localStorage.setItem(key,JSON.stringify(v));
     // Explicit user tap is allowed even for a locked ALP row; update the locked snapshot too.
     try{
@@ -1729,7 +1745,7 @@ document.addEventListener('DOMContentLoaded',function(){
     document.getElementById('chemRows').innerHTML=chemTableRows();renderChemicalReport();clearChemicalForm();
     alert(editId?'Chemical entry updated.':'Chemical entry saved.');
   };
-  window.editChemicalEntry=function(id){const pin=prompt('Edit ke liye PIN enter karein:');if(pin===null||String(pin)!==String(getSitePin())){if(pin!==null)alert('Wrong PIN.');return;}
+  window.editChemicalEntry=async function(id){const pin=await qcPinPrompt('Edit ke liye PIN enter karein');if(pin===null||String(pin)!==String(getSitePin())){if(pin!==null)alert('Wrong PIN.');return;}
     const x=chemRead().find(v=>String(v.id)===String(id)); if(!x)return;
     document.getElementById('chemEditId').value=x.id; document.getElementById('chemDate').value=String(x.date||'').slice(0,10); document.getElementById('chemStack').value=x.stack||''; document.getElementById('chemCommodity').value=x.commodity||'Wheat';
     const q=chemNum(x.qty)*(String(x.unit||'MT').toLowerCase()==='kg'?0.001:1); document.getElementById('chemQty').value=q.toFixed(3); document.getElementById('chemRemarks').value=x.remarks||'';
@@ -1738,7 +1754,7 @@ document.addEventListener('DOMContentLoaded',function(){
     document.getElementById('chemDate').scrollIntoView({behavior:'smooth',block:'center'});
   };
   window.clearChemicalForm=function(){['chemStack','chemQty','chemRemarks'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});const id=document.getElementById('chemEditId');if(id)id.value='';const t=document.getElementById('chemFormTitle');if(t)t.textContent='New '+activeChemicalFolder+' Entry';const b=document.querySelector('.chem-save');if(b)b.innerHTML='💾 SAVE ENTRY';};
-  window.deleteChemicalEntry=function(id){const pin=prompt('Delete ke liye PIN enter karein:');if(pin===null||String(pin)!==String(getSitePin())){if(pin!==null)alert('Wrong PIN.');return;}if(!confirm('Delete this chemical entry?'))return;chemWrite(chemRead().filter(x=>String(x.id)!==String(id)));const r=document.getElementById('chemRows');if(r)r.innerHTML=chemTableRows();renderChemicalReport();};
+  window.deleteChemicalEntry=async function(id){const pin=await qcPinPrompt('Delete ke liye PIN enter karein');if(pin===null||String(pin)!==String(getSitePin())){if(pin!==null)alert('Wrong PIN.');return;}if(!confirm('Delete this chemical entry?'))return;chemWrite(chemRead().filter(x=>String(x.id)!==String(id)));const r=document.getElementById('chemRows');if(r)r.innerHTML=chemTableRows();renderChemicalReport();};
   function alpReportHtml(){const r=reportData(),month=new Date(r.m+'-01T00:00:00').toLocaleDateString('en-IN',{month:'long',year:'numeric'});let progW=0,progR=0,progCons=0;const split=(w,r)=>`<div class="prog-split"><span>Wheat: <b>${Math.round(w)} MT</b></span><span>Rice: <b>${Math.round(r)} MT</b></span></div>`;const rows=r.mm.map((x,i)=>{const w=chemNum(x.wheatMt||0),ri=chemNum(x.riceMt||0),c=chemNum(x.consumption);progW+=w;progR+=ri;progCons+=c;return `<tr><td>${i+1}</td><td>${chemDate(x.date)}</td><td>${escC(x.stackText)}</td><td>${Math.round(w)}</td><td>${Math.round(ri)}</td><td>${split(progW,progR)}</td><td>${c.toFixed(3)}</td><td><b>${progCons.toFixed(3)}</b></td></tr>`}).join('');return `<!doctype html><html><head><meta charset="utf-8"><title>ALP Report</title><style>body{font-family:Arial;margin:28px;color:#172d25}h1{text-align:center;margin:0;font-size:24px}h2{text-align:center;margin:5px 0 18px;font-size:18px}table{border-collapse:collapse;width:100%;font-size:12px}th,td{border:1px solid #999;padding:7px;text-align:center;vertical-align:middle}th{background:#073d2c;color:white}.prog-split{display:grid;grid-template-columns:1fr 1fr;min-width:150px}.prog-split span:first-child{border-right:3px solid #555;padding-right:8px}.prog-split span:last-child{padding-left:8px}.prog-split.no-divider span:first-child{border-right:0;padding-right:8px}@media(max-width:700px){body{margin:12px}table{font-size:10px}th,td{padding:5px}.prog-split{min-width:125px}}</style></head><body><h1>SHED NO. 9 / 14 / 18 / 20</h1><h2>ALP CONSUMPTION REPORT — ${month}</h2><table><thead><tr><th>Sr No</th><th>Fumigation Date</th><th>Stack Number</th><th>Wheat Fumigation MT</th><th>Rice Fumigation MT</th><th>Progressive (MT)<br>Wheat | Rice</th><th>Consumption (kg)</th><th>Consumption Progressive (kg)</th></tr></thead><tbody>${rows||'<tr><td colspan="8">No saved ALP entries for this month.</td></tr>'}</tbody></table></body><style id="moisture-update-rmc-hide-only">
 /* Only requested Moisture Update change: keep Add New Stack, hide Manual/Current RMC cards. */
 .moisture-focused-page .mo-stack-details{display:none!important}
@@ -1856,11 +1872,11 @@ function malathionEntries(){
   window.closeMalathionEntry=function(){const m=document.getElementById('malathionEntryModal');if(m)m.remove();};
   window.toggleMalathionCommodity=function(){};
   window.saveMalathionEntry=function(editId){try{const d=document.getElementById('malEntryDate')?.value||'',stacks=malathionSelectedValues();if(!d){alert('Date select karein.');return}if(!stacks.length){alert('Kam se kam 1 stack select karein.');return}let a=chemRead();if(!Array.isArray(a))a=[];const id=editId?String(editId):('MAL-'+Date.now()+'-'+Math.random().toString(36).slice(2,8));const clean=stacks.map(x=>({stack:String(x.stack||''),commodity:String(x.commodity||'Rice'),qty:Math.round(chemNum(x.qty))})).filter(x=>x.stack);if(!clean.length){alert('Stack select karein.');return}const totalQty=clean.reduce((n,x)=>n+x.qty,0),cons=clean.length*0.061;const record={id,chemical:'Malathion',date:String(d).slice(0,10),stacks:clean,stack:clean.map(x=>x.stack).join(', '),commodity:clean.every(x=>x.commodity==='Wheat')?'Wheat':clean.every(x=>x.commodity==='Rice')?'Rice':'Wheat + Rice',qty:totalQty,unit:'MT',consumption:cons,remarks:''};const ix=a.findIndex(v=>String(v.id)===id);if(ix>=0)a[ix]={...a[ix],...record,id:a[ix].id};else a.push(record);chemWrite(a);if(!chemRead().some(v=>String(v.id)===String(record.id))){alert('Entry save nahi hui.');return}closeMalathionEntry();const dp=document.getElementById('dynamicPage');if(dp){dp.innerHTML=chemicalPage();if(typeof restoreChemicalReportState==='function')restoreChemicalReportState();renderChemicalReport();setTimeout(renderChemicalReport,50)} }catch(e){console.error(e);alert('Malathion entry save nahi hui. Dobara try karein.')}};
-  window.editMalathionEntry=function(id){
-    const pin=prompt('Edit ke liye PIN enter karein:');if(pin===null||String(pin)!==String(getSitePin())){if(pin!==null)alert('Wrong PIN.');return;}
+  window.editMalathionEntry=async function(id){
+    const pin=await qcPinPrompt('Edit ke liye PIN enter karein');if(pin===null||String(pin)!==String(getSitePin())){if(pin!==null)alert('Wrong PIN.');return;}
     openMalathionEntry(id);
   };
-  window.deleteMalathionEntry=function(id){const pin=prompt('Delete ke liye PIN enter karein:');if(pin===null||String(pin)!==String(getSitePin())){if(pin!==null)alert('Wrong PIN.');return;}if(!confirm('Delete this Malathion entry?'))return;chemWrite(chemRead().filter(x=>String(x.id)!==String(id)));const r=document.getElementById('chemRows');if(r)r.innerHTML=malathionTableRows();renderChemicalReport();};
+  window.deleteMalathionEntry=async function(id){const pin=await qcPinPrompt('Delete ke liye PIN enter karein');if(pin===null||String(pin)!==String(getSitePin())){if(pin!==null)alert('Wrong PIN.');return;}if(!confirm('Delete this Malathion entry?'))return;chemWrite(chemRead().filter(x=>String(x.id)!==String(id)));const r=document.getElementById('chemRows');if(r)r.innerHTML=malathionTableRows();renderChemicalReport();};
   
   function chemicalPage(){
     const now=new Date(), folder=activeChemicalFolder;
@@ -2024,7 +2040,7 @@ function malathionEntries(){
 </style>
 <style id="chemical-stack-final-colors">.stack-commodity-block.wheat-stack{background:#fffaf0;border-radius:6px;padding:3px 4px}.stack-commodity-block.rice-stack{background:#f3f9ff;border-radius:6px;padding:3px 4px}.stack-commodity-block.wheat-stack .stack-commodity-title{color:#9a6500}.stack-commodity-block.rice-stack .stack-commodity-title{color:#246a9d}.stack-commodity-block+.stack-commodity-block{border-top:2px solid #9baaa3!important;margin-top:3px}.stack-item em{font-size:9px!important}</style>
 
-<style id="malathion-20-indicator">.mal-20-blink{animation:mal20blink 1s steps(2,start) infinite}@keyframes mal20blink{50%{opacity:.45}}.qc-prompt-overlay{position:fixed;inset:0;background:rgba(0,0,0,.42);display:flex;align-items:center;justify-content:center;z-index:100000;padding:12px}.qc-prompt-box{background:#fff;border-radius:12px;padding:14px;width:230px;max-width:78vw;box-shadow:0 8px 25px rgba(0,0,0,.28)}.qc-prompt-label{display:block;font-size:12px;font-weight:800;margin-bottom:7px}.qc-prompt-input{box-sizing:border-box;width:100%;font-size:16px;padding:9px;border:1px solid #bfcac4;border-radius:8px;margin-bottom:10px;background:#fff}.qc-prompt-actions{display:flex;gap:6px;justify-content:flex-end}.qc-prompt-actions .pill{padding:6px 10px;font-size:11px!important}.mal-20-indicator{margin:10px 0 0;padding:10px;border:1px solid #d9b45b;border-left:4px solid #b8860b;border-radius:9px;background:#fffaf0}.mal-20-title{font-size:12px;font-weight:900;margin-bottom:7px;color:#6b4d00}.mal-20-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.mal-20-grid>div{background:#fff;border:1px solid #eadfbd;border-radius:7px;padding:6px;text-align:center}.mal-20-grid small{display:block;font-size:9px;color:#66736c}.mal-20-grid b{display:block;font-size:13px;margin-top:2px}.mal-20-baki{background:#fff1f1!important;border-color:#e6b4b4!important;color:#a12626}.mal-20-all{font-size:10px;margin-top:7px;padding-top:6px;border-top:1px solid #eadfbd}.mal-20-report-indicator{margin:9px 0;padding:9px;border:1px solid #d9b45b;border-left:4px solid #b8860b;border-radius:8px;background:#fffaf0;font-size:12px}.mal-20-report-indicator strong{color:#a12626}@media(max-width:600px){.mal-20-grid{grid-template-columns:repeat(2,1fr)}}</style>
+<style id="malathion-20-indicator">.mal-20-blink{animation:mal20blink 1s steps(2,start) infinite}@keyframes mal20blink{50%{opacity:.45}}.qc-prompt-overlay{position:fixed;inset:0;background:rgba(0,0,0,.42);display:flex;align-items:flex-end;justify-content:center;z-index:100000;padding:12px;padding-bottom:max(12px,env(safe-area-inset-bottom));pointer-events:auto}.qc-prompt-box{transform:translateY(-6px)}.qc-prompt-box{background:#fff;border-radius:12px;padding:14px;width:230px;max-width:78vw;box-shadow:0 8px 25px rgba(0,0,0,.28);will-change:transform}.qc-prompt-label{display:block;font-size:12px;font-weight:800;margin-bottom:7px}.qc-prompt-input{box-sizing:border-box;width:100%;font-size:16px;padding:9px;border:1px solid #bfcac4;border-radius:8px;margin-bottom:10px;background:#fff}.qc-prompt-actions{display:flex;gap:6px;justify-content:flex-end}.qc-prompt-actions .pill{padding:6px 10px;font-size:11px!important}.mal-20-indicator{margin:10px 0 0;padding:10px;border:1px solid #d9b45b;border-left:4px solid #b8860b;border-radius:9px;background:#fffaf0}.mal-20-title{font-size:12px;font-weight:900;margin-bottom:7px;color:#6b4d00}.mal-20-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.mal-20-grid>div{background:#fff;border:1px solid #eadfbd;border-radius:7px;padding:6px;text-align:center}.mal-20-grid small{display:block;font-size:9px;color:#66736c}.mal-20-grid b{display:block;font-size:13px;margin-top:2px}.mal-20-baki{background:#fff1f1!important;border-color:#e6b4b4!important;color:#a12626}.mal-20-all{font-size:10px;margin-top:7px;padding-top:6px;border-top:1px solid #eadfbd}.mal-20-report-indicator{margin:9px 0;padding:9px;border:1px solid #d9b45b;border-left:4px solid #b8860b;border-radius:8px;background:#fffaf0;font-size:12px}.mal-20-report-indicator strong{color:#a12626}@media(max-width:600px){.mal-20-grid{grid-template-columns:repeat(2,1fr)}.qc-prompt-overlay{padding-left:10px;padding-right:10px}.qc-prompt-box{width:min(300px,92vw);transform:translateY(-8px)}}</style>
 <style id="chemical-malathion-entry-final">
 .malathion-add-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding-top:2px}.malathion-add-btn{font-size:12px!important;padding:8px 11px!important}.malathion-entry-box{max-width:520px!important}.malathion-entry-form{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.malathion-entry-form label{display:grid;gap:4px;font-size:11px;font-weight:800}.malathion-entry-form input,.malathion-entry-form select{width:100%;padding:9px;border:1px solid #cbd9d3;border-radius:8px;background:#fff}.commodity-toggle{border:1px solid #8bb5d5;border-radius:8px;padding:9px;background:#e8f3ff;color:#246a9d;font-weight:900}.commodity-toggle.wheat{background:#fff2d8;border-color:#d8b66c;color:#9a6500}.commodity-toggle.rice{background:#e8f3ff;border-color:#8bb5d5;color:#246a9d}.mal-consumption-preview{grid-column:1/-1;background:#f3f8f5;border:1px solid #d8e6df;border-radius:8px;padding:9px;font-size:12px}.malathion-entry-actions{justify-content:flex-end}.stack-weight-toggle{touch-action:manipulation}.stack-weight-toggle em{pointer-events:none}.stack-weight-toggle.weight-heavy{transform:scale(1.02)}.stack-weight-toggle.weight-heavy em{color:#c62828!important;font-weight:900!important}.stack-weight-toggle:not(.weight-heavy) em{color:#168a45!important;font-weight:900!important}.stack-weight-toggle.weight-flash{outline:2px solid #0a7a4b;outline-offset:1px}
 @media(max-width:560px){.malathion-entry-form{grid-template-columns:1fr}.mal-consumption-preview{grid-column:auto}}
