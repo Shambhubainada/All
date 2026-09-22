@@ -1973,7 +1973,6 @@ function malathionEntries(){
       </div>
       <div class="panel"><div class="panelhead">📒 MALATHION CONSUMPTION REGISTER</div>
         <div class="chem-register-wrap"><table class="chem-table chem-register-table"><thead><tr><th>Sr No.</th><th>Date</th><th>Stack Number</th><th>Qty (MT)</th><th>Consumption</th><th>Progressive Consumption</th><th>Commodity</th><th>Action</th></tr></thead><tbody id="chemRows">${malathionTableRows()}</tbody></table></div><div class="chemical-actions chem-register-downloads"><button class="chem-orange" onclick="downloadChemicalRegisterExcel('Malathion')">📊 REGISTER EXCEL</button><button class="chem-red" onclick="downloadChemicalRegisterPDF('Malathion')">📄 REGISTER PDF</button></div>
-        ${typeof window.malathionProgressHtml==='function'?window.malathionProgressHtml():''}
         <div id="chemSummary" class="alp-report-box mal-20-indicator alp-indicator-outside"></div>${reportFolder('malathionReportFolder','MALATHION REPORT',`${reportControls}${reportActions}`)}
       </div>`;
     }
@@ -1993,6 +1992,7 @@ function malathionEntries(){
       if(r && (name==='ALP'||name==='Delta')) r.innerHTML=chemTableRows();
       if(typeof restoreChemicalReportState==='function') restoreChemicalReportState();
       renderChemicalReport();
+      if(typeof window.__renderChemicalIndicators==='function') setTimeout(window.__renderChemicalIndicators,20);
     }
   };
   window.openChemicalFolders=function(){
@@ -2002,8 +2002,12 @@ function malathionEntries(){
     if(dp) dp.innerHTML=chemicalFolderPage();
   };
 
+  const oldChemicalRenderPage=window.renderPage;
+  window.__renderChemicalIndicators=function(){
+    try{ if(typeof window.renderChemicalReport==='function' && ['ALP','Delta'].includes(activeChemicalFolder)) window.renderChemicalReport(); }catch(e){ console.error('Chemical indicator repaint error',e); }
+  };
   const oldRender=window.renderPage;
-  window.renderPage=function(page){if(page==='chemical'){document.body.classList.remove('moisture-active');document.getElementById('dynamicPage').innerHTML=chemicalPage();const r=document.getElementById('chemRows');if(r && (activeChemicalFolder==='ALP'||activeChemicalFolder==='Delta'))r.innerHTML=chemTableRows();if(typeof restoreChemicalReportState==='function')restoreChemicalReportState();renderChemicalReport();setTimeout(renderChemicalReport,50);return;}return oldRender(page);};
+  window.renderPage=function(page){if(page==='chemical'){document.body.classList.remove('moisture-active');document.getElementById('dynamicPage').innerHTML=chemicalPage();const r=document.getElementById('chemRows');if(r && (activeChemicalFolder==='ALP'||activeChemicalFolder==='Delta'))r.innerHTML=chemTableRows();if(typeof restoreChemicalReportState==='function')restoreChemicalReportState();renderChemicalReport();setTimeout(renderChemicalReport,50);setTimeout(window.__renderChemicalIndicators||function(){},70);return;}return oldRender(page);};
 })();
 </script>
 <style id="chemical-final-interaction-fix">
@@ -2014,75 +2018,7 @@ function malathionEntries(){
 <script id="chemical-final-interaction-fix-js">
 (function(){
   /* Malathion progress block was referenced by chemicalPage() but was missing in some builds. */
-  window.malathionProgressHtml=function(){
-    try{
-      // Read the same all-time ALP totals used by the ALP report.
-      let total=0;
-      try{
-        const ar=typeof reportData==='function'?reportData():null;
-        if(ar && ar.allWheatQty!=null && ar.allRiceQty!=null){
-          total=Number(ar.allWheatQty||0)+Number(ar.allRiceQty||0);
-        }
-      }catch(e){}
-      if(!total){
-        const alp=typeof alpAutoGroups==='function'?alpAutoGroups():[];
-        total=alp.reduce((sum,x)=>sum+Number(x.wheatMt||0)+Number(x.riceMt||0),0);
-      }
-
-      // Build Master Stock stack -> actual MT map for Delta report stacks.
-      const sourceRows=(typeof rows!=='undefined'&&Array.isArray(rows))?rows:[];
-      const qtyByStack=new Map();
-      sourceRows.forEach(r=>{
-        const st=String(typeof stack==='function'?stack(r):'').trim();
-        if(!st)return;
-        const q=Number(typeof qty==='function'?qty(r):0)||0;
-        if(!qtyByStack.has(st))qtyByStack.set(st,q);
-      });
-
-      // Delta done = actual MT of unique stacks appearing in the Delta report.
-      const del=typeof deltaAutoGroups==='function'?deltaAutoGroups():[];
-      const deltaSeen=new Set(); let deltaDone=0;
-      del.forEach(g=>{
-        String(g.stackText||'').split(',').map(v=>v.trim()).filter(Boolean).forEach(st=>{
-          if(deltaSeen.has(st))return;
-          deltaSeen.add(st);
-          deltaDone+=Number(qtyByStack.get(st)||0);
-        });
-      });
-
-      // Malathion done = actual treatment MT shown by the Malathion register/report.
-      const mal=typeof malathionEntries==='function'?malathionEntries():[];
-      const malSeen=new Set(); let malDone=0;
-      mal.forEach(x=>{
-        const ss=typeof malEntryStacks==='function'?malEntryStacks(x):[];
-        if(ss.length){
-          ss.forEach(v=>{
-            const st=String(v.stack||'').trim();
-            if(!st||malSeen.has(st))return;
-            malSeen.add(st);
-            const q=Number(v.qty||0);
-            malDone+=q || Number(qtyByStack.get(st)||0);
-          });
-        }else{
-          String(x.stack||'').split(',').map(v=>v.trim()).filter(Boolean).forEach(st=>{
-            if(malSeen.has(st))return;
-            malSeen.add(st);
-            malDone+=Number(qtyByStack.get(st)||0);
-          });
-        }
-      });
-
-      const deltaPct=total>0?Math.min(100,deltaDone/total*100):0;
-      const malPct=total>0?Math.min(100,malDone/total*100):0;
-      const deltaTarget=total*0.80, malTarget=total*0.20;
-      const deltaDue=Math.max(0,deltaTarget-deltaDone), malDue=Math.max(0,malTarget-malDone);
-      const consumption=mal.reduce((sum,x)=>sum+(Number(x.consumption)||0),0);
-      return '<div class="mal-20-indicator '+((deltaDue>0||malDue>0)?'mal-20-blink':'')+'"><div class="mal-20-title">ALP / DELTA / MALATHION STOCK STATUS</div><div class="mal-20-grid"><div><small>TOTAL ALP STOCK (ALP REPORT)</small><b>'+Math.round(total)+' MT</b></div><div><small>DELTA DONE (DELTA REPORT)</small><b>'+deltaPct.toFixed(1)+'% · '+Math.round(deltaDone)+' MT</b></div><div><small>DELTA 80% REQUIRED</small><b>'+deltaTarget.toFixed(2)+' MT</b></div><div class="mal-20-baki"><small>DELTA REMAINING</small><b>'+deltaDue.toFixed(2)+' MT</b></div><div><small>MALATHION DONE (MALATHION REPORT)</small><b>'+malPct.toFixed(1)+'% · '+Math.round(malDone)+' MT</b></div><div><small>MALATHION 20% REQUIRED</small><b>'+malTarget.toFixed(2)+' MT</b></div><div class="mal-20-baki"><small>MALATHION REMAINING</small><b>'+malDue.toFixed(2)+' MT</b></div></div><div class="mal-20-all"><b>ACTUAL MALATHION CONSUMPTION:</b> '+consumption.toFixed(3)+' Ltr</div></div>';
-    }catch(e){
-      console.error('Malathion indicator error',e);
-      return '<div class="mal-20-indicator"><div class="mal-20-title">ALP / DELTA / MALATHION STOCK STATUS</div><div class="note">Indicator data could not be calculated.</div></div>';
-    }
-  };
+  window.malathionProgressHtml=function(){ return ''; };
   // Reliable tap handler for ALP FEW/HEAVY stack buttons.
   if(!window.__alpFewHeavyTapBound){
     document.addEventListener('click',function(e){
