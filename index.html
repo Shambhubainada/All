@@ -496,19 +496,26 @@ window.addEventListener('resize',fitQc,{passive:true});window.addEventListener('
       const tillDate=a=>Array.isArray(a)?a.filter(x=>{const d=chemISODateValue(x.date);return d>=monthFrom&&d<=today;}):[];
       if(activeChemicalFolder==='ALP'){
         const box=document.getElementById('alpReportSummary'); if(!box)return;
-        /* IMPORTANT: use the same fallback as the report renderer. The old hard-fix
-           used r.mm directly; when r.mm was empty it overwrote a correct indicator
-           with zero even though r.total contained this month's entries. */
-        const data=Array.isArray(r.mm)?r.mm:[];
-        /* Use reportData's already-computed totals. These are the exact figures
-           used by the ALP report itself, so the indicator cannot diverge to 0. */
-        const w=chemNum(r.wheatQty), ri=chemNum(r.riceQty), used=data.reduce((s,x)=>s+chemNum(x.consumption),0);
+        /* FINAL SOURCE: read the same ALP register groups that populate the table,
+           then filter them by the current calendar month. Do NOT use reportData()
+           totals here because its date-range state can be empty while the register
+           still has valid entries. */
+        const all=typeof alpAutoGroups==='function'?alpAutoGroups():[];
+        const data=all.filter(x=>chemISODateValue(x.date)>=monthFrom&&chemISODateValue(x.date)<=today);
+        const w=data.reduce((s,x)=>s+chemNum(x.wheatMt),0);
+        const ri=data.reduce((s,x)=>s+chemNum(x.riceMt),0);
+        const used=data.reduce((s,x)=>s+chemNum(x.consumption),0);
         box.innerHTML='<div class="report-summary-row"><div><b>TOTAL ALP FUMIGATION</b><br>'+Math.round(w+ri)+' MT</div><div><b>WHEAT FUMIGATION</b><br>'+Math.round(w)+' MT</div><div><b>RICE FUMIGATION</b><br>'+Math.round(ri)+' MT</div><div><b>TOTAL ALP USED</b><br>'+used.toFixed(3)+' kg</div></div>';
       } else if(activeChemicalFolder==='Delta'){
         const box=document.getElementById('deltaReportSummary'); if(!box)return;
-        const data=Array.isArray(r.mm)?r.mm:[];
-        /* Use the exact totals already calculated for the Delta report. */
-        const w=chemNum(r.wheatQty), ri=chemNum(r.riceQty), ws=Number(r.wheatDelta||0), rs=Number(r.riceDelta||0), used=chemNum(r.totalDelta);
+        /* FINAL SOURCE: read the same Delta register groups that populate the table. */
+        const all=typeof deltaAutoGroups==='function'?deltaAutoGroups():[];
+        const data=all.filter(x=>chemISODateValue(x.date)>=monthFrom&&chemISODateValue(x.date)<=today);
+        const w=data.reduce((s,x)=>s+chemNum(x.wheatMt),0);
+        const ri=data.reduce((s,x)=>s+chemNum(x.riceMt),0);
+        const ws=data.reduce((s,x)=>s+Number(x.wheat||((x.wheatStacks||[]).length)||0),0);
+        const rs=data.reduce((s,x)=>s+Number(x.rice||((x.riceStacks||[]).length)||0),0);
+        const used=data.reduce((s,x)=>s+chemNum(x.consumption),0);
         box.innerHTML='<div class="report-summary-row"><div><b>TOTAL DELTA SPRAY</b><br>'+Math.round(w+ri)+' MT · '+(ws+rs)+' stacks</div><div><b>WHEAT DELTA</b><br>'+Math.round(w)+' MT · '+ws+' stacks</div><div><b>RICE DELTA</b><br>'+Math.round(ri)+' MT · '+rs+' stacks</div><div><b>DELTA USED</b><br>'+used.toFixed(3)+' kg</div></div>';
       }
     }catch(e){console.error('ALP/Delta indicator hard-fix',e)}
