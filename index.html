@@ -508,6 +508,13 @@ window.addEventListener('resize',fitQc,{passive:true});window.addEventListener('
   setInterval(function(){if(document.getElementById('alpReportSummary')||document.getElementById('deltaReportSummary'))paint()},1500);
 })();
 </script>
+<style id="alp-delta-indicator-final-visible">
+#alpReportSummary.alp-indicator-outside,#deltaReportSummary.delta-indicator-outside{display:block!important;visibility:visible!important;opacity:1!important;position:relative!important;z-index:5!important;min-height:52px!important;width:100%!important;box-sizing:border-box!important;margin:8px 0!important;padding:6px!important;border:1px solid #b9cfc0!important;border-radius:8px!important;background:#f8fbf9!important}
+#alpReportSummary .report-summary-row,#deltaReportSummary .report-summary-row{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:4px!important}
+#alpReportSummary .report-summary-row>div,#deltaReportSummary .report-summary-row>div{display:block!important;visibility:visible!important;min-height:40px!important;padding:6px 3px!important;border:1px solid #d6b656!important;border-radius:6px!important;background:#fff7d6!important;color:#243126!important;text-align:center!important;font-size:9px!important;line-height:1.15!important;overflow:visible!important}
+#alpReportSummary .report-summary-row b,#deltaReportSummary .report-summary-row b{display:block!important;font-size:8px!important;margin-bottom:2px!important}
+@media(max-width:600px){#alpReportSummary .report-summary-row,#deltaReportSummary .report-summary-row{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+</style>
 </head>
 <body>
 <div class="pin-screen" id="pinScreen">
@@ -1994,14 +2001,18 @@ function malathionEntries(){
       return `<div class="panel"><div class="panelhead"><button class="pill" onclick="openChemicalFolders()">← CHEMICAL FOLDERS</button> &nbsp; 💊 ALP REGISTER</div></div>
       <div class="panel"><div class="panelhead">📒 ALP CONSUMPTION REGISTER</div>
         <div class="chem-register-wrap"><table class="chem-table chem-register-table"><thead><tr><th>Sr No.</th><th>Date</th><th class="stack-number-head" onclick="toggleChemicalStackDetails(event)" title="Tap to show/hide MT and FEW/HEAVY for all stacks">Stack Number</th><th>Total Qty (MT)</th><th>Consumption (kg)</th><th>Progressive Consumption (kg)</th><th><div class="treatment-head"><span>Wheat</span><i></i><span>Rice</span></div><small>Treatment Qty (MT)</small></th><th>Action</th></tr></thead><tbody id="chemRows">${alpTableRows()}</tbody></table></div><div class="chemical-actions chem-register-downloads"><button class="chem-orange" onclick="downloadChemicalRegisterExcel('ALP')">📊 REGISTER EXCEL</button><button class="chem-red" onclick="downloadChemicalRegisterPDF('ALP')">📄 REGISTER PDF</button></div>
-        <div id="alpReportSummary" class="alp-report-box alp-indicator-outside"></div>${reportFolder('alpReportFolder','ALP REPORT',`${reportControls}${reportActions}`)}
+        <div id="alpReportSummary" class="alp-report-box alp-indicator-outside" style="display:block!important;visibility:visible!important;opacity:1!important">
+  <div class="report-summary-row"><div><b>TOTAL ALP FUMIGATION</b><br>0 MT</div><div><b>WHEAT FUMIGATION</b><br>0 MT</div><div><b>RICE FUMIGATION</b><br>0 MT</div><div><b>TOTAL ALP USED</b><br>0.000 kg</div></div>
+</div>${reportFolder('alpReportFolder','ALP REPORT',`${reportControls}${reportActions}`)}
       </div>`;
     }
     if(folder==='Delta'){
       return `<div class="panel"><div class="panelhead"><button class="pill" onclick="openChemicalFolders()">← CHEMICAL FOLDERS</button> &nbsp; 🧪 DELTA REGISTER</div></div>
       <div class="panel"><div class="panelhead">📒 DELTA CONSUMPTION REGISTER</div>
         <div class="chem-register-wrap"><table class="chem-table chem-register-table"><thead><tr><th>Sr No.</th><th>Entry Date</th><th>Stack Number</th><th>Consumption (kg)</th><th>Progressive Consumption (kg)</th><th>Fumigated Stacks</th><th>Action</th></tr></thead><tbody id="chemRows">${deltaTableRows()}</tbody></table></div><div class="chemical-actions chem-register-downloads"><button class="chem-orange" onclick="downloadChemicalRegisterExcel('Delta')">📊 REGISTER EXCEL</button><button class="chem-red" onclick="downloadChemicalRegisterPDF('Delta')">📄 REGISTER PDF</button></div>
-        <div id="deltaReportSummary" class="alp-report-box delta-indicator-outside"></div>${reportFolder('deltaReportFolder','DELTA REPORT',`${reportControls}${reportActions}`)}
+        <div id="deltaReportSummary" class="alp-report-box delta-indicator-outside" style="display:block!important;visibility:visible!important;opacity:1!important">
+  <div class="report-summary-row"><div><b>TOTAL DELTA SPRAY</b><br>0 MT · 0 stacks</div><div><b>WHEAT DELTA</b><br>0 MT · 0 stacks</div><div><b>RICE DELTA</b><br>0 MT · 0 stacks</div><div><b>DELTA USED</b><br>0.000 kg</div></div>
+</div>${reportFolder('deltaReportFolder','DELTA REPORT',`${reportControls}${reportActions}`)}
       </div>`;
     }
     if(folder==='Malathion'){
@@ -2030,6 +2041,7 @@ function malathionEntries(){
       if(typeof restoreChemicalReportState==='function') restoreChemicalReportState();
       renderChemicalReport();
       if(typeof window.__renderChemicalIndicators==='function') setTimeout(window.__renderChemicalIndicators,20);
+      if(typeof window.__paintALPDeltaIndicator==='function') setTimeout(window.__paintALPDeltaIndicator,80);
     }
   };
   window.openChemicalFolders=function(){
