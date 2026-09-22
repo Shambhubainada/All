@@ -483,61 +483,45 @@ window.addEventListener('resize',fitQc,{passive:true});window.addEventListener('
 </style>
 <script id="alp-delta-indicator-hard-fix">
 (function(){
-  function readObj(key){try{const v=JSON.parse(localStorage.getItem(key)||'{}');return v&&typeof v==='object'?v:{}}catch(e){return {}}}
-  function monthRange(){const n=new Date();return {from:new Date(n.getFullYear(),n.getMonth(),1),to:new Date(n.getFullYear(),n.getMonth(),n.getDate(),23,59,59,999)}}
-  function inMonth(d){const x=parseDate(d);if(!x)return false;const r=monthRange();return x>=r.from&&x<=r.to}
-  function alpSource(){
-    let a=[]; try{a=typeof alpAutoGroups==='function'?alpAutoGroups():[]}catch(e){a=[]}
-    const ov=readObj('shambhuALPOverridesV1');
-    if(!a.length) a=Object.values(ov).filter(x=>x&&x.locked);
-    return a.filter(x=>inMonth(x.date));
+  function n(v){const x=String(v??'').replace(/,/g,'').match(/-?\d+(?:\.\d+)?/);return x?Number(x[0]):0}
+  function parseAnyDate(v){try{if(typeof parseDate==='function')return parseDate(v)}catch(e){}const s=String(v||'').trim();let m=s.match(/^(\d{1,2})[.\/-](\d{1,2})[.\/-](\d{2,4})$/);if(m){let y=+m[3];if(y<100)y+=2000;return new Date(y,+m[2]-1,+m[1])}const d=new Date(s);return isNaN(d)?null:d}
+  function currentMonth(d){const x=parseAnyDate(d),now=new Date();return !!x&&x.getFullYear()===now.getFullYear()&&x.getMonth()===now.getMonth()&&x.getDate()<=now.getDate()}
+  function read(key){try{return JSON.parse(localStorage.getItem(key)||'{}')}catch(e){return{}}}
+  function alpRowsFromRegister(){
+    const out=[]; document.querySelectorAll('#chemRows tr').forEach(tr=>{const c=tr.querySelectorAll('td');if(c.length<5)return;const date=c[1]?.textContent.trim();if(!currentMonth(date))return;const total=n(c[3]?.textContent),cons=n(c[4]?.textContent);if(total||cons)out.push({total,cons})});return out;
   }
-  function deltaSource(){
-    let a=[]; try{a=typeof deltaAutoGroups==='function'?deltaAutoGroups():[]}catch(e){a=[]}
-    const ov=readObj('shambhuDeltaOverridesV1');
-    if(!a.length) a=Object.values(ov).filter(x=>x&&x.locked);
-    return a.filter(x=>inMonth(x.date));
+  function deltaRowsFromRegister(){
+    const out=[]; document.querySelectorAll('#chemRows tr').forEach(tr=>{const c=tr.querySelectorAll('td');if(c.length<6)return;const date=c[1]?.textContent.trim();if(!currentMonth(date))return;const stacks=c[2]?.textContent||'',cons=n(c[3]?.textContent);const w=(stacks.match(/Wheat/gi)||[]).length,r=(stacks.match(/Rice/gi)||[]).length;out.push({cons,stacks,w,r})});return out;
   }
-  function alpVals(x){
-    let w=chemNum(x.wheatMt), r=chemNum(x.riceMt), total=chemNum(x.mt);
-    if(!total) total=w+r;
-    if(!w && !r && total){
-      const ws=Array.isArray(x.wheatStacks)?x.wheatStacks:[], rs=Array.isArray(x.riceStacks)?x.riceStacks:[];
-      ws.forEach(st=>{const sn=typeof st==='string'?st:st?.stack;const rr=rows.find(q=>String(stack(q)||'').trim()===String(sn||'').trim());if(rr)w+=qty(rr)});
-      rs.forEach(st=>{const sn=typeof st==='string'?st:st?.stack;const rr=rows.find(q=>String(stack(q)||'').trim()===String(sn||'').trim());if(rr)r+=qty(rr)});
-      if(!w&&!r && x.wheat && x.rice){w=total*Number(x.wheat)/(Number(x.wheat)+Number(x.rice));r=total-w}
-      if(!w&&!r) total=total;
-    }
-    const used=chemNum(x.consumption) || (total*0.009);
-    return {w,r,total,used};
-  }
-  function deltaVals(x){
-    let w=chemNum(x.wheatMt), r=chemNum(x.riceMt), ws=Number(x.wheat||0), rs=Number(x.rice||0);
-    const wheatStacks=Array.isArray(x.wheatStacks)?x.wheatStacks:[], riceStacks=Array.isArray(x.riceStacks)?x.riceStacks:[];
-    if(!ws)ws=wheatStacks.length; if(!rs)rs=riceStacks.length;
-    if(!w && wheatStacks.length) wheatStacks.forEach(st=>{const sn=typeof st==='string'?st:st?.stack;const rr=rows.find(q=>String(stack(q)||'').trim()===String(sn||'').trim());if(rr)w+=qty(rr)});
-    if(!r && riceStacks.length) riceStacks.forEach(st=>{const sn=typeof st==='string'?st:st?.stack;const rr=rows.find(q=>String(stack(q)||'').trim()===String(sn||'').trim());if(rr)r+=qty(rr)});
-    return {w,r,ws,rs,used:chemNum(x.consumption)||(ws+rs)*0.650};
-  }
+  function alpSource(){try{const a=typeof alpAutoGroups==='function'?alpAutoGroups():[];return a.filter(x=>currentMonth(x.date))}catch(e){return[]}}
+  function deltaSource(){try{const a=typeof deltaAutoGroups==='function'?deltaAutoGroups():[];return a.filter(x=>currentMonth(x.date))}catch(e){return[]}}
   function paint(){
     try{
-      if(typeof activeChemicalFolder==='undefined')return;
-      const boxId=activeChemicalFolder==='ALP'?'alpReportSummary':activeChemicalFolder==='Delta'?'deltaReportSummary':'';
-      if(!boxId)return; const box=document.getElementById(boxId);if(!box)return;
-      if(activeChemicalFolder==='ALP'){
-        const src=alpSource(); let w=0,r=0,total=0,used=0;
-        src.forEach(x=>{const v=alpVals(x);w+=v.w;r+=v.r;total+=v.total;used+=v.used});
+      const folder=typeof activeChemicalFolder==='undefined'?'':activeChemicalFolder;
+      const box=document.getElementById(folder==='ALP'?'alpReportSummary':folder==='Delta'?'deltaReportSummary':''); if(!box)return;
+      if(folder==='ALP'){
+        let total=0,w=0,r=0,used=0; const src=alpSource();
+        src.forEach(x=>{total+=n(x.mt);w+=n(x.wheatMt);r+=n(x.riceMt);used+=n(x.consumption)});
+        if(!(total||used||w||r)){
+          const dom=alpRowsFromRegister(); dom.forEach(x=>{total+=x.total;used+=x.cons});
+          const a=src; if(a.length){w=a.reduce((s,x)=>s+n(x.wheatMt),0);r=a.reduce((s,x)=>s+n(x.riceMt),0)}
+          if(!w&&!r&&total){w=total;r=0}
+        }
         box.innerHTML='<div class="report-summary-row"><div><b>TOTAL ALP FUMIGATION</b><br>'+Math.round(total)+' MT</div><div><b>WHEAT FUMIGATION</b><br>'+Math.round(w)+' MT</div><div><b>RICE FUMIGATION</b><br>'+Math.round(r)+' MT</div><div><b>TOTAL ALP USED</b><br>'+used.toFixed(3)+' kg</div></div>';
       }else{
-        const src=deltaSource(); let w=0,r=0,ws=0,rs=0,used=0;
-        src.forEach(x=>{const v=deltaVals(x);w+=v.w;r+=v.r;ws+=v.ws;rs+=v.rs;used+=v.used});
+        let total=0,w=0,r=0,ws=0,rs=0,used=0; const src=deltaSource();
+        src.forEach(x=>{w+=n(x.wheatMt);r+=n(x.riceMt);ws+=n(x.wheat)||((x.wheatStacks||[]).length);rs+=n(x.rice)||((x.riceStacks||[]).length);used+=n(x.consumption)});
+        if(!(w||r||ws||rs||used)){
+          deltaRowsFromRegister().forEach(x=>{used+=x.cons;ws+=x.w;rs+=x.r;});
+          const all=src.reduce((s,x)=>s+n(x.wheatMt)+n(x.riceMt),0); if(all){w=src.reduce((s,x)=>s+n(x.wheatMt),0);r=src.reduce((s,x)=>s+n(x.riceMt),0)}
+        }
         box.innerHTML='<div class="report-summary-row"><div><b>TOTAL DELTA SPRAY</b><br>'+Math.round(w+r)+' MT · '+(ws+rs)+' stacks</div><div><b>WHEAT DELTA</b><br>'+Math.round(w)+' MT · '+ws+' stacks</div><div><b>RICE DELTA</b><br>'+Math.round(r)+' MT · '+rs+' stacks</div><div><b>DELTA USED</b><br>'+used.toFixed(3)+' kg</div></div>';
       }
     }catch(e){console.error('ALP/Delta indicator render',e)}
   }
   window.__paintALPDeltaIndicator=paint;
-  document.addEventListener('DOMContentLoaded',function(){setTimeout(paint,150);setTimeout(paint,600);setTimeout(paint,1200)});
-  setInterval(paint,1200);
+  document.addEventListener('DOMContentLoaded',function(){setTimeout(paint,200);setTimeout(paint,700);setTimeout(paint,1500)});
+  setInterval(paint,1000);
 })();
 </script>
 <style id="alp-delta-indicator-final-visible">
