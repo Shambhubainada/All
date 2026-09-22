@@ -485,40 +485,30 @@ window.addEventListener('resize',fitQc,{passive:true});window.addEventListener('
 (function(){
   function paint(){
     try{
-      if(typeof activeChemicalFolder==='undefined') return;
-      /* Use the exact same reportData() source as the visible report.
-         Do not rebuild figures from raw group dates here; that caused 0 on
-         indicators when dates were stored in dd.mm.yy / other formats. */
-      if(typeof reportData!=='function') return;
+      if(typeof activeChemicalFolder==='undefined'||typeof reportData!=='function') return;
       const r=reportData();
-      const now=new Date(), y=now.getFullYear(), mo=String(now.getMonth()+1).padStart(2,'0');
-      const monthFrom=y+'-'+mo+'-01', today=y+'-'+mo+'-'+String(now.getDate()).padStart(2,'0');
-      const tillDate=a=>Array.isArray(a)?a.filter(x=>{const d=chemISODateValue(x.date);return d>=monthFrom&&d<=today;}):[];
       if(activeChemicalFolder==='ALP'){
         const box=document.getElementById('alpReportSummary'); if(!box)return;
-        /* FINAL SOURCE: read the same ALP register groups that populate the table,
-           then filter them by the current calendar month. Do NOT use reportData()
-           totals here because its date-range state can be empty while the register
-           still has valid entries. */
-        const all=typeof alpAutoGroups==='function'?alpAutoGroups():[];
-        const data=all.filter(x=>chemISODateValue(x.date)>=monthFrom&&chemISODateValue(x.date)<=today);
-        const w=data.reduce((s,x)=>s+chemNum(x.wheatMt),0);
-        const ri=data.reduce((s,x)=>s+chemNum(x.riceMt),0);
-        const used=data.reduce((s,x)=>s+chemNum(x.consumption),0);
+        /* The indicator is deliberately fed by the SAME reportData() object used by the ALP report. */
+        const rows=Array.isArray(r.mm)?r.mm:[];
+        const src=rows.length?rows:(Array.isArray(r.total)?r.total:[]);
+        const w=rows.length?chemNum(r.wheatQty):src.reduce((s,x)=>s+chemNum(x.wheatMt),0);
+        const ri=rows.length?chemNum(r.riceQty):src.reduce((s,x)=>s+chemNum(x.riceMt),0);
+        const used=rows.reduce((s,x)=>s+chemNum(x.consumption),0);
         box.innerHTML='<div class="report-summary-row"><div><b>TOTAL ALP FUMIGATION</b><br>'+Math.round(w+ri)+' MT</div><div><b>WHEAT FUMIGATION</b><br>'+Math.round(w)+' MT</div><div><b>RICE FUMIGATION</b><br>'+Math.round(ri)+' MT</div><div><b>TOTAL ALP USED</b><br>'+used.toFixed(3)+' kg</div></div>';
-      } else if(activeChemicalFolder==='Delta'){
+      }else if(activeChemicalFolder==='Delta'){
         const box=document.getElementById('deltaReportSummary'); if(!box)return;
-        /* FINAL SOURCE: read the same Delta register groups that populate the table. */
-        const all=typeof deltaAutoGroups==='function'?deltaAutoGroups():[];
-        const data=all.filter(x=>chemISODateValue(x.date)>=monthFrom&&chemISODateValue(x.date)<=today);
-        const w=data.reduce((s,x)=>s+chemNum(x.wheatMt),0);
-        const ri=data.reduce((s,x)=>s+chemNum(x.riceMt),0);
-        const ws=data.reduce((s,x)=>s+Number(x.wheat||((x.wheatStacks||[]).length)||0),0);
-        const rs=data.reduce((s,x)=>s+Number(x.rice||((x.riceStacks||[]).length)||0),0);
-        const used=data.reduce((s,x)=>s+chemNum(x.consumption),0);
+        /* The indicator is deliberately fed by the SAME reportData() object used by the Delta report. */
+        const rows=Array.isArray(r.mm)?r.mm:[];
+        const src=rows.length?rows:(Array.isArray(r.total)?r.total:[]);
+        const w=rows.length?chemNum(r.wheatQty):src.reduce((s,x)=>s+chemNum(x.wheatMt),0);
+        const ri=rows.length?chemNum(r.riceQty):src.reduce((s,x)=>s+chemNum(x.riceMt),0);
+        const ws=rows.length?rows.reduce((s,x)=>s+Number(x.wheat||0),0):src.reduce((s,x)=>s+Number(x.wheat||0),0);
+        const rs=rows.length?rows.reduce((s,x)=>s+Number(x.rice||0),0):src.reduce((s,x)=>s+Number(x.rice||0),0);
+        const used=rows.reduce((s,x)=>s+chemNum(x.consumption),0);
         box.innerHTML='<div class="report-summary-row"><div><b>TOTAL DELTA SPRAY</b><br>'+Math.round(w+ri)+' MT · '+(ws+rs)+' stacks</div><div><b>WHEAT DELTA</b><br>'+Math.round(w)+' MT · '+ws+' stacks</div><div><b>RICE DELTA</b><br>'+Math.round(ri)+' MT · '+rs+' stacks</div><div><b>DELTA USED</b><br>'+used.toFixed(3)+' kg</div></div>';
       }
-    }catch(e){console.error('ALP/Delta indicator hard-fix',e)}
+    }catch(e){console.error('ALP/Delta indicator render',e)}
   }
   window.__paintALPDeltaIndicator=paint;
   document.addEventListener('DOMContentLoaded',function(){setTimeout(paint,150);setTimeout(paint,600);});
@@ -531,6 +521,11 @@ window.addEventListener('resize',fitQc,{passive:true});window.addEventListener('
 #alpReportSummary .report-summary-row>div,#deltaReportSummary .report-summary-row>div{display:block!important;visibility:visible!important;min-height:40px!important;padding:6px 3px!important;border:1px solid #d6b656!important;border-radius:6px!important;background:#fff7d6!important;color:#243126!important;text-align:center!important;font-size:9px!important;line-height:1.15!important;overflow:visible!important}
 #alpReportSummary .report-summary-row b,#deltaReportSummary .report-summary-row b{display:block!important;font-size:8px!important;margin-bottom:2px!important}
 @media(max-width:600px){#alpReportSummary .report-summary-row,#deltaReportSummary .report-summary-row{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+</style>
+<style id="alp-delta-indicator-font-final">
+#alpReportSummary .report-summary-row>div,#deltaReportSummary .report-summary-row>div{font-size:11px!important;font-weight:800!important;line-height:1.2!important}
+#alpReportSummary .report-summary-row b,#deltaReportSummary .report-summary-row b{font-size:10px!important;font-weight:800!important}
+@media(max-width:600px){#alpReportSummary .report-summary-row>div,#deltaReportSummary .report-summary-row>div{font-size:11px!important}#alpReportSummary .report-summary-row b,#deltaReportSummary .report-summary-row b{font-size:9.5px!important}}
 </style>
 </head>
 <body>
