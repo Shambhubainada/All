@@ -1236,7 +1236,7 @@ const SHAMBHU_FIREBASE_CONFIG={
 /* Moisture Active is deliberately NOT synced as one large document.
    Each stack gets its own Firestore document so two phones can update
    different stacks without overwriting each other. */
-const SHAMBHU_SHARED_KEYS=['shambhuMoistureHistory','shambhuWorkNotes'];
+const SHAMBHU_SHARED_KEYS=['shambhuMoistureHistory','shambhuWorkNotes','shambhuChemicalRegisterV1','shambhuMIRDataV1'];
 const SHAMBHU_CLIENT_ID=(()=>{let x=localStorage.getItem('shambhuSyncClientId');if(!x){x='c_'+Date.now()+'_'+Math.random().toString(36).slice(2);localStorage.setItem('shambhuSyncClientId',x)}return x})();
 let shambhuFirebaseReady=false,shambhuFirebaseBusy=false,shambhuSharedUnsub=null,shambhuMoistureUnsub=null;
 const shambhuPendingShared=new Map(),shambhuSharedRev=new Map(),shambhuMoistureRev=new Map();
