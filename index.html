@@ -763,7 +763,17 @@ function mirEnsureMonth(a){
   if(!Array.isArray(d.months[k])){
     const eligible=mirEligible(a,d);const target=mirTarget(eligible.length);const n=mirCycleMonthNo(d,k);
     const sel=mirRotationSelection(eligible,n,target).map(r=>(mirRecordFromRow(r)));
-    d.months[k]=sel;saveMirData(d);
+    d.months[k]=sel;
+    if(!d.monthPlanKeys)d.monthPlanKeys={};
+    d.monthPlanKeys[k]=sel.map(x=>x.stackKey);
+    saveMirData(d);
+  } else {
+    if(!d.monthPlanKeys)d.monthPlanKeys={};
+    if(!Array.isArray(d.monthPlanKeys[k])){
+      const all=[...(d.months[k]||[]),...(d.history?.[k]||[]),...(d.reports?.[k]||[])];
+      d.monthPlanKeys[k]=[...new Set(all.map(x=>x.stackKey).filter(Boolean))];
+      saveMirData(d);
+    }
   }
   // Completed stacks stay in this month's MIR History immediately until the month is completed.
   if(!d.monthComplete)d.monthComplete={};
@@ -773,7 +783,7 @@ function mirRebuildMonth(a){
   const d=mirData(),k=mirMonthKey();const old=mirMonthRecords(d,k);const oldKeys=new Set(old.map(x=>x.stackKey));
   const eligible=mirEligible(a,d).filter(r=>!oldKeys.has(mirStackKey(r)));const need=Math.max(0,mirTarget(mirEligible(a,d).length)-old.length);
   const n=mirCycleMonthNo(d,k);const extra=mirRotationSelection(eligible,n,need).map(r=>(mirRecordFromRow(r)));
-  d.months[k]=old.concat(extra);saveMirData(d);return d;
+  d.months[k]=old.concat(extra);if(!d.monthPlanKeys)d.monthPlanKeys={};if(!Array.isArray(d.monthPlanKeys[k]))d.monthPlanKeys[k]=old.map(x=>x.stackKey);extra.forEach(x=>{if(!d.monthPlanKeys[k].includes(x.stackKey))d.monthPlanKeys[k].push(x.stackKey)});saveMirData(d);return d;
 }
 function mirCurrentSelected(a){const d=mirEnsureMonth(a),k=mirMonthKey();return d.months[k]||[]}
 function mirAvailableChoices(a){const d=mirEnsureMonth(a),current=new Set(mirCurrentSelected(a).map(x=>x.stackKey));return mirEligible(a,d).filter(r=>!current.has(mirStackKey(r)))}
@@ -792,60 +802,104 @@ function mirSelectStackChanged(){
   const mt=checked.reduce((s,c)=>s+num(qty(map.get(c.value))),0),box=$('mirSelectSummary');
   if(box)box.innerHTML=`<b>Selected Stacks: ${checked.length}</b> · <b>Selected MT: ${mt.toFixed(3)} MT</b>`;
 }
-function mirSaveSelectedChoices(){const picks=[...document.querySelectorAll('.mir-select-list input[type=checkbox]:checked')].map(x=>x.value);if(!picks.length){alert('Kam se kam ek stack select karein.');return}const d=mirData(),k=mirMonthKey();const a=activeRows();const map=new Map(mirAvailable(a).map(r=>[mirStackKey(r),r]));const cur=mirMonthRecords(d,k);picks.forEach(pk=>{const r=map.get(pk);if(r&&!cur.some(x=>x.stackKey===pk))cur.push(mirRecordFromRow(r))});if(!d.months)d.months={};d.months[k]=cur;saveMirData(d);closeModal();renderPage('mir')}
+function mirSaveSelectedChoices(){const picks=[...document.querySelectorAll('.mir-select-list input[type=checkbox]:checked')].map(x=>x.value);if(!picks.length){alert('Kam se kam ek stack select karein.');return}const d=mirData(),k=mirMonthKey();const a=activeRows();const map=new Map(mirAvailable(a).map(r=>[mirStackKey(r),r]));const cur=mirMonthRecords(d,k);picks.forEach(pk=>{const r=map.get(pk);if(r&&!cur.some(x=>x.stackKey===pk))cur.push(mirRecordFromRow(r))});if(!d.months)d.months={};d.months[k]=cur;if(!d.monthPlanKeys)d.monthPlanKeys={};if(!Array.isArray(d.monthPlanKeys[k]))d.monthPlanKeys[k]=[];picks.forEach(pk=>{if(!d.monthPlanKeys[k].includes(pk))d.monthPlanKeys[k].push(pk)});saveMirData(d);closeModal();renderPage('mir')}
 function mirReplace(k){const d=mirData(),mk=mirMonthKey(),cur=mirMonthRecords(d,mk),idx=cur.findIndex(x=>x.stackKey===k);if(idx<0)return;const choices=mirAvailableChoices(activeRows());if(!choices.length){alert('Replacement ke liye koi eligible stack nahi hai.');return}const body=choices.map(r=>`<label class="mir-select-row"><input type="radio" name="mirReplace" value="${esc(mirStackKey(r))}"><div><b>${esc(stack(r))}</b><small>Shed ${esc(shed(r))} · ${esc(isRice(r)?'Rice':'Wheat')} · ${qty(r).toFixed(3)} MT</small></div><span>${esc(commodity(r))}</span></label>`).join('');$('modalTitle').textContent='REPLACE MIR STACK';$('modalBody').innerHTML=`<div class="smallmuted" style="margin-bottom:8px">Current stack remove hoga; replacement All eligible Wheat + Rice me se choose karein.</div><div class="mir-select-list">${body}</div><div class="mir-actions"><button class="mir-primary" onclick="mirSaveReplacement('${esc(k)}')">✓ REPLACE</button><button class="pill" onclick="closeModal()">Cancel</button></div>`;$('modal').classList.add('show')}
 function mirSaveReplacement(oldKey){const pick=document.querySelector('input[name="mirReplace"]:checked')?.value;if(!pick){alert('Replacement stack select karein.');return}const a=activeRows(),r=mirAvailable(a).find(x=>mirStackKey(x)===pick);if(!r)return;const d=mirData(),mk=mirMonthKey(),cur=mirMonthRecords(d,mk),idx=cur.findIndex(x=>x.stackKey===oldKey);if(idx<0)return;cur[idx]=mirRecordFromRow(r);d.months[mk]=cur;saveMirData(d);closeModal();renderPage('mir')}
 function mirRemove(k){const d=mirData(),mk=mirMonthKey(),cur=mirMonthRecords(d,mk),x=cur.find(v=>v.stackKey===k);if(!x)return;if(x.status==='Completed'){alert('Completed MIR ko remove karne ke liye PIN/unlock workflow use karein.');return}if(!confirm('Is stack ko current MIR list se remove karein?'))return;d.months[mk]=cur.filter(v=>v.stackKey!==k);saveMirData(d);renderPage('mir')}
-async function mirComplete(k){const d=mirData(),mk=mirMonthKey(),cur=mirMonthRecords(d,mk),idx=cur.findIndex(v=>v.stackKey===k);if(idx<0)return;const x=cur[idx];if(x.status==='Completed'||x.infestationLocked)return;const dt=await qcDatePrompt('MIR Date',new Date().toISOString().slice(0,10));if(dt===null)return;if(!/^\d{4}-\d{2}-\d{2}$/.test(dt)){alert('Date format YYYY-MM-DD rakhein.');return}if(!confirm('Stack: '+x.stack+'\nMIR Date: '+dt+'\n\nKya aap is stack ka MIR Complete karke MIR History me bhejna chahte hain?'))return;x.status='Completed';x.mirDate=dt;x.infested=x.infested==='YES'?'YES':'NO';x.fumigationStatus=x.infested==='YES'?'Pending':'';x.fumigationDate='';x.infestationLocked=true;if(!d.history)d.history={};if(!Array.isArray(d.history[mk]))d.history[mk]=[];const hi=d.history[mk].findIndex(v=>v.stackKey===x.stackKey);if(hi>=0)d.history[mk][hi]={...x};else d.history[mk].push({...x});d.months[mk]=cur.filter((_,i)=>i!==idx);
-  const remaining=d.months[mk].filter(v=>v.status!=='Completed');
-  if(!remaining.length){mirSaveReportSnapshot(d,mk);d.history[mk]=[];if(!d.monthComplete)d.monthComplete={};d.monthComplete[mk]=true;d.months[mk]=[];}
-  saveMirData(d);renderPage('mir')}
-
-function openMirMonthCheck(){
-  const d=mirData(),mk=mirMonthKey(),cur=mirMonthRecords(d,mk),hist=Array.isArray(d.history?.[mk])?d.history[mk]:[];
-  if(!cur.length&&!hist.length){alert('Current month me koi MIR stack nahi hai.');return}
-  const all=hist.concat(cur),pending=cur.filter(x=>x.status!=='Completed');
-  const rows=all.map((x,i)=>`<tr><td>${i+1}</td><td>${esc(x.shed)}</td><td><b>${esc(x.stack)}</b></td><td>${esc(x.commodity||'')}</td><td>${Math.round(num(x.qty))}</td><td>${x.status==='Completed'?'<span class="badge ok">✓ Completed / History</span>':'<span class="badge soon">Pending Check</span>'}</td><td>${x.infested==='YES'?'YES':'NO'}</td></tr>`).join('');
-  $('modalTitle').textContent='🔎 CHECK MIR STACKS — '+mirMonthLabel(mk);
-  $('modalBody').innerHTML=`<div class="note"><b>Month Complete se pehle sabhi stacks check karein.</b><br>Individual Complete karte hi stack Current Month list se remove hokar MIR History me aa jayega. Month complete karne par History ke sabhi stacks report me save hokar History se remove ho jayenge.</div><div class="tablewrap" style="margin-top:10px"><table><thead><tr><th>Sr</th><th>Shed</th><th>Stack</th><th>Commodity</th><th>Qty MT</th><th>Check</th><th>Infestation</th></tr></thead><tbody>${rows}</tbody></table></div><div style="display:flex;justify-content:flex-end;gap:8px;margin-top:10px"><button class="pill" onclick="closeModal()">Cancel</button><button class="mir-primary" onclick="confirmMirMonthComplete()">${pending.length?'✓ CHECK PENDING STACKS':'✓ COMPLETE MONTH'}</button></div>`;
-  $('modal').classList.add('show');
-}
-async function confirmMirMonthComplete(){
-  const d=mirData(),mk=mirMonthKey(),cur=mirMonthRecords(d,mk),hist=Array.isArray(d.history?.[mk])?d.history[mk]:[];
-  if(!cur.length&&!hist.length){closeModal();return}
-  const pending=cur.filter(x=>x.status!=='Completed');
-  if(pending.length){alert('Pehle Current Month ke sabhi MIR stacks ko individual ✓ Complete karein. Abhi '+pending.length+' stack pending hai.');return}
-  const dt=await qcDatePrompt('MIR Month Complete Date',new Date().toISOString().slice(0,10));
-  if(dt===null)return;
+async function mirComplete(k){
+  const d=mirData(),mk=mirMonthKey(),cur=mirMonthRecords(d,mk),idx=cur.findIndex(v=>v.stackKey===k);
+  if(idx<0)return; const x=cur[idx];
+  if(x.status==='Completed')return;
+  const dt=await qcDatePrompt('MIR Date',new Date().toISOString().slice(0,10)); if(dt===null)return;
   if(!/^\d{4}-\d{2}-\d{2}$/.test(dt)){alert('Date format YYYY-MM-DD rakhein.');return}
-  hist.forEach(x=>{x.mirDate=x.mirDate||dt;x.infestationLocked=true;x.status='Completed'});
-  d.history[mk]=hist;
-  mirSaveReportSnapshot(d,mk);
-  d.history[mk]=[];
-  d.months[mk]=[];
-  if(!d.monthComplete)d.monthComplete={};d.monthComplete[mk]=true;
-  saveMirData(d);closeModal();renderPage('mir');
-}
-async function mirCompleteCurrentMonth(){
-  const d=mirData(),mk=mirMonthKey(),cur=mirMonthRecords(d,mk).filter(x=>x.status!=='Completed');
-  if(!cur.length){alert('Current month MIR list me koi pending stack nahi hai.');return}
-  const dt=await qcDatePrompt('MIR Complete All Date',new Date().toISOString().slice(0,10));
-  if(dt===null)return;
-  if(!/^\d{4}-\d{2}-\d{2}$/.test(dt)){alert('Date format YYYY-MM-DD rakhein.');return}
-  const totalMt=cur.reduce((n,x)=>n+num(x.qty),0);
-  const list=cur.map((x,i)=>`${i+1}. ${x.stack} — ${num(x.qty).toFixed(3)} MT`).join('\n');
-  const ok=confirm('CHECK BEFORE COMPLETE\n\nMonth: '+mirMonthLabel(mk)+'\nMIR Date: '+dt+'\nTotal Stacks: '+cur.length+'\nTotal MT: '+totalMt.toFixed(3)+' MT\n\n'+list+'\n\nKya aap sabhi listed stacks ko ek saath MIR History me Complete karna chahte hain?');
+  const ok=confirm('CONFIRM MIR COMPLETE\n\nStack: '+x.stack+'\nMIR Date: '+dt+'\n\nConfirm karne par ye stack Current MIR List se remove hokar MIR History me chala jayega.');
   if(!ok)return;
-  if(!d.history)d.history={}; if(!Array.isArray(d.history[mk]))d.history[mk]=[];
-  cur.forEach(x=>{x.status='Completed';x.mirDate=dt;x.infested=x.infested==='YES'?'YES':'NO';x.fumigationStatus=x.infested==='YES'?'Pending':'';x.fumigationDate='';x.infestationLocked=true;d.history[mk].push({...x});});
-  d.months[mk]=mirMonthRecords(d,mk).filter(x=>x.status==='Completed');
-  saveMirData(d);renderPage('mir');
-  alert(cur.length+' MIR stacks History me move ho gaye.');
+  await mirCompleteSelected([x.stackKey],dt);
 }
 
-function mirSetInfestation(k,v){const d=mirData(),mk=mirMonthKey(),x=mirMonthRecords(d,mk).find(v=>v.stackKey===k);if(!x)return;if(x.status==='Completed'||x.infestationLocked){renderPage('mir');return}x.infested=v==='YES'?'YES':'NO';if(x.infested==='YES'){x.fumigationStatus='Pending';x.fumigationDate=''}else{x.fumigationStatus='';x.fumigationDate=''};const h=d.history?.[mk]||[];const hi=h.findIndex(z=>z.stackKey===k);if(hi>=0)h[hi]={...x};if(!d.history)d.history={};d.history[mk]=h;saveMirData(d);renderPage('mir')}
-function mirPendingItems(d){const today=new Date();today.setHours(0,0,0,0);const out=[];Object.values(d.history||{}).forEach(arr=>(arr||[]).forEach(x=>{if(x.infested==='YES'&&x.fumigationStatus!=='Done'&&x.mirDate){const md=parseDate(x.mirDate);if(md){md.setHours(0,0,0,0);if(md<today)out.push(x)}}}));return out}
-async function mirFumigationDone(k){const d=mirData();let found=null;for(const arr of Object.values(d.history||{})){const x=(arr||[]).find(z=>z.stackKey===k);if(x){found=x;break}}if(!found)return;const dt=await qcDatePrompt('Fumigation Date',new Date().toISOString().slice(0,10));if(dt===null)return;if(!/^\d{4}-\d{2}-\d{2}$/.test(dt)){alert('Date format YYYY-MM-DD rakhein.');return}found.fumigationStatus='Done';found.fumigationDate=dt;saveMirData(d);renderAll()}
+function mirSelectedKeys(){return [...document.querySelectorAll('.mir-current-check:checked')].map(x=>x.value)}
+function mirUpdateCurrentSelection(){
+  const checks=[...document.querySelectorAll('.mir-current-check')],sel=checks.filter(x=>x.checked),d=mirData(),mk=mirMonthKey(),cur=mirMonthRecords(d,mk),map=new Map(cur.map(x=>[x.stackKey,x]));
+  const mt=sel.reduce((n,c)=>n+num(map.get(c.value)?.qty),0),box=$('mirCurrentSelectionSummary');
+  if(box)box.innerHTML=`<b>Selected Stacks: ${sel.length}</b> · <b>Selected MT: ${mt.toFixed(3)} MT</b>`;
+  const btn=$('mirCompleteSelectedBtn'); if(btn)btn.disabled=!sel.length;
+}
+async function mirCompleteSelected(keys,dt){
+  const d=mirData(),mk=mirMonthKey(),cur=mirMonthRecords(d,mk),picked=cur.filter(x=>keys.includes(x.stackKey)&&x.status!=='Completed');
+  if(!picked.length)return;
+  if(!d.history)d.history={}; if(!Array.isArray(d.history[mk]))d.history[mk]=[];
+  picked.forEach(x=>{x.status='Completed';x.mirDate=dt;x.fumigationStatus=x.infested==='YES'?(x.fumigationStatus||'Pending'):(x.fumigationStatus||'');d.history[mk].push({...x});});
+  d.months[mk]=cur.filter(x=>!keys.includes(x.stackKey));
+  mirMaybeFinalizeMonth(d,mk);
+  saveMirData(d);renderPage('mir');updateWorkAlert();
+}
+async function mirCompleteSelectedFromUI(){
+  const keys=mirSelectedKeys(); if(!keys.length){alert('Pehle MIR list me ek ya ek se zyada stack par ✓ tick karein.');return;}
+  const d=mirData(),mk=mirMonthKey(),cur=mirMonthRecords(d,mk),picked=cur.filter(x=>keys.includes(x.stackKey));
+  const dt=await qcDatePrompt('MIR Complete Date',new Date().toISOString().slice(0,10)); if(dt===null)return;
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(dt)){alert('Date format YYYY-MM-DD rakhein.');return}
+  const mt=picked.reduce((n,x)=>n+num(x.qty),0),list=picked.map((x,i)=>`${i+1}. ${x.stack} — ${num(x.qty).toFixed(3)} MT`).join('\n');
+  const ok=confirm('CONFIRM COMPLETE\n\nMIR Date: '+dt+'\nSelected Stacks: '+picked.length+'\nSelected MT: '+mt.toFixed(3)+' MT\n\n'+list+'\n\nConfirm karne par selected stacks Current MIR List se remove hokar MIR History me jayenge. Agar ye month ke sabhi pending stacks hain to month report me move ho jayenge.');
+  if(!ok)return;
+  await mirCompleteSelected(keys,dt);
+}
+
+async function mirCompleteCurrentMonth(){
+  const d=mirData(),mk=mirMonthKey(),cur=mirMonthRecords(d,mk); if(!cur.length){alert('Current month MIR list me koi stack nahi hai.');return;}
+  document.querySelectorAll('.mir-current-check').forEach(c=>c.checked=true); mirUpdateCurrentSelection(); await mirCompleteSelectedFromUI();
+}
+
+function mirMaybeFinalizeMonth(d,mk){
+  const current=d.months?.[mk]||[];
+  const history=d.history?.[mk]||[];
+  const blocked=history.some(x=>x.infested==='YES'&&x.fumigationStatus!=='Done');
+  if(!d.monthPlanKeys)d.monthPlanKeys={};
+  if(!Array.isArray(d.monthPlanKeys[mk])){
+    const all=[...current,...history,...(d.reports?.[mk]||[])];
+    d.monthPlanKeys[mk]=[...new Set(all.map(x=>x.stackKey).filter(Boolean))];
+  }
+  const plan=new Set(d.monthPlanKeys[mk]||[]);
+  const completed=new Set(history.map(x=>x.stackKey).filter(Boolean));
+  const allPlannedCompleted=plan.size>0 && [...plan].every(k=>completed.has(k));
+  // Report is created only once ALL stacks planned for this month are in History
+  // and no infestation/fumigation is pending. Until then every completed stack
+  // stays together in History.
+  if(current.length===0 && history.length && allPlannedCompleted && !blocked){
+    mirSaveReportSnapshot(d,mk);
+    d.history[mk]=[];
+    if(!d.monthComplete)d.monthComplete={};
+    d.monthComplete[mk]=true;
+  }
+}
+
+function mirSetInfestation(k,v){
+  const d=mirData(),mk=mirMonthKey(),x=mirMonthRecords(d,mk).find(v=>v.stackKey===k);if(!x)return;
+  if(x.status==='Completed'){renderPage('mir');return}
+  x.infested=v==='YES'?'YES':'NO';
+  if(x.infested==='YES'){x.fumigationStatus='Pending';x.fumigationDate='';alert('⚠️ Infestation alert: '+x.stack+' ko Fumigation Done hone tak MIR Complete nahi kiya ja sakta.');}
+  else{x.fumigationStatus='';x.fumigationDate='';}
+  if(!d.history)d.history={};saveMirData(d);renderPage('mir');updateWorkAlert();
+}
+function mirPendingItems(d){
+  const out=[];
+  Object.values(d.history||{}).forEach(arr=>(arr||[]).forEach(x=>{if(x.infested==='YES'&&x.fumigationStatus!=='Done'&&x.mirDate)out.push(x)}));
+  const mk=mirMonthKey();(d.months?.[mk]||[]).forEach(x=>{if(x.infested==='YES'&&x.fumigationStatus!=='Done')out.push({...x,mirDate:x.mirDate||new Date().toISOString().slice(0,10)})});
+  return out;
+}
+async function mirFumigationDone(k){
+  const d=mirData();let found=null,where='history';
+  for(const [m,arr] of Object.entries(d.history||{})){const x=(arr||[]).find(z=>z.stackKey===k);if(x){found=x;break}}
+  if(!found){const mk=mirMonthKey();found=(d.months?.[mk]||[]).find(z=>z.stackKey===k);where='month';}
+  if(!found)return;
+  const dt=await qcDatePrompt('Fumigation Date',new Date().toISOString().slice(0,10));if(dt===null)return;if(!/^\d{4}-\d{2}-\d{2}$/.test(dt)){alert('Date format YYYY-MM-DD rakhein.');return}
+  found.fumigationStatus='Done';found.fumigationDate=dt;
+  if(where==='history'){
+    const mk=Object.keys(d.history||{}).find(m=>(d.history[m]||[]).some(x=>x.stackKey===k));
+    if(mk)mirMaybeFinalizeMonth(d,mk);
+  }
+  saveMirData(d);renderAll();updateWorkAlert();
+}
+
 async function mirEditDate(k){const d=mirData(),mk=mirMonthKey(),cur=mirMonthRecords(d,mk),x=cur.find(v=>v.stackKey===k);if(!x)return;const dt=await qcDatePrompt('MIR Date',x.mirDate||new Date().toISOString().slice(0,10));if(dt===null)return;if(!/^\d{4}-\d{2}-\d{2}$/.test(dt)){alert('Date format YYYY-MM-DD rakhein.');return}x.mirDate=dt;if(x.status==='Completed'){const h=d.history?.[mk]||[];const hi=h.findIndex(v=>v.stackKey===k);if(hi>=0)h[hi]={...x};d.history[mk]=h}saveMirData(d);renderPage('mir')}
 async function mirUnlockEdit(k){const pin=await qcPinPrompt('MIR Edit ke liye PIN enter karein');if(pin===null)return;if(String(pin)!==String(getSitePin())){alert('Wrong PIN.');return}const d=mirData(),mk=mirMonthKey(),x=mirMonthRecords(d,mk).find(v=>v.stackKey===k);if(!x)return;x.status='Pending';saveMirData(d);renderPage('mir')}
 function mirMonthSummary(d){const mk=mirMonthKey(),sel=mirMonthRecords(d,mk);const done=sel.filter(x=>x.status==='Completed').length;const elig=mirEligible(activeRows(),d);const target=mirTarget(elig.length+done);return {sel,done,elig,target}}
@@ -892,15 +946,12 @@ function mirHistoryHtml(d){const months=Object.keys(d.history||{}).filter(m=>(d.
 function toggleMirHistoryMonth(m){const body=$('mir-history-body-'+m),folder=$('mir-history-folder-'+m);if(!body||!folder)return;const head=folder.querySelector('.mir-folder-head span');const open=body.style.display!=='none';body.style.display=open?'none':'block';if(head)head.textContent=open?'▶':'▼'}
 function toggleMirHistoryPanel(){const body=$('mir-history-panel-body'),arrow=$('mir-history-panel-arrow');if(!body)return;const open=body.style.display!=='none';body.style.display=open?'none':'block';if(arrow)arrow.textContent=open?'▶':'▼'}
 function mirPage(a){
-  const d=mirEnsureMonth(a),mk=mirMonthKey(),sel=mirMonthRecords(d,mk),done=sel.filter(x=>x.status==='Completed').length;
+  const d=mirEnsureMonth(a),mk=mirMonthKey(),sel=mirMonthRecords(d,mk).filter(x=>x.status!=='Completed');
   const eligible=mirEligible(a,d),w=eligible.filter(isWheat),r=eligible.filter(isRice);
   const hist=[];Object.values(d.history||{}).forEach(arr=>(arr||[]).forEach(x=>hist.push(x)));
-  const wDone=hist.filter(x=>/rice|frk|rra/i.test(String(x.commodity||''))===false && /wheat/i.test(String(x.commodity||''))).length;
-  const rDone=hist.filter(x=>/rice|frk|rra/i.test(String(x.commodity||''))).length;
   const wTarget=Math.ceil((d.cycleBase?.wheat||w.length)*0.35),rTarget=Math.ceil((d.cycleBase?.rice||r.length)*0.35);
-  const denom=hist.length+eligible.length,coverage=denom?Math.min(100,Math.round(hist.length/denom*100)):100;
-  const cycle=mirCycleMonthNo(d,mk);
-  return `<div class="panel"><div class="panelhead">🔍 MIR INSPECTION — 3 MONTH ROTATION</div><div class="smallmuted">${esc(mirMonthLabel(mk))} · Monthly 35% planning target · Wheat + Rice mixed selection allowed</div><div class="mir-grid" style="margin-top:10px"><div class="mir-card"><span>WHEAT ELIGIBLE</span><b>${w.length}</b></div><div class="mir-card"><span>WHEAT 35% TARGET</span><b>${wTarget}</b></div><div class="mir-card"><span>RICE ELIGIBLE</span><b>${r.length}</b></div><div class="mir-card"><span>RICE 35% TARGET</span><b>${rTarget}</b></div><div class="mir-card"><span>THIS MONTH SELECTED</span><b>${sel.length}</b></div><div class="mir-card"><span>THIS MONTH COMPLETED</span><b>${done}</b></div><div class="mir-card"><span>CYCLE MONTH</span><b>${cycle<=3?cycle:'3'}/3</b></div><div class="mir-card"><span>3-MONTH COVERAGE</span><b>${coverage}%</b></div></div><div class="mir-progress"><i style="width:${coverage}%"></i></div><div class="mir-actions"><button class="mir-primary" onclick="mirAddStacks(activeRows())">➕ Select Stack</button><button class="mir-primary" onclick="mirCompleteCurrentMonth()">✅ COMPLETE CURRENT MONTH</button><button class="mir-blue" onclick="mirRebuildMonth(activeRows());renderPage('mir')">🔄 Add/Refresh 35% Plan</button><button class="mir-warn" onclick="alert('Rotation: Month 1 → 1,4,7… · Month 2 → 2,5,8… · Month 3 → 3,6,9…\\nVacant stack replace ho sakta hai; new receipt eligible pool me aayega. 35% target flexible hai.')">ℹ️ Logic</button></div><div class="mir-note">Wheat/Rice target alag hai, lekin Select Stack me dono commodities available hain. 35% guideline hai—practical need par thoda upar/niche selection kar sakte hain. Completed MIR history se duplicate selection automatic block hoti hai.</div></div><div class="panel"><div class="panelhead">📋 CURRENT MONTH MIR LIST — ${esc(mirMonthLabel(mk))}</div><div class="mir-table"><table><thead><tr><th>Sr No.</th><th>Shed Number</th><th>Stack Number</th><th>Receipt Date</th><th>Bags</th><th>Qty in MT</th><th>Commodity / Crop Year</th><th>MIR Date</th><th>Infestation Status</th><th>Action</th></tr></thead><tbody>${sel.length?sel.map((x,i)=>`<tr class="${x.status==='Completed'?'mir-complete':'mir-selected'}"><td>${i+1}</td><td>${esc(x.shed)}</td><td><b>${esc(x.stack)}</b></td><td>${dateText(x.receiptDate)}</td><td>${num(x.bags)||0}</td><td>${Math.round(num(x.qty))}</td><td>${esc(x.commodity||'')} ${x.cropYear?'/ '+esc(x.cropYear):''}</td><td>${x.mirDate?dateText(x.mirDate):'—'}</td><td>${x.status==='Completed'||x.infestationLocked?`<span class="mir-lock-status">${x.infested==='YES'?'YES':'NO'} 🔒</span>`:`<select onchange="mirSetInfestation('${esc(x.stackKey)}',this.value)"><option value="NO" ${x.infested!=='YES'?'selected':''}>NO</option><option value="YES" ${x.infested==='YES'?'selected':''}>YES</option></select>`}</td><td>${x.status==='Completed'?`🔒 <button class="pill" onclick="mirUnlockEdit('${esc(x.stackKey)}')">✏️ Edit</button>`:`<button class="pill" onclick="mirComplete('${esc(x.stackKey)}')">✓ Complete</button> <button class="pill" onclick="mirReplace('${esc(x.stackKey)}')">🔄 Replace</button> <button class="pill" onclick="mirRemove('${esc(x.stackKey)}')">🗑 Remove</button>`}</td></tr>`).join(''):'<tr><td colspan="10" class="mir-empty">No MIR stack selected.</td></tr>'}</tbody></table></div></div><div class="panel"><button class="panelhead mir-history-toggle" onclick="toggleMirHistoryPanel()">🗓️ MIR HISTORY <span id="mir-history-panel-arrow">▶</span></button><div id="mir-history-panel-body" style="display:none"><div style="margin-bottom:10px"><button class="mir-blue" onclick="openMirReportPicker()">📊 MONTH-WISE MIR REPORT — VIEW / DOWNLOAD</button></div>${mirHistoryHtml(d)}</div></div></div>`
+  const denom=hist.length+eligible.length,coverage=denom?Math.min(100,Math.round(hist.length/denom*100)):100,cycle=mirCycleMonthNo(d,mk);
+  return `<div class="panel"><div class="panelhead">🔍 MIR INSPECTION — 3 MONTH ROTATION</div><div class="smallmuted">${esc(mirMonthLabel(mk))} · Monthly 35% planning target · Wheat + Rice mixed selection allowed</div><div class="mir-grid" style="margin-top:10px"><div class="mir-card"><span>WHEAT ELIGIBLE</span><b>${w.length}</b></div><div class="mir-card"><span>WHEAT 35% TARGET</span><b>${wTarget}</b></div><div class="mir-card"><span>RICE ELIGIBLE</span><b>${r.length}</b></div><div class="mir-card"><span>RICE 35% TARGET</span><b>${rTarget}</b></div><div class="mir-card"><span>THIS MONTH SELECTED</span><b>${sel.length}</b></div><div class="mir-card"><span>HISTORY</span><b>${hist.length}</b></div><div class="mir-card"><span>CYCLE MONTH</span><b>${cycle<=3?cycle:'3'}/3</b></div><div class="mir-card"><span>3-MONTH COVERAGE</span><b>${coverage}%</b></div></div><div class="mir-progress"><i style="width:${coverage}%"></i></div><div class="mir-actions"><button class="mir-primary" onclick="mirAddStacks(activeRows())">➕ Select Stack</button><button id="mirCompleteSelectedBtn" class="mir-primary" onclick="mirCompleteSelectedFromUI()" disabled>✅ COMPLETE SELECTED</button><button class="mir-blue" onclick="mirRebuildMonth(activeRows());renderPage('mir')">🔄 Add/Refresh 35% Plan</button></div><div class="mir-note">MIR list me har stack ke aage ✓ tick karein. Ek ya kai selected stacks ko ek saath Complete kiya ja sakta hai. Confirm ke baad selected stack Current List se History me jayega. Infestation YES wale stack ki Fumigation Done hone tak Complete blocked rahega.</div></div><div class="panel"><div class="panelhead">📋 CURRENT MONTH MIR LIST — ${esc(mirMonthLabel(mk))}</div><div id="mirCurrentSelectionSummary" class="mir-note" style="margin-bottom:8px"><b>Selected Stacks: 0</b> · <b>Selected MT: 0.000 MT</b></div><div class="mir-table"><table><thead><tr><th>✓</th><th>Sr No.</th><th>Shed</th><th>Stack</th><th>Receipt Date</th><th>Bags</th><th>Qty MT</th><th>Commodity / Crop Year</th><th>MIR Date</th><th>Infestation</th><th>Action</th></tr></thead><tbody>${sel.length?sel.map((x,i)=>`<tr class="mir-selected"><td><input class="mir-current-check" type="checkbox" value="${esc(x.stackKey)}" onchange="mirUpdateCurrentSelection()"></td><td>${i+1}</td><td>${esc(x.shed)}</td><td><b>${esc(x.stack)}</b></td><td>${dateText(x.receiptDate)}</td><td>${num(x.bags)||0}</td><td>${num(x.qty).toFixed(3)}</td><td>${esc(x.commodity||'')} ${x.cropYear?'/ '+esc(x.cropYear):''}</td><td>${x.mirDate?dateText(x.mirDate):'—'}</td><td>${`<select onchange="mirSetInfestation('${esc(x.stackKey)}',this.value)"><option value="NO" ${x.infested!=='YES'?'selected':''}>NO</option><option value="YES" ${x.infested==='YES'?'selected':''}>YES</option></select>`}${x.infested==='YES'?`<div class="smallmuted">🔴 ${x.fumigationStatus==='Done'?'Fumigation Done':'Fumigation Pending'}</div>`:''}</td><td><button class="pill" onclick="mirComplete('${esc(x.stackKey)}')">✓ Complete</button> <button class="pill" onclick="mirReplace('${esc(x.stackKey)}')">🔄 Replace</button> <button class="pill" onclick="mirRemove('${esc(x.stackKey)}')">🗑 Remove</button></td></tr>`).join(''):'<tr><td colspan="11" class="mir-empty">No MIR stack selected.</td></tr>'}</tbody></table></div></div><div class="panel"><button class="panelhead mir-history-toggle" onclick="toggleMirHistoryPanel()">🗓️ MIR HISTORY <span id="mir-history-panel-arrow">▶</span></button><div id="mir-history-panel-body" style="display:none"><div style="margin-bottom:10px"><button class="mir-blue" onclick="openMirReportPicker()">📊 MONTH-WISE MIR REPORT — VIEW / DOWNLOAD</button></div>${mirHistoryHtml(d)}</div></div></div>`;
 }
 
 function calendarPage(a){const items=treatmentItems(a);return `<div class="panel"><div class="panelhead">TREATMENT CALENDAR</div><div class="smallmuted">Current due items based on the live Master Stock data.</div>${table('DUE / UPCOMING',['Type','Stack','Reference Date','Days'],items.map(x=>`<tr><td>${x[0]}</td><td><b>${esc(x[1])}</b></td><td>${dateText(x[2])}</td><td>${dayDiff(x[2])??'—'}</td></tr>`).join(''))}</div>`}
