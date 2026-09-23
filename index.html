@@ -949,20 +949,14 @@ async function mirCompleteCurrentMonth(){
 }
 
 function mirMaybeFinalizeMonth(d,mk){
-  const current=d.months?.[mk]||[];
-  const history=d.history?.[mk]||[];
-  const blocked=history.some(x=>x.infested==='YES'&&x.fumigationStatus!=='Done');
-  if(!d.monthPlanKeys)d.monthPlanKeys={};
-  if(!Array.isArray(d.monthPlanKeys[mk])){
-    const all=[...current,...history,...(d.reports?.[mk]||[])];
-    d.monthPlanKeys[mk]=[...new Set(all.map(x=>x.stackKey).filter(Boolean))];
-  }
-  const plan=new Set(d.monthPlanKeys[mk]||[]);
-  const completed=new Set(history.map(x=>x.stackKey).filter(Boolean));
-  const allPlannedCompleted=plan.size>0 && [...plan].every(k=>completed.has(k));
-  // Do NOT move anything automatically. The whole month remains in History
-  // until the user explicitly presses MIR COMPLETE.
-  return current.length===0 && history.length>0 && allPlannedCompleted && !blocked;
+  const current=Array.isArray(d.months?.[mk])?d.months[mk]:[];
+  const history=Array.isArray(d.history?.[mk])?d.history[mk]:[];
+  // MIR COMPLETE is available when the current-month list is empty,
+  // History contains at least one MIR stack, and there is no infestation/
+  // fumigation pending in that month's History. Do not block this button
+  // with monthPlanKeys because older/saved MIR history may not have them.
+  const blocked=history.some(x=>String(x.infested||'').toUpperCase()==='YES' && String(x.fumigationStatus||'').toLowerCase()!=='done');
+  return current.length===0 && history.length>0 && !blocked;
 }
 function mirCanFinalizeMonth(d,mk){return mirMaybeFinalizeMonth(d,mk)}
 async function mirFinalizeMonth(){
