@@ -693,7 +693,9 @@ function mirSourceRows(a=rows){return (Array.isArray(a)?a:[]).filter(r=>mirStack
 function mirStackKey(r){return mirShedNo(r)+'|'+mirStackNo(r)}
 function mirRecordFromRow(r,status='Pending'){return {stackKey:mirStackKey(r),shed:mirShedNo(r),stack:mirStackNo(r),receiptDate:mirReceipt(r),bags:mirBags(r),qty:mirQty(r),commodity:mirCommodityRaw(r),cropYear:mirCropYearRaw(r),status,mirDate:'',infested:'NO',fumigationStatus:'',fumigationDate:''}}
 function mirAvailable(a){const m=new Map();mirSourceRows(a).forEach(r=>{const k=mirStackKey(r);if(!k||k==='|')return;const q=mirQty(r),bags=mirBags(r);/* Add Plan availability: empty rows are excluded. */if(q<=0&&bags<=0)return;if(!m.has(k)||((mirQty(m.get(k))<=0&&q>0)||(mirBags(m.get(k))<=0&&bags>0)))m.set(k,{...r});});return [...m.values()]}
-function mirSelectAvailable(){const m=new Map();/* SELECT STACK source = the same occupied rows used by Home Dashboard. No MIR/35%/history filter. */const source=Array.isArray(rows)?rows.filter(r=>qty(r)>0):[];source.forEach(r=>{const sn=String(mirStackNo(r)||'').trim();if(!sn)return;const k=mirStackKey(r);if(!k||k==='|')return;if(!m.has(k))m.set(k,{...r});});return [...m.values()]}
+let mirAddNewMasterRows=null;
+function mirSelectAvailable(){const m=new Map();/* MIR ADD NEW STACK source = DIRECTLY from live Google Sheet Master Stock. Only Qty (MT) > 0. */const source=Array.isArray(mirAddNewMasterRows)?mirAddNewMasterRows:(Array.isArray(rows)?rows:[]);source.forEach(r=>{const sn=String(mirStackNo(r)||stack(r)||'').trim();if(!sn||mirQty(r)<=0)return;const k=mirStackKey(r);if(!k||k==='|')return;if(!m.has(k))m.set(k,{...r});});return [...m.values()]}
+
 function mirHistoryKeys(d){const out=new Set();Object.values(d.history||{}).forEach(arr=>(arr||[]).forEach(x=>out.add(String(x.stackKey))));return out}
 /* Mobile-safe PIN/date prompts: native numeric keyboard and native calendar picker. */
 function qcInputPrompt(label,value,type){return new Promise(function(resolve){
@@ -867,10 +869,22 @@ function mirRefresh35Toggle(){
   d.monthPlanKeys[mk]=plan.picked.map(r=>mirStackKey(r));
   saveMirData(d);renderPage('mir');
 }
-function mirAddStacks(a,plan35=false){
+async function mirAddStacks(a,plan35=false){
   mirPlan35Mode=!!plan35;
-  const d=mirData(), all=plan35?mirAvailable(a):mirSelectAvailable(), choices=plan35?mirEligible(a,d):all;
-  if(!all.length){alert('Koi available stack nahi mila.');return}
+  const d=mirData();
+  let all,choices;
+  if(plan35){ all=mirAvailable(a); choices=mirEligible(a,d); }
+  else {
+    try{
+      const u=`https://docs.google.com/spreadsheets/d/${CONFIG.SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent('Master Stock')}`;
+      const t=await fetch(u,{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('HTTP '+r.status);return r.text()});
+      const m=t.match(/google\.visualization\.Query\.setResponse\((.*)\);?$/s);if(!m)throw Error('Unreadable Master Stock');
+      const j=JSON.parse(m[1]),cols=j.table.cols.map(c=>(c.label||'').trim());
+      mirAddNewMasterRows=j.table.rows.map(rr=>{const o={};cols.forEach((c,i)=>o[c]=rr.c[i]?(rr.c[i].f??rr.c[i].v??''):'');return o});
+    }catch(e){console.error('MIR Add New Stack Master Stock error',e);mirAddNewMasterRows=Array.isArray(rows)?rows:[];}
+    all=mirSelectAvailable(); choices=all;
+  }
+  if(!all.length){alert('Master Stock me Qty (MT) > 0 wala koi available stack nahi mila.');return}
   if(plan35){
     const plan=mirPick35WithFallback(all,choices,mirCycleMonthNo(d,mirMonthKey()));
     if(!plan.picked.length){alert('Master Stock me Wheat/Rice classify hone wala available stack nahi mila. Commodity column/source mapping check karna hoga.');return}
@@ -884,8 +898,8 @@ function mirAddStacks(a,plan35=false){
   const statusMap=mirRecentStatus(all,d);
   const currentKeys=new Set(mirCurrentSelected(a).map(x=>String(x.stackKey)));
   const body=all.map(r=>{const sk=mirStackKey(r),status=statusMap.get(sk)||'',already=currentKeys.has(String(sk));return `<label class="mir-select-row" style="${already?'opacity:.65':''}"><input type="checkbox" value="${esc(sk)}" ${already?'disabled':''} onchange="mirSelectStackChanged()"><div><b>${esc(stack(r))}</b><small>Shed ${esc(shed(r))} · ${esc(isRice(r)?'Rice':'Wheat')} · ${qty(r).toFixed(3)} MT · ${esc(cropYear(r)||'')}</small>${already?`<small style="display:block;font-weight:700">MIR THIS MONTH</small>`:(status?`<small style="display:block;font-weight:700">${esc(status)}</small>`:'')}</div><span>${qty(r).toFixed(3)} MT</span></label>`}).join('');
-  $('modalTitle').textContent='ADD NEW STACK — ALL AVAILABLE STACKS';
-  $('modalBody').innerHTML=`<div class="smallmuted" style="margin-bottom:8px">Available stacks: <b>${all.length}</b>. Zero MT stacks nahi dikhaye jayenge. Jo stack is month already MIR me hai uske niche <b>MIR THIS MONTH</b> dikhega.</div><div class="mir-select-list">${body}</div><div id="mirSelectSummary" class="mir-note" style="margin-top:8px"><b>New Stacks: 0</b> · <b>Selected MT: 0.000 MT</b></div><div class="mir-actions"><button class="mir-primary" onclick="window.mirSaveSelectedChoices()">✓ ADD NEW STACK</button><button class="pill" onclick="closeModal()">Cancel</button></div>`;
+  $('modalTitle').textContent='ADD NEW STACK — MASTER STOCK';
+  $('modalBody').innerHTML=`<div class="smallmuted" style="margin-bottom:8px">Master Stock se live available stacks: <b>${all.length}</b>. Zero MT stacks nahi dikhaye jayenge. Jo stack is month already MIR me hai uske niche <b>MIR THIS MONTH</b> dikhega.</div><div class="mir-select-list">${body}</div><div id="mirSelectSummary" class="mir-note" style="margin-top:8px"><b>New Stacks: 0</b> · <b>Selected MT: 0.000 MT</b></div><div class="mir-actions"><button class="mir-primary" onclick="window.mirSaveSelectedChoices()">✓ ADD NEW STACK</button><button class="pill" onclick="closeModal()">Cancel</button></div>`;
   $('modal').classList.add('show');mirSelectStackChanged();
 }
 window.mirAddStacks=function(){try{if(typeof mirAddStacks!=='function')throw Error('MIR function missing');mirAddStacks(rows,false)}catch(e){console.error('MIR Add New Stack error',e);const m=$('modal');if(m){$('modalTitle').textContent='ADD NEW STACK — ALL AVAILABLE STACKS';$('modalBody').innerHTML='<div class="smallmuted">MIR stack list load nahi ho saki. Please Refresh Data ke baad dobara try karein.</div><div class="mir-actions"><button class="pill" onclick="closeModal()">Close</button></div>';m.classList.add('show')}else alert('MIR Add New Stack open nahi ho raha.')}};
