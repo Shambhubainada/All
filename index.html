@@ -693,7 +693,7 @@ function mirSourceRows(a=rows){return (Array.isArray(a)?a:[]).filter(r=>mirStack
 function mirStackKey(r){return mirShedNo(r)+'|'+mirStackNo(r)}
 function mirRecordFromRow(r,status='Pending'){return {stackKey:mirStackKey(r),shed:mirShedNo(r),stack:mirStackNo(r),receiptDate:mirReceipt(r),bags:mirBags(r),qty:mirQty(r),commodity:mirCommodityRaw(r),cropYear:mirCropYearRaw(r),status,mirDate:'',infested:'NO',fumigationStatus:'',fumigationDate:''}}
 function mirAvailable(a){const m=new Map();mirSourceRows(a).forEach(r=>{const k=mirStackKey(r);if(!k||k==='|')return;const q=mirQty(r),bags=mirBags(r);/* Add Plan availability: empty rows are excluded. */if(q<=0&&bags<=0)return;if(!m.has(k)||((mirQty(m.get(k))<=0&&q>0)||(mirBags(m.get(k))<=0&&bags>0)))m.set(k,{...r});});return [...m.values()]}
-function mirSelectAvailable(){const m=new Map();/* SELECT STACK source = the same occupied rows used by Home Dashboard. No MIR/35%/history filter. */const source=Array.isArray(rows)?rows.filter(r=>qty(r)>0):[];source.forEach(r=>{const sn=String(mirStackNo(r)||'').trim();if(!sn)return;const k=mirStackKey(r);if(!k||k==='|')return;if(!m.has(k))m.set(k,{...r});});return [...m.values()]}
+function mirSelectAvailable(){const m=new Map();/* MIR Select Stack MUST use the same already-loaded Home rows. No second Master Stock fetch. */const source=Array.isArray(rows)?rows.filter(r=>mirQty(r)>0):[];source.forEach(r=>{const sn=String(mirStackNo(r)||'').trim();if(!sn)return;const k=mirStackKey(r);if(!k||k==='|')return;const old=m.get(k);if(!old||mirQty(old)<=0)m.set(k,{...r});});return [...m.values()]}
 function mirHistoryKeys(d){const out=new Set();Object.values(d.history||{}).forEach(arr=>(arr||[]).forEach(x=>out.add(String(x.stackKey))));return out}
 /* Mobile-safe PIN/date prompts: native numeric keyboard and native calendar picker. */
 function qcInputPrompt(label,value,type){return new Promise(function(resolve){
@@ -879,36 +879,38 @@ async function mirFetchMasterRowsDirect(){
 }
 async function mirAddStacks(a,plan35=false){
   mirPlan35Mode=!!plan35;
-  if(!plan35){
-    let live=mirSelectAvailable();
-    if(!live.length){
-      try{
-        const direct=await mirFetchMasterRowsDirect();
-        live=direct.filter(r=>mirQty(r)>0);
-        if(live.length){ rows=direct; loadedAt=new Date(); }
-      }catch(e){ console.error('MIR direct Master Stock load failed',e); }
-    }
-    a=live;
-  }
-  const d=mirData(), all=plan35?mirAvailable(a):a, choices=plan35?mirEligible(a,d):all;
-  if(!all.length){alert('Koi available stack nahi mila.');return}
   if(plan35){
+    const d=mirData(),all=mirAvailable(a),choices=mirEligible(a,d);
+    if(!all.length){alert('Koi available stack nahi mila.');return}
     const plan=mirPick35WithFallback(all,choices,mirCycleMonthNo(d,mirMonthKey()));
-    if(!plan.picked.length){alert('Master Stock me Wheat/Rice classify hone wala available stack nahi mila. Commodity column/source mapping check karna hoga.');return}
+    if(!plan.picked.length){alert('Master Stock me Wheat/Rice classify hone wala available stack nahi mila.');return}
     const names=plan.picked.map(r=>String(mirStackNo(r))).join(', ');
     const forcedNames=plan.forced.map(r=>String(mirStackNo(r))).join(', ');
     $('modalTitle').textContent='ADD / REFRESH 35% PLAN';
-    const forcedHtml=plan.forced.length?`<div class="mir-note" style="margin-top:8px;border:2px solid #e3a52b;background:#fff8df"><b>⚠️ ${plan.forced.length} FORCEFULLY INCLUDED:</b><br>${esc(forcedNames)}<br><span class="smallmuted">Required 35% stack available nahi the, isliye 3-month rotation maintain karne ke liye kuch stack forcefully include kiye gaye hain.</span></div>`:'';
-    $('modalBody').innerHTML=`<div class="smallmuted" style="margin-bottom:8px">Available stacks: <b>${all.length}</b> · Wheat 35%: <b>${plan.wTarget}</b> · Rice 35%: <b>${plan.rTarget}</b> · Normal eligible stacks: <b>${choices.length}</b></div><div class="mir-note"><b>${plan.picked.length} stacks plan me rahenge:</b> ${esc(names)}</div>${forcedHtml}<div class="mir-actions"><button class="mir-primary" onclick="window.mirRefresh35Toggle()">✓ ADD / REFRESH 35% PLAN</button><button class="pill" onclick="closeModal()">Cancel</button></div>`;
+    const forcedHtml=plan.forced.length?`<div class="mir-note" style="margin-top:8px;border:2px solid #e3a52b;background:#fff8df"><b>⚠️ ${plan.forced.length} FORCEFULLY INCLUDED:</b><br>${esc(forcedNames)}<br><span class="smallmuted">Required 35% stack available nahi the.</span></div>`:'';
+    $('modalBody').innerHTML=`<div class="smallmuted" style="margin-bottom:8px">Available stacks: <b>${all.length}</b> · Wheat 35%: <b>${plan.wTarget}</b> · Rice 35%: <b>${plan.rTarget}</b></div><div class="mir-note"><b>${plan.picked.length} stacks plan me rahenge:</b> ${esc(names)}</div>${forcedHtml}<div class="mir-actions"><button class="mir-primary" onclick="window.mirRefresh35Toggle()">✓ ADD / REFRESH 35% PLAN</button><button class="pill" onclick="closeModal()">Cancel</button></div>`;
     $('modal').classList.add('show'); return;
   }
-  const statusMap=mirRecentStatus(all,d);
-  const body=all.map((r,i)=>{const sk=mirStackKey(r),status=statusMap.get(sk)||'';const cv=mirCommodityRaw(r)||commodity(r)||'';return `<label class="mir-select-row"><input type="checkbox" value="${esc(sk)}" onchange="mirSelectStackChanged()"><div><b>${i+1}. Shed ${esc(mirShedNo(r))} · Stack ${esc(mirStackNo(r))}</b><small>Receipt: ${dateText(mirReceipt(r))} · Bags: ${mirBags(r)||0} · MT: ${mirQty(r).toFixed(3)}</small><small>${esc(cv)}${mirCropYearRaw(r)?' / '+esc(mirCropYearRaw(r)):''}</small>${status?`<small style="display:block;font-weight:700">${esc(status)}</small>`:''}</div></label>`}).join('');
-  $('modalTitle').textContent='SELECT MIR STACKS — ALL OCCUPIED STACKS';
-  $('modalBody').innerHTML=`<div class="smallmuted" style="margin-bottom:8px">Occupied stacks: <b>${all.length}</b>. Home Dashboard me jo occupied stacks hain, wahi yahan show honge.</div><div class="mir-select-list">${body}</div><div id="mirSelectSummary" class="mir-note" style="margin-top:8px"><b>Selected Stacks: 0</b> · <b>Selected MT: 0.000 MT</b></div><div class="mir-actions"><button class="mir-primary" onclick="window.mirSaveSelectedChoices()">✓ ADD SELECTED</button><button class="pill" onclick="closeModal()">Cancel</button></div>`;
+
+  /* IMPORTANT: Home already loaded `rows`; use ONLY that same array. */
+  const source=Array.isArray(rows)?rows:[];
+  const all=mirSelectAvailable();
+  if(!source.length){alert('Home ka Master Stock data abhi load nahi hua. Pehle Refresh Data karein.');return}
+  if(!all.length){alert('Master Stock me Qty (MT) > 0 wala koi available stack nahi mila.');return}
+
+  const d=mirData(),k=mirMonthKey();
+  const current=new Set(mirMonthRecords(d,k).map(x=>String(x.stackKey)));
+  const body=all.map((r,i)=>{
+    const sk=mirStackKey(r),already=current.has(String(sk));
+    const cv=mirCommodityRaw(r)||commodity(r)||'';
+    const rd=mirReceipt(r);
+    return `<label class="mir-select-row" style="${already?'opacity:.72;cursor:not-allowed;background:#eef7f2;':''}"><input type="checkbox" value="${esc(sk)}" ${already?'disabled':''} onchange="mirSelectStackChanged()"><div><b>${esc(mirStackNo(r))}</b><small>Receipt Date: ${esc(dateText(rd))}</small><small>${esc(cv)}</small>${already?'<small style="display:block;font-weight:900;color:#0a7a4b">✓ MIR THIS MONTH</small>':''}</div></label>`;
+  }).join('');
+  $('modalTitle').textContent='ADD NEW STACK — SELECT MIR STACK';
+  $('modalBody').innerHTML=`<div class="smallmuted" style="margin-bottom:8px">Available stacks: <b>${all.length}</b> · Qty (MT) &gt; 0 only. Already selected this month cannot be selected again.</div><div class="mir-select-list">${body}</div><div id="mirSelectSummary" class="mir-note" style="margin-top:8px"><b>Selected Stacks: 0</b></div><div class="mir-actions"><button class="mir-primary" onclick="window.mirSaveSelectedChoices()">✓ ADD SELECTED</button><button class="pill" onclick="closeModal()">Cancel</button></div>`;
   $('modal').classList.add('show');mirSelectStackChanged();
 }
-window.mirAddStacks=async function(){try{if(typeof mirAddStacks!=='function')throw Error('MIR function missing');await mirAddStacks(rows,false)}catch(e){console.error('MIR Select Stack error',e);const m=$('modal');if(m){$('modalTitle').textContent='SELECT MIR STACKS — MASTER STOCK';$('modalBody').innerHTML='<div class="smallmuted">Master Stock se stack list load nahi ho saki. Google Sheet access/connection check karke dobara try karein.</div><div class="mir-actions"><button class="pill" onclick="closeModal()">Close</button></div>';m.classList.add('show')}else alert('MIR stack list load nahi ho rahi.')}};
+window.mirAddStacks=async function(){try{await mirAddStacks(rows,false)}catch(e){console.error('MIR Select Stack error',e);alert('MIR Add New Stack open nahi ho raha.')}};
 window.mirRefresh35Toggle=function(){try{if(typeof mirRefresh35Toggle!=='function')throw Error('MIR refresh function missing');mirRefresh35Toggle()}catch(e){console.error('MIR 35% error',e);const m=$('modal');if(m){$('modalTitle').textContent='ADD / REFRESH 35% PLAN';$('modalBody').innerHTML='<div class="smallmuted">35% Plan open nahi ho raha. Please Refresh Data ke baad dobara try karein.</div><div class="mir-actions"><button class="pill" onclick="closeModal()">Close</button></div>';m.classList.add('show')}else alert('MIR Add/Refresh 35% Plan open nahi ho raha.')}};
 function mirSelectStackChanged(){
   const checked=[...document.querySelectorAll('.mir-select-list input[type=checkbox]:checked')], map=new Map(mirSelectAvailable().map(r=>[mirStackKey(r),r]));
