@@ -712,34 +712,44 @@ function qcPinPrompt(label){return qcInputPrompt(label,'','pin')}
 function qcDatePrompt(label,value){return qcInputPrompt(label,value,'date')}
 
 function mirRecentTwoMonthMirMap(d,k){
+  // Eligibility is based ONLY on completed MIR reports from the previous two months.
+  // History/current-month records are deliberately not used here because a stack
+  // counts as 'MIR done' for rotation only after it has moved to the month report.
   const out=new Map(); const [y,m]=String(k).split('-').map(Number);
   for(let off=1;off<=2;off++){
     const dt=new Date(y,m-1-off,1), mk=mirMonthKey(dt);
-    const arr=[];
-    if(Array.isArray(d.history?.[mk]))arr.push(...d.history[mk]);
-    if(Array.isArray(d.reports?.[mk]))arr.push(...d.reports[mk]);
-    arr.forEach(x=>{if(x?.stackKey)out.set(String(x.stackKey),x)});
+    const arr=Array.isArray(d.reports?.[mk])?d.reports[mk]:[];
+    arr.forEach(x=>{
+      if(x?.stackKey){
+        const sk=String(x.stackKey);
+        if(!out.has(sk))out.set(sk,[]);
+        out.get(sk).push(x);
+      }
+    });
   }
   return out;
 }
 function mirCompletedKeys(d){return mirHistoryKeys(d)}
+function mirSameStackVersion(r,x){
+  if(!x)return false;
+  const nr=parseDate(receipt(r)), or=parseDate(x.receiptDate);
+  const ncom=String(commodity(r)||'').trim().toLowerCase(), ocom=String(x.commodity||'').trim().toLowerCase();
+  const ncy=String(cropYear(r)||'').trim(), ocy=String(x.cropYear||'').trim();
+  return !!(nr&&or&&nr.getTime()===or.getTime()&&ncom===ocom&&ncy===ocy);
+}
 function mirEligible(a,d){
   const k=mirMonthKey(), recent=mirRecentTwoMonthMirMap(d,k);
   const currentHist=new Map((d.history?.[k]||[]).map(x=>[String(x.stackKey),x]));
   return mirAvailable(a).filter(r=>{
-    const sk=mirStackKey(r), old=recent.get(sk), ch=currentHist.get(sk);
-    if(ch){
-      const nr=parseDate(receipt(r)), or=parseDate(ch.receiptDate);
-      if(!(nr&&or&&nr>or))return false;
-    }
-    if(!old)return true;
-    const nr=parseDate(receipt(r)), or=parseDate(old.receiptDate);
-    return nr&&or ? nr>or : false;
+    const sk=mirStackKey(r), oldList=recent.get(sk)||[], ch=currentHist.get(sk);
+    if(ch && mirSameStackVersion(r,ch))return false;
+    if(oldList.some(x=>mirSameStackVersion(r,x)))return false;
+    return true;
   });
 }
 function mirRecentStatus(a,d){
   const recent=mirRecentTwoMonthMirMap(d,mirMonthKey());
-  return new Map(mirAvailable(a).map(r=>{const x=recent.get(mirStackKey(r));return [mirStackKey(r),!!x && !(parseDate(receipt(r))&&parseDate(x.receiptDate)&&parseDate(receipt(r))>parseDate(x.receiptDate))]}));
+  return new Map(mirAvailable(a).map(r=>[mirStackKey(r),(recent.get(mirStackKey(r))||[]).some(x=>mirSameStackVersion(r,x))]));
 }
 function mirMonthRecords(d,k){return Array.isArray(d.months?.[k])?d.months[k]:[]}
 function mirTarget(n){return Math.ceil(n*0.35)}
@@ -787,31 +797,34 @@ function mirRebuildMonth(a){
 }
 function mirCurrentSelected(a){const d=mirEnsureMonth(a),k=mirMonthKey();return d.months[k]||[]}
 function mirAvailableChoices(a){const d=mirEnsureMonth(a),current=new Set(mirCurrentSelected(a).map(x=>x.stackKey));return mirEligible(a,d).filter(r=>!current.has(mirStackKey(r)))}
+let mirPlan35Mode=false;
 function mirRefresh35Toggle(){
   const modal=$('modal');
   if(modal&&modal.classList.contains('show')){
     const checked=[...document.querySelectorAll('.mir-select-list input[type=checkbox]:checked')].map(x=>x.value);
-    const d=mirData(),mk=mirMonthKey(),cur=mirMonthRecords(d,mk);
-    const keep=new Set(checked);
-    // Only the temporary selection list is affected; already-current MIR entries remain unless explicitly unchecked here.
-    const selectedRows=mirAvailable(activeRows()).filter(r=>keep.has(mirStackKey(r)));
-    d.months[mk]=cur.filter(x=>!mirAvailable(activeRows()).some(r=>mirStackKey(r)===x.stackKey) || keep.has(x.stackKey));
+    const d=mirData(),mk=mirMonthKey(),cur=mirMonthRecords(d,mk),a=activeRows(),eligible=mirEligible(a,d);
+    const keep=new Set(checked), eligibleKeys=new Set(eligible.map(r=>mirStackKey(r)));
+    const selectedRows=eligible.filter(r=>keep.has(mirStackKey(r)));
+    d.months[mk]=cur.filter(x=>!eligibleKeys.has(String(x.stackKey)) || keep.has(String(x.stackKey)));
     selectedRows.forEach(r=>{const sk=mirStackKey(r);if(!d.months[mk].some(x=>x.stackKey===sk))d.months[mk].push(mirRecordFromRow(r));});
     if(!d.monthPlanKeys)d.monthPlanKeys={}; d.monthPlanKeys[mk]=d.months[mk].map(x=>x.stackKey);
     saveMirData(d); closeModal(); renderPage('mir'); return;
   }
-  mirAddStacks(activeRows());
+  mirAddStacks(activeRows(),true);
 }
-function mirAddStacks(a){
-  const all=mirAvailable(a), choices=mirAvailableChoices(a), eligibleSet=new Set(choices.map(r=>mirStackKey(r))), recent=mirRecentStatus(a,mirData()), selectedSet=new Set();
+function mirAddStacks(a,plan35=false){
+  mirPlan35Mode=!!plan35;
+  const all=mirAvailable(a), choices=plan35?mirAvailableChoices(a):mirAvailableChoices(a);
   if(!all.length){alert('Koi available stack nahi mila.');return}
-  const body=all.map(r=>{
-    const sk=mirStackKey(r), blocked=!eligibleSet.has(sk), recentBlocked=recent.get(sk)===true;
-    const reason=blocked?(recentBlocked?'Last 2 months me MIR ho chuka hai':'Already current MIR list me hai'):'';
-    return `<label class="mir-select-row" style="${blocked?'opacity:.58':''}"><input type="checkbox" value="${esc(sk)}" ${blocked?'disabled':''} onchange="mirSelectStackChanged()"><div><b>${esc(stack(r))}</b><small>Shed ${esc(shed(r))} · ${esc(isRice(r)?'Rice':'Wheat')} · ${qty(r).toFixed(3)} MT</small></div><span>${blocked?'🔒 '+esc(reason):qty(r).toFixed(3)+' MT'}</span></label>`;
+  const list=plan35?choices:all;
+  if(plan35&&!list.length){alert('Pichhle 2 months ke same stack version ke alawa koi eligible stack nahi hai. New receipt, commodity change ya crop year change par stack eligible hoga.');return}
+  const body=list.map(r=>{
+    const sk=mirStackKey(r);
+    return `<label class="mir-select-row"><input type="checkbox" value="${esc(sk)}" onchange="mirSelectStackChanged()"><div><b>${esc(stack(r))}</b><small>Shed ${esc(shed(r))} · ${esc(isRice(r)?'Rice':'Wheat')} · ${qty(r).toFixed(3)} MT · ${esc(cropYear(r)||'')}</small></div><span>${qty(r).toFixed(3)} MT</span></label>`;
   }).join('');
-  $('modalTitle').textContent='SELECT MIR STACKS — ALL STACKS';
-  $('modalBody').innerHTML=`<div class="smallmuted" style="margin-bottom:8px">Total available stacks: <b>${all.length}</b>. Last 2 months me MIR hue stacks locked hain; new receipt automatically eligible rahega.</div><div class="mir-select-list">${body}</div><div id="mirSelectSummary" class="mir-note" style="margin-top:8px"><b>Selected Stacks: 0</b> · <b>Selected MT: 0.000 MT</b></div><div class="mir-actions"><button class="mir-primary" onclick="mirRefresh35Toggle()">🔄 ADD / REFRESH 35%</button><button class="pill" onclick="closeModal()">Cancel</button></div>`;$('modal').classList.add('show');mirSelectStackChanged()}
+  $('modalTitle').textContent=plan35?'ADD / REFRESH 35% PLAN — ELIGIBLE STACKS':'SELECT MIR STACKS — ALL STACKS';
+  $('modalBody').innerHTML=`<div class="smallmuted" style="margin-bottom:8px">${plan35?'Sirf wahi stacks dikh rahe hain jinka same receipt + commodity + crop year ke saath pichhle 2 months me MIR nahi hua. New receipt, commodity change ya crop year change hone par eligible hain.':'Available stacks: <b>'+all.length+'</b>.'}</div><div class="mir-select-list">${body}</div><div id="mirSelectSummary" class="mir-note" style="margin-top:8px"><b>Selected Stacks: 0</b> · <b>Selected MT: 0.000 MT</b></div><div class="mir-actions"><button class="mir-primary" onclick="mirRefresh35Toggle()">${plan35?'🔄 ADD / REFRESH 35%':'✓ ADD SELECTED'}</button><button class="pill" onclick="closeModal()">Cancel</button></div>`;$('modal').classList.add('show');mirSelectStackChanged()
+}
 function mirSelectStackChanged(){
   const checked=[...document.querySelectorAll('.mir-select-list input[type=checkbox]:checked')], map=new Map(mirAvailable(activeRows()).map(r=>[mirStackKey(r),r]));
   const mt=checked.reduce((s,c)=>s+num(qty(map.get(c.value))),0),box=$('mirSelectSummary');
@@ -972,7 +985,7 @@ function mirReportMonths(){
 function openMirReportPicker(){
   const ms=mirReportMonths();
   $('modalTitle').textContent='🔍 MIR REPORT — MONTH WISE FOLDERS';
-  $('modalBody').innerHTML=`<div class="smallmuted" style="margin-bottom:10px">Har completed month ki report alag folder me save rahegi. Folder par tap karke report kholein.</div>${ms.length?ms.map(m=>`<div class="mir-month-folder" id="mir-report-folder-${esc(m)}"><button class="mir-folder-head" onclick="toggleMirReportMonth('${esc(m)}')">📁 <b>${esc(mirMonthLabel(m))}</b><span>▶</span></button><div class="mir-folder-body" id="mir-report-body-${esc(m)}" style="display:none"><div class="smallmuted" style="padding:8px 0">MIR Report — ${esc(mirMonthLabel(m))}</div><button class="pill" onclick="viewMirReport('${esc(m)}')">👁 View Report</button> <button class="pill" onclick="downloadMirReport('${esc(m)}')">📥 Download Excel</button></div></div>`).join(''):'<div class="empty">Abhi koi completed MIR report save nahi hai.</div>'}`;
+  $('modalBody').innerHTML=`<div class="smallmuted" style="margin-bottom:10px">Har completed month ki report alag folder me save rahegi. Folder par tap karke report kholein.</div>${ms.length?ms.map(m=>`<div class="mir-month-folder" id="mir-report-folder-${esc(m)}"><button class="mir-folder-head" onclick="toggleMirReportMonth('${esc(m)}')">📁 <b>${esc(mirMonthLabel(m))}</b><span>▶</span></button><div class="mir-folder-body" id="mir-report-body-${esc(m)}" style="display:none"><div class="smallmuted" style="padding:8px 0">MIR Report — ${esc(mirMonthLabel(m))}</div><button class="pill" onclick="viewMirReport('${esc(m)}')">👁 View Report</button> <button class="pill" onclick="downloadMirReport('${esc(m)}')">📥 Download Excel</button> <button class="pill" onclick="mirDeleteReport('${esc(m)}')">🔐 Delete Report</button></div></div>`).join(''):'<div class="empty">Abhi koi completed MIR report save nahi hai.</div>'}`;
   $('modal').classList.add('show');
 }
 function toggleMirReportMonth(m){const body=$('mir-report-body-'+m),folder=$('mir-report-folder-'+m);if(!body||!folder)return;const head=folder.querySelector('.mir-folder-head span');const open=body.style.display!=='none';body.style.display=open?'none':'block';if(head)head.textContent=open?'▶':'▼'}
@@ -980,6 +993,20 @@ function viewMirReport(mk){
   $('modalTitle').textContent='🔍 MIR REPORT — '+mirMonthLabel(mk);
   $('modalBody').innerHTML=mirReportHtml(mk)+`<div style="margin-top:10px;text-align:right"><button class="pill" onclick="downloadMirReport('${esc(mk)}')">📥 Download Excel</button></div>`;
   $('modal').classList.add('show');
+}
+async function mirDeleteReport(mk){
+  const d=mirData(),rows=mirReportData(d,mk);
+  if(!rows.length){alert('Is month ki MIR report save nahi hai.');return}
+  const pin=await qcPinPrompt('MIR Report delete karne ke liye PIN enter karein');
+  if(pin===null)return;
+  if(String(pin)!==String(getSitePin())){alert('Wrong PIN.');return}
+  if(!confirm('CONFIRM DELETE\n\n'+mirMonthLabel(mk)+' ki poori MIR report delete karni hai?\nIs month ke sabhi report records delete honge.'))return;
+  if(d.reports)d.reports[mk]=[];
+  if(d.reports&&Array.isArray(d.reports[mk])&&!d.reports[mk].length)delete d.reports[mk];
+  saveMirData(d);
+  closeModal();
+  renderPage('mir');
+  alert(mirMonthLabel(mk)+' MIR report delete ho gayi.');
 }
 async function downloadMirReport(mk){
   const d=mirData(),rows=mirReportData(d,mk);if(!rows.length){alert('Is month ki MIR report save nahi hai.');return}
