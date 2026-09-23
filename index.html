@@ -1069,7 +1069,31 @@ async function mirDeleteReport(mk){
 }
 async function downloadMirReport(mk){
   const d=mirData(),rows=mirReportData(d,mk);if(!rows.length){alert('Is month ki MIR report save nahi hai.');return}
-  const data=[['SHAMBHU SHED — MIR REPORT'],[mirMonthLabel(mk)],[],['Sr No.','Shed No.','Stack No.','Receipt Date','Bags','Qty (MT)','Commodity / Crop Year','MIR Date','Infestation Status','Fumigation Status','Fumigation Date'],...rows.map((x,i)=>[i+1,x.shed,x.stack,dateText(x.receiptDate),num(x.bags)||0,Math.round(num(x.qty)),`${x.commodity||''}${x.cropYear?' / '+x.cropYear:''}`,dateText(x.mirDate),x.infested==='YES'?'YES':'NO',x.infested==='YES'?(x.fumigationStatus||'Pending'):'—',x.fumigationDate?dateText(x.fumigationDate):'—'])];
+  // MIR Excel: unavailable/insufficient source data must remain BLANK.
+  // Do not write 0, N/A or — when the underlying field is missing.
+  const hasValue=v=>v!==undefined&&v!==null&&String(v).trim()!=='';
+  const textOrBlank=v=>hasValue(v)?String(v):'';
+  const numberOrBlank=v=>hasValue(v)?num(v):'';
+  const roundedOrBlank=v=>hasValue(v)?Math.round(num(v)):'';
+  const dateOrBlank=v=>hasValue(v)?dateText(v):'';
+  const commodityOrBlank=x=>{
+    const c=hasValue(x.commodity)?String(x.commodity):'';
+    const cy=hasValue(x.cropYear)?String(x.cropYear):'';
+    return c&&cy?`${c} / ${cy}`:(c||cy);
+  };
+  const data=[['SHAMBHU SHED — MIR REPORT'],[mirMonthLabel(mk)],[],['Sr No.','Shed No.','Stack No.','Receipt Date','Bags','Qty (MT)','Commodity / Crop Year','MIR Date','Infestation Status','Fumigation Status','Fumigation Date'],...rows.map((x,i)=>[
+    i+1,
+    textOrBlank(x.shed),
+    textOrBlank(x.stack),
+    dateOrBlank(x.receiptDate),
+    numberOrBlank(x.bags),
+    roundedOrBlank(x.qty),
+    commodityOrBlank(x),
+    dateOrBlank(x.mirDate),
+    hasValue(x.infested)?(x.infested==='YES'?'YES':'NO'):'',
+    hasValue(x.infested)&&x.infested==='YES'?(hasValue(x.fumigationStatus)?String(x.fumigationStatus):'Pending'):'',
+    dateOrBlank(x.fumigationDate)
+  ])];
   await makeWorkbook([{name:'MIR Report',data,widths:[8,10,16,15,10,12,28,15,15,18,18]}],`SHAMBHU_SHED_MIR_Report_${mk}.xlsx`);
 }
 function mirHistoryHtml(d){const rows=[];Object.keys(d.history||{}).sort().reverse().forEach(m=>(d.history[m]||[]).forEach(x=>rows.push(x)));if(!rows.length)return '<div class="mir-empty">Abhi MIR History nahi hai.</div>';const body=rows.map(x=>`<tr><td>${dateText(x.mirDate)}</td><td>${esc(x.shed)}</td><td><b>${esc(x.stack)}</b></td><td>${dateText(x.receiptDate)}</td><td>${num(x.bags)||0}</td><td>${esc(x.commodity||'')} ${x.cropYear?'/ '+esc(x.cropYear):''}</td><td>${num(x.qty).toFixed(3)}</td><td>${x.infested==='YES'?'🔴 YES':'NO'} 🔒</td><td><span class="badge ${x.fumigationStatus==='Done'?'ok':'soon'}">${x.infested==='YES'?(x.fumigationStatus||'Pending'):'—'}</span></td><td>${x.fumigationDate?dateText(x.fumigationDate):'—'}</td><td><button class="pill" onclick="mirHistoryEdit('${esc(x.stackKey)}')">✏️ Edit</button> <button class="pill" onclick="mirHistoryDelete('${esc(x.stackKey)}')">🗑 Delete</button></td></tr>`).join('');return `<div class="mir-table"><table><thead><tr><th>MIR Date</th><th>Shed</th><th>Stack</th><th>Receipt Date</th><th>Bags</th><th>Commodity / Crop Year</th><th>Qty MT</th><th>Infestation</th><th>Fumigation Status</th><th>Fumigation Date</th><th>Action</th></tr></thead><tbody>${body}</tbody></table></div>`}
