@@ -822,6 +822,8 @@ function mirRefresh35Toggle(){
     const d=mirData(),mk=mirMonthKey(),cur=mirMonthRecords(d,mk),a=mirSourceRows(),eligible=mirEligible(a,d);
     const keep=new Set(checked), eligibleKeys=new Set(eligible.map(r=>mirStackKey(r)));
     const selectedRows=eligible.filter(r=>keep.has(mirStackKey(r)));
+    // Replace only the current month's 35% plan entries; never remove manually selected
+    // stacks that are not part of this plan.
     d.months[mk]=cur.filter(x=>!eligibleKeys.has(String(x.stackKey)) || keep.has(String(x.stackKey)));
     selectedRows.forEach(r=>{const sk=mirStackKey(r);if(!d.months[mk].some(x=>x.stackKey===sk))d.months[mk].push(mirRecordFromRow(r));});
     if(!d.monthPlanKeys)d.monthPlanKeys={}; d.monthPlanKeys[mk]=d.months[mk].map(x=>x.stackKey);
@@ -833,17 +835,24 @@ function mirAddStacks(a,plan35=false){
   mirPlan35Mode=!!plan35;
   const all=mirAvailable(a), choices=plan35?mirAvailableChoices(a):all;
   if(!all.length){alert('Koi available stack nahi mila.');return}
-  const list=plan35?choices:all;
-  if(plan35&&!list.length){alert('Pichhle 2 months ke same stack version ke alawa koi eligible stack nahi hai. New receipt, commodity change ya crop year change par stack eligible hoga.');return}
+  if(plan35&&!choices.length){alert('Pichhle 2 months ki reports me sabhi available stacks ka MIR mil chuka hai.');return}
+  // Select Stack = ALL available. Add/Refresh 35% = 35% of TOTAL available,
+  // chosen only from stacks absent from the previous two completed report months.
+  let list=choices;
+  if(plan35){
+    const target=Math.min(choices.length,Math.max(1,Math.ceil(all.length*0.35)));
+    const d=mirData(),n=mirCycleMonthNo(d,mirMonthKey());
+    list=mirRotationSelection(choices,n,target);
+  }
+  const current=new Set(mirMonthRecords(mirData(),mirMonthKey()).map(x=>String(x.stackKey)));
   const body=list.map(r=>{
     const sk=mirStackKey(r);
-    return `<label class="mir-select-row"><input type="checkbox" value="${esc(sk)}" onchange="mirSelectStackChanged()"><div><b>${esc(stack(r))}</b><small>Shed ${esc(shed(r))} · ${esc(isRice(r)?'Rice':'Wheat')} · ${qty(r).toFixed(3)} MT · ${esc(cropYear(r)||'')}</small></div><span>${qty(r).toFixed(3)} MT</span></label>`;
+    return `<label class="mir-select-row"><input type="checkbox" value="${esc(sk)}" ${plan35&&current.has(sk)?'checked':''} onchange="mirSelectStackChanged()"><div><b>${esc(stack(r))}</b><small>Shed ${esc(shed(r))} · ${esc(isRice(r)?'Rice':'Wheat')} · ${qty(r).toFixed(3)} MT · ${esc(cropYear(r)||'')}</small></div><span>${qty(r).toFixed(3)} MT</span></label>`;
   }).join('');
-  $('modalTitle').textContent=plan35?'ADD / REFRESH 35% PLAN — ELIGIBLE STACKS':'SELECT MIR STACKS — ALL STACKS';
-  $('modalBody').innerHTML=`<div class="smallmuted" style="margin-bottom:8px">${plan35?'Sirf wahi stacks dikh rahe hain jinka same receipt + commodity + crop year ke saath pichhle 2 months me MIR nahi hua. New receipt, commodity change ya crop year change hone par eligible hain.':'Available stacks: <b>'+all.length+'</b>.'}</div><div class="mir-select-list">${body}</div><div id="mirSelectSummary" class="mir-note" style="margin-top:8px"><b>Selected Stacks: 0</b> · <b>Selected MT: 0.000 MT</b></div><div class="mir-actions"><button class="mir-primary" onclick="window.mirRefresh35Toggle()">${plan35?'🔄 ADD / REFRESH 35%':'✓ ADD SELECTED'}</button><button class="pill" onclick="closeModal()">Cancel</button></div>`;$('modal').classList.add('show');mirSelectStackChanged()
+  $('modalTitle').textContent=plan35?'ADD / REFRESH 35% PLAN — ELIGIBLE STACKS':'SELECT MIR STACKS — ALL AVAILABLE STACKS';
+  $('modalBody').innerHTML=`<div class="smallmuted" style="margin-bottom:8px">${plan35?'35% target = total available stacks ka 35%. Sirf wahi eligible stacks liye jayenge jo pichhle 2 completed MIR report months me nahi hain.':'Available stacks: <b>'+all.length+'</b>. Yahan koi last-2-month filter nahi hai.'}</div><div class="mir-select-list">${body}</div><div id="mirSelectSummary" class="mir-note" style="margin-top:8px"><b>Selected Stacks: 0</b> · <b>Selected MT: 0.000 MT</b></div><div class="mir-actions"><button class="mir-primary" onclick="${plan35?'window.mirRefresh35Toggle()':'mirSaveSelectedChoices()'}">${plan35?'🔄 ADD / REFRESH 35%':'✓ ADD SELECTED'}</button><button class="pill" onclick="closeModal()">Cancel</button></div>`;
+  $('modal').classList.add('show');mirSelectStackChanged();
 }
-window.mirAddStacks=function(){try{if(typeof mirAddStacks!=='function')throw Error('MIR function missing');const a=mirSourceRows();mirAddStacks(Array.isArray(a)?a:[] ,false)}catch(e){console.error('MIR Select Stack error',e);const m=$('modal');if(m){$('modalTitle').textContent='SELECT MIR STACKS — ALL STACKS';$('modalBody').innerHTML='<div class="smallmuted">MIR stack list load nahi ho saki. Please Refresh Data ke baad dobara try karein.</div><div class="mir-actions"><button class="pill" onclick="closeModal()">Close</button></div>';m.classList.add('show')}else alert('MIR Select Stack open nahi ho raha.')}};
-window.mirRefresh35Toggle=function(){try{if(typeof mirRefresh35Toggle!=='function')throw Error('MIR refresh function missing');mirRefresh35Toggle()}catch(e){console.error('MIR 35% error',e);const m=$('modal');if(m){$('modalTitle').textContent='ADD / REFRESH 35% PLAN';$('modalBody').innerHTML='<div class="smallmuted">35% Plan open nahi ho raha. Please Refresh Data ke baad dobara try karein.</div><div class="mir-actions"><button class="pill" onclick="closeModal()">Close</button></div>';m.classList.add('show')}else alert('MIR Add/Refresh 35% Plan open nahi ho raha.')}};
 function mirSelectStackChanged(){
   const checked=[...document.querySelectorAll('.mir-select-list input[type=checkbox]:checked')], map=new Map(mirAvailable(mirSourceRows()).map(r=>[mirStackKey(r),r]));
   const mt=checked.reduce((s,c)=>s+num(qty(map.get(c.value))),0),box=$('mirSelectSummary');
