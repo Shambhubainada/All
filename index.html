@@ -901,11 +901,18 @@ async function mirAddStacks(a,plan35=false){
   const d=mirData(),k=mirMonthKey();
   const current=new Set(mirMonthRecords(d,k).map(x=>String(x.stackKey)));
   const completedMonthByStack=new Map();
-  Object.entries(d.history||{}).forEach(([m,arr])=>(arr||[]).forEach(x=>{if(x.stackKey)completedMonthByStack.set(String(x.stackKey),m)}));
-  Object.entries(d.reports||{}).forEach(([m,arr])=>(arr||[]).forEach(x=>{if(x.stackKey)completedMonthByStack.set(String(x.stackKey),m)}));
+  const completedMonthByNo=new Map();
+  const rememberCompleted=(m,x)=>{
+    if(!x)return;
+    if(x.stackKey)completedMonthByStack.set(String(x.stackKey),m);
+    const sn=String(x.stack||x.stackNo||'').trim();
+    if(sn)completedMonthByNo.set(sn,m);
+  };
+  Object.entries(d.history||{}).forEach(([m,arr])=>(arr||[]).forEach(x=>rememberCompleted(m,x)));
+  Object.entries(d.reports||{}).forEach(([m,arr])=>(arr||[]).forEach(x=>rememberCompleted(m,x)));
   const body=all.map((r,i)=>{
-    const sk=mirStackKey(r),alreadyCurrent=current.has(String(sk));
-    const doneMonth=completedMonthByStack.get(String(sk));
+    const sk=mirStackKey(r),sn=String(mirStackNo(r)||'').trim(),alreadyCurrent=current.has(String(sk));
+    const doneMonth=completedMonthByStack.get(String(sk))||completedMonthByNo.get(sn);
     const cv=mirCommodityRaw(r)||commodity(r)||'';
     const rd=mirReceipt(r);
     const label=alreadyCurrent ? '✓ MIR THIS MONTH' : (doneMonth ? '✓ MIR '+mirMonthLabel(doneMonth) : '');
@@ -980,11 +987,12 @@ async function mirCompleteCurrentMonth(){
 function mirMaybeFinalizeMonth(d,mk){
   const current=Array.isArray(d.months?.[mk])?d.months[mk]:[];
   const history=Array.isArray(d.history?.[mk])?d.history[mk]:[];
-  const report=Array.isArray(d.reports?.[mk])?d.reports[mk]:[];
-  const pending=[...current,...history].some(x=>x && x.infested==='YES' && x.fumigationStatus!=='Done');
-  // MIR COMPLETE is available as soon as this month's current list is empty,
-  // at least one MIR record exists for the month, and no infestation/fumigation is pending.
-  return current.length===0 && !pending && (history.length>0 || report.length>0);
+  // MIR COMPLETE is shown only after at least one stack has actually moved
+  // into THIS month's History, all current MIR work is finished, and no
+  // historical stack from this month is waiting for fumigation.
+  if(current.length!==0 || history.length===0)return false;
+  const fumigationPending=history.some(x=>x && x.infested==='YES' && String(x.fumigationStatus||'Pending')!=='Done');
+  return !fumigationPending;
 }
 function mirCanFinalizeMonth(d,mk){return mirMaybeFinalizeMonth(d,mk)}
 async function mirFinalizeMonth(){
