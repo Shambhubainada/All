@@ -647,7 +647,7 @@ function filterRows(source=rows){return source.filter(r=>{const s=shed(r),c=isRi
 async function load(){
   const keepMoistureStack=(currentPage==='moisture')?(localStorage.getItem('shambhuSelectedMoistureStack')||$('mStack')?.value||''):'';
   if(!loadedAt) setStatus("Connecting to Google Sheet…");
-  try{const u=`https://docs.google.com/spreadsheets/d/${CONFIG.SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(CONFIG.SHEET_NAME)}`;const t=await fetch(u,{cache:"no-store"}).then(r=>{if(!r.ok)throw Error("HTTP "+r.status);return r.text()});const m=t.match(/google\.visualization\.Query\.setResponse\((.*)\);?$/s);if(!m)throw Error("Unreadable Google Sheet response");const j=JSON.parse(m[1]);const cols=j.table.cols.map(c=>(c.label||"").trim());rows=j.table.rows.map(rr=>{const o={};cols.forEach((c,i)=>o[c]=rr.c[i]?(rr.c[i].f??rr.c[i].v??""):"");return o}).filter(r=>stack(r));loadedAt=new Date();setStatus(`✓ Live data connected · ${rows.length} rows · Last refresh ${loadedAt.toLocaleTimeString("en-IN")}`);renderAll();if(currentPage==='moisture'&&keepMoistureStack){const sel=$('mStack');if(sel&&[...sel.options].some(o=>o.value===keepMoistureStack)){sel.value=keepMoistureStack;localStorage.setItem('shambhuSelectedMoistureStack',keepMoistureStack);loadMoistureStack()}}}catch(e){console.error(e);setStatus("⚠ Google Sheet could not be read. Set the Master Stock tab to Anyone with the link → Viewer, then refresh.",true);renderAll();if(currentPage==='moisture'&&keepMoistureStack){const sel=$('mStack');if(sel&&[...sel.options].some(o=>o.value===keepMoistureStack)){sel.value=keepMoistureStack;loadMoistureStack()}}}}
+  try{const u=`https://docs.google.com/spreadsheets/d/${CONFIG.SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(CONFIG.SHEET_NAME)}`;const t=await fetch(u,{cache:"no-store"}).then(r=>{if(!r.ok)throw Error("HTTP "+r.status);return r.text()});const m=t.match(/google\.visualization\.Query\.setResponse\((.*)\);?$/s);if(!m)throw Error("Unreadable Google Sheet response");const j=JSON.parse(m[1]);const cols=j.table.cols.map(c=>(c.label||"").trim());rows=j.table.rows.map(rr=>{const o={};cols.forEach((c,i)=>o[c]=rr.c[i]?(rr.c[i].f??rr.c[i].v??""):"");return o}).filter(r=>String(mirStackNo(r)||stack(r)||"").trim()!=='');loadedAt=new Date();setStatus(`✓ Live data connected · ${rows.length} rows · Last refresh ${loadedAt.toLocaleTimeString("en-IN")}`);renderAll();if(currentPage==='moisture'&&keepMoistureStack){const sel=$('mStack');if(sel&&[...sel.options].some(o=>o.value===keepMoistureStack)){sel.value=keepMoistureStack;localStorage.setItem('shambhuSelectedMoistureStack',keepMoistureStack);loadMoistureStack()}}}catch(e){console.error(e);setStatus("⚠ Google Sheet could not be read. Set the Master Stock tab to Anyone with the link → Viewer, then refresh.",true);renderAll();if(currentPage==='moisture'&&keepMoistureStack){const sel=$('mStack');if(sel&&[...sel.options].some(o=>o.value===keepMoistureStack)){sel.value=keepMoistureStack;loadMoistureStack()}}}}
 function setStatus(t,bad=false){$("status").textContent=t;$("status").style.borderLeftColor=bad?"#d92d3b":"#0a7a4b"}
 function activeRows(){return filterRows(rows).filter(r=>qty(r)>0)}
 function mirSourceRows(){return rows.filter(r=>{const k=mirStackKey(r);if(!k||k==='|')return false;const bags=num(val(r,'Bags','Bags (Nos.)','No. of Bags','No of Bags','Bags Nos'));return qty(r)>0||bags>0||stack(r)!==''})}
@@ -764,6 +764,22 @@ function mirEligible(a,d){
     return !oldList.some(x=>mirSameStackVersion(r,x));
   });
 }
+function mirPick35WithFallback(available,eligible,monthNo){
+  const wTarget=mirTarget(available.filter(isWheat).length), rTarget=mirTarget(available.filter(isRice).length);
+  const eligW=eligible.filter(isWheat), eligR=eligible.filter(isRice);
+  const used=new Set(), picked=[], forced=[];
+  function addGroup(eligibleGroup,allGroup,target){
+    const normal=mirRotationSelection(eligibleGroup,monthNo,target);
+    normal.forEach(r=>{if(picked.filter(x=>isWheat(x)===isWheat(r)).length<target&&!used.has(mirStackKey(r))){picked.push(r);used.add(mirStackKey(r));}});
+    if(normal.length<target){
+      const fallback=allGroup.filter(r=>!used.has(mirStackKey(r)));
+      for(const r of fallback){if(picked.filter(x=>isWheat(x)===isWheat(r)).length>=target)break;picked.push(r);used.add(mirStackKey(r));forced.push(r);}
+    }
+  }
+  addGroup(eligW,available.filter(isWheat),wTarget);
+  addGroup(eligR,available.filter(isRice),rTarget);
+  return {picked,forced,wTarget,rTarget};
+}
 function mirStatusForStack(r,d){
   const sk=mirStackKey(r), all=[];
   Object.keys(d.reports||{}).forEach(mk=>(d.reports[mk]||[]).forEach(x=>{if(String(x.stackKey)===sk&&mirSameStackVersion(r,x))all.push({mk,x})}));
@@ -838,15 +854,17 @@ function mirAvailableChoices(a){const d=mirEnsureMonth(a),current=new Set(mirCur
 let mirPlan35Mode=false;
 function mirRefresh35Toggle(){
   const d=mirData(),mk=mirMonthKey(),a=mirSourceRows(),available=mirAvailable(a),eligible=mirEligible(a,d);
-  if(!available.length){alert('Koi available stack nahi mila.');return}
-  const wTarget=mirTarget(available.filter(isWheat).length),rTarget=mirTarget(available.filter(isRice).length);
-  const current=mirMonthRecords(d,mk),eligibleKeys=new Set(eligible.map(r=>mirStackKey(r)));
-  const keep=current.filter(x=>!eligibleKeys.has(String(x.stackKey)));
-  const selected=mirRotationSelectionByCommodity(eligible,mirCycleMonthNo(d,mk));
-  const picked=[...selected.filter(isWheat).slice(0,wTarget),...selected.filter(isRice).slice(0,rTarget)];
-  picked.forEach(r=>{const sk=mirStackKey(r);if(!keep.some(x=>String(x.stackKey)===sk))keep.push(mirRecordFromRow(r));});
-  d.months[mk]=keep;
-  if(!d.monthPlanKeys)d.monthPlanKeys={}; d.monthPlanKeys[mk]=picked.map(r=>mirStackKey(r));
+  if(!available.length){
+    alert('Master Stock me koi stack available nahi mila. Agar sheet me stack hai to data-loading/source mapping check karna hoga.');
+    return;
+  }
+  const plan=mirPick35WithFallback(available,eligible,mirCycleMonthNo(d,mk));
+  const current=mirMonthRecords(d,mk), currentKeys=new Set(current.map(x=>String(x.stackKey)));
+  const picked=plan.picked.filter(r=>!currentKeys.has(mirStackKey(r)));
+  const allPicked=[...current,...picked.map(r=>mirRecordFromRow(r))];
+  d.months[mk]=allPicked;
+  if(!d.monthPlanKeys)d.monthPlanKeys={};
+  d.monthPlanKeys[mk]=plan.picked.map(r=>mirStackKey(r));
   saveMirData(d);renderPage('mir');
 }
 function mirAddStacks(a,plan35=false){
@@ -854,11 +872,13 @@ function mirAddStacks(a,plan35=false){
   const d=mirData(), all=plan35?mirAvailable(a):mirSelectAvailable(), choices=plan35?mirEligible(a,d):all;
   if(!all.length){alert('Koi available stack nahi mila.');return}
   if(plan35){
-    const wTarget=mirTarget(all.filter(isWheat).length),rTarget=mirTarget(all.filter(isRice).length); const picked=mirRotationSelectionByCommodity(choices,mirCycleMonthNo(d,mirMonthKey())).filter(r=>isWheat(r)).slice(0,wTarget).concat(mirRotationSelectionByCommodity(choices,mirCycleMonthNo(d,mirMonthKey())).filter(r=>isRice(r)).slice(0,rTarget));
-    if(!picked.length){alert('Pichhle 2 MIR report months ke baad koi eligible stack nahi hai.');return}
-    const names=picked.map(r=>String(mirStackNo(r))).join(', ');
+    const plan=mirPick35WithFallback(all,choices,mirCycleMonthNo(d,mirMonthKey()));
+    if(!plan.picked.length){alert('Master Stock me Wheat/Rice classify hone wala available stack nahi mila. Commodity column/source mapping check karna hoga.');return}
+    const names=plan.picked.map(r=>String(mirStackNo(r))).join(', ');
+    const forcedNames=plan.forced.map(r=>String(mirStackNo(r))).join(', ');
     $('modalTitle').textContent='ADD / REFRESH 35% PLAN';
-    $('modalBody').innerHTML=`<div class="smallmuted" style="margin-bottom:8px">Available stacks: <b>${all.length}</b> · Wheat 35%: <b>${wTarget}</b> · Rice 35%: <b>${rTarget}</b> · Pichhle 2 MIR report months ke stacks exclude hain.</div><div class="mir-note"><b>${picked.length} stacks plan me add honge:</b> ${esc(names)}</div><div class="mir-actions"><button class="mir-primary" onclick="window.mirRefresh35Toggle()">✓ ADD / REFRESH 35% PLAN</button><button class="pill" onclick="closeModal()">Cancel</button></div>`;
+    const forcedHtml=plan.forced.length?`<div class="mir-note" style="margin-top:8px;border:2px solid #e3a52b;background:#fff8df"><b>⚠️ ${plan.forced.length} FORCEFULLY INCLUDED:</b><br>${esc(forcedNames)}<br><span class="smallmuted">Required 35% stack available nahi the, isliye 3-month rotation maintain karne ke liye kuch stack forcefully include kiye gaye hain.</span></div>`:'';
+    $('modalBody').innerHTML=`<div class="smallmuted" style="margin-bottom:8px">Available stacks: <b>${all.length}</b> · Wheat 35%: <b>${plan.wTarget}</b> · Rice 35%: <b>${plan.rTarget}</b> · Normal eligible stacks: <b>${choices.length}</b></div><div class="mir-note"><b>${plan.picked.length} stacks plan me rahenge:</b> ${esc(names)}</div>${forcedHtml}<div class="mir-actions"><button class="mir-primary" onclick="window.mirRefresh35Toggle()">✓ ADD / REFRESH 35% PLAN</button><button class="pill" onclick="closeModal()">Cancel</button></div>`;
     $('modal').classList.add('show'); return;
   }
   const statusMap=mirRecentStatus(all,d);
