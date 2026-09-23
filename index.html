@@ -692,7 +692,7 @@ function mirCropYearRaw(r){return String(mirRaw(r,['Crop Year','CropYear','Year 
 function mirSourceRows(a=rows){return (Array.isArray(a)?a:[]).filter(r=>mirStackNo(r)!=='')}
 function mirStackKey(r){return mirShedNo(r)+'|'+mirStackNo(r)}
 function mirRecordFromRow(r,status='Pending'){return {stackKey:mirStackKey(r),shed:mirShedNo(r),stack:mirStackNo(r),receiptDate:mirReceipt(r),bags:mirBags(r),qty:mirQty(r),commodity:mirCommodityRaw(r),cropYear:mirCropYearRaw(r),status,mirDate:'',infested:'NO',fumigationStatus:'',fumigationDate:''}}
-function mirAvailable(a){const m=new Map();mirSourceRows(a).forEach(r=>{const k=mirStackKey(r);if(!k||k==='|')return;const rp=parseDate(mirReceipt(r)),bags=mirBags(r),q=mirQty(r);if(!rp||bags<=0||q<=0)return;if(!m.has(k)||mirQty(m.get(k))<=0&&q>0)m.set(k,{...r});});return [...m.values()]}
+function mirAvailable(a){const m=new Map();mirSourceRows(a).forEach(r=>{const k=mirStackKey(r);if(!k||k==='|')return;const q=mirQty(r);if(q<=0)return;if(!m.has(k)||mirQty(m.get(k))<=0&&q>0)m.set(k,{...r});});return [...m.values()]}
 function mirHistoryKeys(d){const out=new Set();Object.values(d.history||{}).forEach(arr=>(arr||[]).forEach(x=>out.add(String(x.stackKey))));return out}
 /* Mobile-safe PIN/date prompts: native numeric keyboard and native calendar picker. */
 function qcInputPrompt(label,value,type){return new Promise(function(resolve){
