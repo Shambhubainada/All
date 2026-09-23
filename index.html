@@ -1039,7 +1039,7 @@ function mirReportHtml(mk){
 }
 function mirReportMonths(){
   const d=mirData(),keys=new Set([...Object.keys(d.reports||{}),...Object.keys(d.history||{})]);
-  return [...keys].filter(k=>mirReportData(d,k).length).sort().reverse();
+  return [...keys].filter(k=>mirReportData(d,k).length).sort((a,b)=>String(a).localeCompare(String(b)));
 }
 function openMirReportPicker(){
   const ms=mirReportMonths();
