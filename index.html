@@ -1065,10 +1065,31 @@ function toggleMirTestCheckMonth(m){const body=$('mir-test-body-'+m),folder=$('m
 function viewMirTestCheck(mk){$('modalTitle').textContent='📝 MIR TEST CHECK — '+mirMonthLabel(mk);$('modalBody').innerHTML=mirTestCheckHtml(mk)+`<div style="margin-top:10px;text-align:right"><button class="pill" onclick="downloadMirTestCheck('${esc(mk)}')">📥 Download Excel</button></div>`;$('modal').classList.add('show')}
 async function downloadMirTestCheck(mk){
   const rows=mirTestCheckRows(mk);if(!rows.length){alert('Is month ka MIR TEST CHECK report save nahi hai.');return}
-  const headers=['Sr No.','Shed No.','Stack No.','Receipt Date','Bags','MT','Commodity','Date','TA Classification','TA Extent of Infestation','TA Damage','TA Discolored','TA W','TA Cat','Manager QC MIR Date','Manager QC Classification','Manager QC Extent of Infestation','Manager QC Damage','Manager QC Discolored','Manager QC W','Manager QC Cat','Manager QC Moisture %'];
-  const data=[['TEST CHECK STATEMENT OF CATEGORISATION DONE BY JASSI K CHOUHAN MANAGER (QC) IN RESPECT OF SHED NUMBER 9/14/18/20 AT FSD SABARMATI AS ON DATE ('+(rows[0]?.mirDate?dateText(rows[0].mirDate):'')+')'],[],headers,...rows.map((x,i)=>[i+1,x.shed,x.stack,dateText(x.receiptDate),num(x.bags)||0,Math.round(num(x.qty)),`${x.commodity||''}${x.cropYear?' / '+x.cropYear:''}`,'','CLEAR','NIL','','','', 'A',dateText(x.mirDate),'CLEAR','NIL','','','','','A',''])];
+  // Excel layout is kept exactly like the View Report: grouped TA INSPECTION
+  // and INSPECTION DONE BY MANAGER QC headers, with the same sub-headings.
+  const title='TEST CHECK STATEMENT OF CATEGORISATION DONE BY JASSI K CHOUHAN MANAGER (QC) IN RESPECT OF SHED NUMBER 9/14/18/20 AT FSD SABARMATI AS ON DATE ('+(rows[0]?.mirDate?dateText(rows[0].mirDate):'')+')';
+  const data=[
+    [title],
+    [],
+    ['Sr No.','Shed No.','Stack No.','Receipt Date','Bags','MT','Commodity','TA INSPECTION','','','','','','','INSPECTION DONE BY MANAGER QC','','','','','',''],
+    ['','','','','','','','Date','Classification','Extent of Infestation','Damage','Discolored','W','Cat','MIR Date','Classification','Extent of Infestation','Damage','Discolored','W','Cat','Moisture %'],
+    ...rows.map((x,i)=>[
+      i+1,x.shed||'',x.stack||'',dateText(x.receiptDate),num(x.bags)||0,Math.round(num(x.qty)),
+      `${x.commodity||''}${x.cropYear?' / '+x.cropYear:''}`,
+      '', 'CLEAR', 'NIL', '', '', '', 'A',
+      dateText(x.mirDate), 'CLEAR', 'NIL', '', '', '', '', 'A', ''
+    ])
+  ];
   data.push([],['TA-II','Shed Number 9/14/18/20','','','','','','','','','','','','','','Manager (QC)','Unit III FSD Sabarmati']);
-  await makeWorkbook([{name:'MIR Test Check',data,widths:[8,10,16,15,10,10,22,18,18,24,14,16,14,10,15,20,26,18,18,18,14,14]}],`MIR_TEST_CHECK_${mk}.xlsx`);
+  const merges=[
+    {s:{r:0,c:0},e:{r:0,c:20}},
+    ...[0,1,2,3,4,5,6].map(c=>({s:{r:2,c},e:{r:3,c}})),
+    {s:{r:2,c:7},e:{r:2,c:13}},
+    {s:{r:2,c:14},e:{r:2,c:20}},
+    {s:{r:data.length-1,c:0},e:{r:data.length-1,c:1}},
+    {s:{r:data.length-1,c:15},e:{r:data.length-1,c:16}}
+  ];
+  await makeWorkbook([{name:'MIR Test Check',data,merges,widths:[8,10,16,15,10,10,22,12,18,24,14,14,8,8,15,18,24,14,14,8,8,12]}],`MIR_TEST_CHECK_${mk}.xlsx`);
 }
 function openMirReportPicker(){
   const ms=mirReportMonths();
