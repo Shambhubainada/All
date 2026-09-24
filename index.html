@@ -1053,7 +1053,7 @@ function mirTestCheckHtml(mk){
     const moisture='';
     return `<tr><td>${i+1}</td><td>${esc(x.shed||'')}</td><td><b>${esc(x.stack||'')}</b></td><td>${dateText(x.receiptDate)}</td><td>${num(x.bags)||0}</td><td>${Math.round(num(x.qty))}</td><td>${esc(x.commodity||'')}${x.cropYear?' / '+esc(x.cropYear):''}</td><td></td><td>CLEAR</td><td>NIL</td><td></td><td></td><td></td><td>${cat}</td><td>${mirDt}</td><td>CLEAR</td><td>NIL</td><td></td><td></td><td></td><td></td><td>${cat}</td><td>${moisture}</td></tr>`;
   }).join('');
-  return `<div style="text-align:center;font-weight:800;font-size:16px;margin-bottom:4px">TEST CHECK STATEMENT OF CATEGORISATION DONE BY JASSI K CHOUHAN MANAGER (QC) IN RESPECT OF SHED NUMBER 9/14/18/20 AT FSD SABARMATI AS ON DATE (${esc(rows[0]?.mirDate?dateText(rows[0].mirDate):'')})</div><div class="tablewrap" style="overflow:auto"><table class="mir-test-check-table"><thead><tr><th rowspan="2">Sr No.</th><th rowspan="2">Shed No.</th><th rowspan="2">Stack No.</th><th rowspan="2">Receipt Date</th><th rowspan="2">Bags</th><th rowspan="2">MT</th><th rowspan="2">Commodity</th><th colspan="7">TA INSPECTION</th><th colspan="8">INSPECTION DONE BY MANAGER QC</th></tr><tr><th>Date</th><th>Classification</th><th>Extent of Infestation</th><th>Damage</th><th>Discolored</th><th>W</th><th>Cat</th><th>MIR Date</th><th>Classification</th><th>Extent of Infestation</th><th>Damage</th><th>Discolored</th><th>W</th><th>Cat</th><th>Moisture %</th></tr></thead><tbody>${body||'<tr><td colspan="21" class="mir-empty">No MIR Test Check data.</td></tr>'}</tbody></table></div><div style="display:flex;justify-content:space-between;margin-top:28px;font-weight:700"><div>TA-II<br>Shed Number 9/14/18/20</div><div style="text-align:right">Manager (QC)<br>Unit III FSD Sabarmati</div></div>`;
+  return `<div class="mir-test-check-title">TEST CHECK STATEMENT OF CATEGORISATION DONE BY JASSI K CHOUHAN MANAGER (QC) IN RESPECT OF SHED NUMBER 9/14/18/20 AT FSD SABARMATI AS ON DATE (${esc(rows[0]?.mirDate?dateText(rows[0].mirDate):'')})</div><div class="mir-test-check-wrap"><table class="mir-test-check-table"><thead><tr><th rowspan="2">Sr No.</th><th rowspan="2">Shed No.</th><th rowspan="2">Stack No.</th><th rowspan="2">Receipt Date</th><th rowspan="2">Bags</th><th rowspan="2">MT</th><th rowspan="2">Commodity</th><th colspan="7">TA INSPECTION</th><th colspan="8">INSPECTION DONE BY MANAGER QC</th></tr><tr><th>Date</th><th>Classification</th><th>Extent of Infestation</th><th>Damage</th><th>Discolored</th><th>W</th><th>Cat</th><th>MIR Date</th><th>Classification</th><th>Extent of Infestation</th><th>Damage</th><th>Discolored</th><th>W</th><th>Cat</th><th>Moisture %</th></tr></thead><tbody>${body||'<tr><td colspan="22" class="mir-empty">No MIR Test Check data.</td></tr>'}</tbody></table></div><div class="mir-test-check-footer"><div>TA-II<br>Shed Number 9/14/18/20</div><div style="text-align:right">Manager (QC)<br>Unit III FSD Sabarmati</div></div>`;
 }
 function openMirTestCheckPicker(){
   const ms=mirReportMonths();
@@ -1062,7 +1062,7 @@ function openMirTestCheckPicker(){
   $('modal').classList.add('show');
 }
 function toggleMirTestCheckMonth(m){const body=$('mir-test-body-'+m),folder=$('mir-test-folder-'+m);if(!body||!folder)return;const head=folder.querySelector('.mir-folder-head span');const open=body.style.display!=='none';body.style.display=open?'none':'block';if(head)head.textContent=open?'▶':'▼'}
-function viewMirTestCheck(mk){$('modalTitle').textContent='📝 MIR TEST CHECK — '+mirMonthLabel(mk);$('modalBody').innerHTML=mirTestCheckHtml(mk)+`<div style="margin-top:10px;text-align:right"><button class="pill" onclick="downloadMirTestCheck('${esc(mk)}')">📥 Download Excel</button></div>`;$('modal').classList.add('show')}
+function viewMirTestCheck(mk){$('modalTitle').textContent='📝 MIR TEST CHECK — '+mirMonthLabel(mk);const mb=$('modal').querySelector('.modalbox');if(mb)mb.classList.add('mir-test-wide');$('modalBody').innerHTML=mirTestCheckHtml(mk)+`<div style="margin-top:10px;text-align:right"><button class="pill" onclick="downloadMirTestCheck('${esc(mk)}')">📥 Download Excel</button></div>`;$('modal').classList.add('show')}
 async function downloadMirTestCheck(mk){
   const rows=mirTestCheckRows(mk);if(!rows.length){alert('Is month ka MIR TEST CHECK report save nahi hai.');return}
   // Excel layout is kept exactly like the View Report: grouped TA INSPECTION
@@ -2396,4 +2396,40 @@ function malathionEntries(){
 @media(max-width:430px){.alp-indicator-outside .report-summary-row>div,.delta-indicator-outside .report-summary-row>div{font-size:11px!important}.alp-indicator-outside .report-summary-row b,.delta-indicator-outside .report-summary-row b{font-size:10px!important}}
 
 .mir-folder-head{width:100%;display:flex;align-items:center;justify-content:space-between;border:1px solid #dfe9e3;background:#f7faf8;border-radius:9px;padding:10px 12px;margin:5px 0;cursor:pointer;font-size:14px;text-align:left}.mir-folder-body{padding:6px 8px 10px;border-left:2px solid #e4ece7;margin-left:5px}.mir-history-toggle{width:100%;display:flex;align-items:center;justify-content:space-between;cursor:pointer;border:0;text-align:left}.mir-month-folder,.mir-history-folder{margin-bottom:6px}
+/* MIR TEST CHECK - clean bordered landscape-style view */
+.modalbox.mir-test-wide{width:min(1500px,98vw);max-height:94vh;padding:14px}
+.mir-test-check-title{font-size:16px;line-height:1.35;font-weight:900;text-align:center;margin:0 0 10px;padding:7px 10px;border:1px solid #9fb5aa;background:#f4f8f6;border-radius:6px}
+.mir-test-check-wrap{width:100%;overflow:auto;border:1.5px solid #4d6258;border-radius:5px;background:#fff}
+table.mir-test-check-table{width:100%;min-width:1250px;table-layout:fixed;border-collapse:collapse;margin:0;font-size:10px}
+.mir-test-check-table th,.mir-test-check-table td{border:1px solid #71827a!important;text-align:center!important;vertical-align:middle!important;padding:5px 4px!important;white-space:normal!important;line-height:1.2}
+.mir-test-check-table thead th{background:#073d2c;color:#fff;font-weight:900;position:static}
+.mir-test-check-table thead tr:first-child th{font-size:10px;padding:6px 3px!important}
+.mir-test-check-table thead tr:nth-child(2) th{background:#0a6b4a;font-size:9px}
+.mir-test-check-table tbody td{background:#fff;height:27px}
+.mir-test-check-table tbody tr:nth-child(even) td{background:#f8fbf9}
+.mir-test-check-table tbody tr:hover td{background:#eef7f2}
+.mir-test-check-table th:nth-child(1),.mir-test-check-table td:nth-child(1){width:42px}
+.mir-test-check-table th:nth-child(2),.mir-test-check-table td:nth-child(2){width:62px}
+.mir-test-check-table th:nth-child(3),.mir-test-check-table td:nth-child(3){width:78px}
+.mir-test-check-table th:nth-child(4),.mir-test-check-table td:nth-child(4){width:78px}
+.mir-test-check-table th:nth-child(5),.mir-test-check-table td:nth-child(5){width:55px}
+.mir-test-check-table th:nth-child(6),.mir-test-check-table td:nth-child(6){width:55px}
+.mir-test-check-table th:nth-child(7),.mir-test-check-table td:nth-child(7){width:105px}
+.mir-test-check-table th:nth-child(8),.mir-test-check-table td:nth-child(8){width:68px}
+.mir-test-check-table th:nth-child(9),.mir-test-check-table td:nth-child(9){width:88px}
+.mir-test-check-table th:nth-child(10),.mir-test-check-table td:nth-child(10){width:108px}
+.mir-test-check-table th:nth-child(11),.mir-test-check-table td:nth-child(11){width:62px}
+.mir-test-check-table th:nth-child(12),.mir-test-check-table td:nth-child(12){width:62px}
+.mir-test-check-table th:nth-child(13),.mir-test-check-table td:nth-child(13){width:40px}
+.mir-test-check-table th:nth-child(14),.mir-test-check-table td:nth-child(14){width:40px}
+.mir-test-check-table th:nth-child(15),.mir-test-check-table td:nth-child(15){width:78px}
+.mir-test-check-table th:nth-child(16),.mir-test-check-table td:nth-child(16){width:88px}
+.mir-test-check-table th:nth-child(17),.mir-test-check-table td:nth-child(17){width:108px}
+.mir-test-check-table th:nth-child(18),.mir-test-check-table td:nth-child(18){width:62px}
+.mir-test-check-table th:nth-child(19),.mir-test-check-table td:nth-child(19){width:62px}
+.mir-test-check-table th:nth-child(20),.mir-test-check-table td:nth-child(20){width:40px}
+.mir-test-check-table th:nth-child(21),.mir-test-check-table td:nth-child(21){width:40px}
+.mir-test-check-table th:nth-child(22),.mir-test-check-table td:nth-child(22){width:62px}
+.mir-test-check-footer{display:flex;justify-content:space-between;gap:20px;margin-top:14px;padding:10px 8px 2px;font-weight:700;font-size:11px}
+@media(max-width:700px){.modalbox.mir-test-wide{width:99vw;padding:9px}.mir-test-check-title{font-size:12px}.mir-test-check-footer{font-size:10px}.mir-test-check-table{font-size:9px}}
 </style>
