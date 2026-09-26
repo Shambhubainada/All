@@ -392,7 +392,7 @@ body.page-open:not(.dashboard-open) #dashboardPage { display:none!important; }
 .mo-saved-rmc-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:7px}
 .mo-saved-rmc-strip>div{background:#f7fbf9;border:1px solid #dce7e2;border-radius:7px;padding:5px 4px;text-align:center}
 .mo-saved-rmc-strip span{display:block;font-size:8px;font-weight:900;color:#687b74}
-.mo-saved-rmc-strip b{display:block;font-size:12px;color:#073d2c;margin-top:2px}
+.mo-saved-rmc-strip b{display:block;font-size:12px;color:#073d2c;margin-top:2px}.mo-saved-rmc-edit{cursor:pointer!important;user-select:none;transition:background .15s,transform .05s}.mo-saved-rmc-edit:hover{background:#eef8f2!important}.mo-saved-rmc-edit:active{transform:scale(.98)}.mo-saved-rmc-edit:focus{outline:2px solid #1b6e4b;outline-offset:1px}.mo-saved-rmc-edit small{display:block;font-size:7px;font-weight:800;color:#6d7d76;margin-top:2px}
 @media(max-width:430px){.saved-moisture-focus .mo-final-table th,.saved-moisture-focus .mo-final-table td{padding:3px 2px!important}.mo-saved-rmc-strip b{font-size:11px}}
 /* Home: one quick-folder row only; detailed overview remains below it. */
 body.dashboard-open .final-quick-row{display:none!important}
@@ -1347,7 +1347,7 @@ function moisturePage(){
     <div class="mo-focus-section saved-moisture-focus">
       <div class="mo-focus-title">SAVED MOISTURE ENTRY</div>
       <div class="mo-table-wrap"><table class="mo-final-table"><thead><tr><th>Sr. No.</th><th>Bags</th><th>Moisture (%)</th><th>Slip</th><th>Action</th></tr></thead><tbody id="moTruckRows"></tbody></table></div>
-      <div class="mo-saved-rmc-strip"><div><span>RMC</span><b id="moSavedRmc">0.00 %</b></div><div><span>IMC</span><b id="moSavedImc">0.00 %</b></div><div><span>DIFFERENCE</span><b id="moSavedDiff">0.00 %</b></div></div>
+      <div class="mo-saved-rmc-strip"><div class="mo-saved-rmc-edit" role="button" tabindex="0" title="Tap to edit RMC (PIN required)" onclick="editSavedRmcWithPin()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();editSavedRmcWithPin()}"><span>RMC ✏️</span><b id="moSavedRmc">0.00 %</b><small>Tap to edit • PIN</small></div><div><span>IMC</span><b id="moSavedImc">0.00 %</b></div><div><span>DIFFERENCE</span><b id="moSavedDiff">0.00 %</b></div></div>
     </div>
 
     <div class="mo-focus-hidden" aria-hidden="true">
@@ -1553,6 +1553,25 @@ function saveEditedMoisture(i){
 
 function renderMoistureActivity(){const box=$('mActivity');if(box)box.style.display='none'}
 function saveManualRmc(){const st=currentMoistureStack();if(!st){alert('Pehle Stack select karein.');return}const v=$('mRmcManual').value;if(v===''){alert('Manual RMC enter karein.');return}const all=moistureStore(),rec=stackRecord(st);rec.manualRmc=num(v);all[st]=rec;saveMoistureStore(all);calcMoisture();alert('Manual RMC saved for this stack.');}
+async function editSavedRmcWithPin(){
+  const st=currentMoistureStack();
+  if(!st){alert('Pehle Stack select karein.');return}
+  const rec=stackRecord(st);
+  const r=rows.find(x=>stack(x)===st)||{};
+  const current=(rec.manualRmc!=null&&rec.manualRmc!=='')?num(rec.manualRmc):stackMasterRmc(r);
+  const pin=await qcPinPrompt('RMC edit karne ke liye current PIN enter karein');
+  if(pin===null)return;
+  if(String(pin)!==String(getSitePin())){alert('Wrong PIN. RMC change nahi hua.');return}
+  const value=await qcInputPrompt('Edit RMC (%)',current?num(current).toFixed(2):'','text');
+  if(value===null)return;
+  const v=String(value).trim();
+  if(v===''||!Number.isFinite(num(v))||num(v)<0){alert('Valid RMC enter karein.');return}
+  rec.manualRmc=num(v);
+  const all=moistureStore();all[st]=rec;saveMoistureStore(all);
+  if($('mRmcManual'))$('mRmcManual').value=num(v).toFixed(2);
+  calcMoisture();
+  alert('RMC updated successfully.');
+}
 function completeMoistureStack(){const st=currentMoistureStack();if(!st)return;const rec=stackRecord(st),total=num($('mStackBags').value),issued=stackIssuedTotal(rec),updated=stackUpdatedTotal(rec);const remaining=total-issued;if(!(total>0&&remaining<=100&&issued>0&&updated>=issued)){alert('Complete Stack tabhi hoga jab remaining bags 100 ya usse kam ho aur issued bags ka moisture complete ho.');return}if(!confirm('Is stack ko Complete karke History me move karein?'))return;const all=moistureStore();delete all[st];saveMoistureStore(all);const r=rows.find(x=>stack(x)===st),h=JSON.parse(localStorage.getItem('shambhuMoistureHistory')||'[]');const completedAt=dateTimeNow(),receiptDate=r?dateText(receipt(r)):''; const receiptObj=r?receipt(r):null; const completedDate=parseDate(completedAt.split(' ')[0]),receiptDateObj=parseDate(receiptObj); const storageDays=(completedDate&&receiptDateObj)?Math.max(0,Math.floor((new Date(completedDate.getFullYear(),completedDate.getMonth(),completedDate.getDate())-new Date(receiptDateObj.getFullYear(),receiptDateObj.getMonth(),receiptDateObj.getDate()))/86400000)):0; const finalRmc=rec.manualRmc!=null?num(rec.manualRmc):stackMasterRmc(r||{}); const finalImc=updated?stackWtTotal(rec)/updated:0; h.unshift({...rec,id:Date.now(),stack:st,completedAt,shed:r?shed(r):'',receipt:receiptDate,storageDays,commodity:r?commodity(r):'',cropYear:r?cropYearFromRow(r):'',stackBags:total,rmc:finalRmc,dmc:finalImc,imc:finalImc});localStorage.setItem('shambhuMoistureHistory',JSON.stringify(h));alert('Stack History me move ho gaya.');clearMoisture(false);renderMoistureHistory();}
 function clearMoisture(confirmIt=true){if(confirmIt&&!confirm('Current screen clear karein? Saved truck entries delete nahi hongi.'))return;if($('mStack'))$('mStack').value='';for(const id of ['mReceipt','mCommodity','mCrop','mStackBags','mRmcAuto','mRmcManual','mRemainBags','mUpdateBags','mUpdateMoisture'])if($(id))$(id).value='';if($('mUpdateDate'))$('mUpdateDate').value=dateText(new Date());if($('mUpdateTime'))$('mUpdateTime').value=new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});if($('moTruckRows'))$('moTruckRows').innerHTML='<tr><td colspan="7" class="empty">Select a stack to view moisture entries.</td></tr>';if($('mStackBar'))$('mStackBar').style.display='none';if($('mActivity'))$('mActivity').style.display='none';if($('mRmc'))$('mRmc').textContent='0.00';if($('mImc'))$('mImc').textContent='0.00';if($('mDiff'))$('mDiff').textContent='0.00';if($('mCompleteStatus'))$('mCompleteStatus').textContent='Select a stack';if($('mCompleteStatusVisible'))$('mCompleteStatusVisible').textContent='Select a stack';if($('mCompleteBtn'))$('mCompleteBtn').disabled=true;if($('mCompleteBtnVisible'))$('mCompleteBtnVisible').disabled=true;}
 function newMoisture(){localStorage.removeItem('shambhuSelectedMoistureStack');clearMoisture();}
