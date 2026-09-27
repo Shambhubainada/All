@@ -1463,7 +1463,7 @@ function renderMoistureStackStatus(){
     if(pending[pending.length-1] && num(pending[pending.length-1].bags)<=0) pending.pop();
   });
   const item=(r,cls,label)=>{const rice=isRice(r);const st=String(r.stack||'');const safe=st.replaceAll('\\','\\\\').replaceAll("'","\\'");const selected=String(currentMoistureStack())===st;return `<div class="mo-stack-card ${rice?'rice':'wheat'} ${selected?'selected-mo-stack':''}" onclick="openUnderIssueStack('${safe}')"><div><b>${esc(st)}</b><span class="mo-stack-meta-line">${esc(r.commodity||'')} · ${esc(r.cropYear||'')}</span></div><div class="mo-stack-remaining">Remaining: ${Math.max(0,num(r.bags)-stackUpdatedTotal(moistureStore()[st]||{})).toLocaleString()}</div><button class="mo-delete-btn" title="Delete" aria-label="Delete" onclick="event.stopPropagation();deleteMoistureStackWithPin('${safe}')">🗑</button></div>`};
-  box.innerHTML=`<div class="mo-status-panel mo-pending"><div class="mo-status-head"><span>🟠 UNDER ISSUE STACK</span><span class="mo-status-count">${pending.length}</span></div><div class="smallmuted">Moisture issue wale stacks — Wheat aur Rice alag colour me</div><div class="mo-stack-list">${pending.length?pending.map(r=>item(r,'mo-pending','Pending')).join(''):'<div class="empty">No pending stack.</div>'}</div></div>`;
+  box.innerHTML=`<div class="mo-status-panel mo-pending"><div class="mo-status-head"><span>🟠 UNDER ISSUE STACK</span><span class="mo-status-count">${pending.length}</span></div><div class="mo-stack-list">${pending.length?pending.map(r=>item(r,'mo-pending','Pending')).join(''):'<div class="empty">No pending stack.</div>'}</div></div>`;
 }
 function selectMoistureStack(st){const key=String(st||'').trim();if(!key)return;const r=rows.find(x=>String(stack(x))===key);if(!r){alert('Selected stack Master Sheet me nahi mila.');return}localStorage.setItem('shambhuSelectedMoistureStack',key);const sel=$('mStack');if(sel)sel.value=key;loadMoistureStack();renderMoistureStackStatus();requestAnimationFrame(()=>{const target=document.querySelector('.saved-moisture-focus');if(target)target.scrollIntoView({behavior:'smooth',block:'start'});});}
 function openUnderIssueStack(st){
@@ -2603,4 +2603,12 @@ table.mir-test-check-table{width:max-content;min-width:1080px;table-layout:fixed
 .mo-stack-card.selected-mo-stack.wheat{background:#e8f7ed!important;border-color:#1565c0!important;border-left:5px solid #0d5bb5!important}
 .mo-stack-card.selected-mo-stack.rice{background:#fff2d6!important;border-color:#1565c0!important;border-left:5px solid #0d5bb5!important}
 .mo-stack-card.selected-mo-stack b{color:#084b8f!important}
+</style>
+
+<style id="moisture-under-issue-final">
+.mo-stack-remaining{font-size:9px!important;font-weight:800!important;padding:3px 5px!important}
+.mo-stack-card.wheat{background:#e8f7ed!important;border-color:#35a05b!important;border-left:5px solid #178345!important}
+.mo-stack-card.rice{background:#fff2d6!important;border-color:#e2a12b!important;border-left:5px solid #b87508!important}
+.mo-stack-card.selected-mo-stack.wheat{background:#e8f7ed!important;border-color:#1565c0!important;border-left:5px solid #0d5bb5!important}
+.mo-stack-card.selected-mo-stack.rice{background:#fff2d6!important;border-color:#1565c0!important;border-left:5px solid #0d5bb5!important}
 </style>
