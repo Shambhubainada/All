@@ -2391,35 +2391,7 @@ document.addEventListener('DOMContentLoaded',function(){
   }catch(e){console.error('Chemical report render error',e);}
 };
   window.viewChemicalReport=function(){const w=window.open('','_blank');if(!w){alert('Popup blocked. Allow popups for View Report.');return}w.document.write(activeChemicalFolder==='ALP'?alpReportHtml():activeChemicalFolder==='Delta'?deltaReportHtml():activeChemicalFolder==='Malathion'?malathionReportHtml():reportHtml());w.document.close();};
-  window.downloadChemicalPDF=function(){const w=window.open('','_blank');if(!w){alert('Popup blocked.');return}w.document.write((activeChemicalFolder==='ALP'?alpReportHtml():activeChemicalFolder==='Delta'?deltaReportHtml():activeChemicalFolder==='Malathion'?malathionReportHtml():reportHtml()).replace('
-<style id="moisture-saved-entry-datetime-final">
-/* Saved Moisture Entry: dd.mm date + 24-hour time; rows auto-size to content. */
-.mo-table-wrap{width:100%;overflow-x:auto;overflow-y:visible;-webkit-overflow-scrolling:touch}
-.mo-final-table{width:max-content;min-width:100%;table-layout:auto;border-collapse:collapse}
-.mo-final-table th,.mo-final-table td{height:auto;white-space:normal;vertical-align:middle}
-.mo-final-table td{padding:9px 8px;line-height:1.25}
-.mo-final-table th{white-space:nowrap}
-.mo-entry-datetime{min-width:92px;white-space:nowrap!important;text-align:center;font-variant-numeric:tabular-nums}
-.mo-entry-datetime .mo-date,.mo-entry-datetime .mo-time{display:block}
-.mo-entry-datetime .mo-date{font-weight:900}
-.mo-entry-datetime .mo-time{font-size:12px;font-weight:800;letter-spacing:.2px}
-@media(max-width:560px){.mo-final-table td{padding:8px 7px}.mo-entry-datetime{min-width:82px;font-size:12px}.mo-entry-datetime .mo-time{font-size:11px}}
-</style>
-</body>','<script>window.onload=function(){setTimeout(function(){window.print()},300)}<\/script>
-<style id="moisture-saved-entry-datetime-final">
-/* Saved Moisture Entry: dd.mm date + 24-hour time; rows auto-size to content. */
-.mo-table-wrap{width:100%;overflow-x:auto;overflow-y:visible;-webkit-overflow-scrolling:touch}
-.mo-final-table{width:max-content;min-width:100%;table-layout:auto;border-collapse:collapse}
-.mo-final-table th,.mo-final-table td{height:auto;white-space:normal;vertical-align:middle}
-.mo-final-table td{padding:9px 8px;line-height:1.25}
-.mo-final-table th{white-space:nowrap}
-.mo-entry-datetime{min-width:92px;white-space:nowrap!important;text-align:center;font-variant-numeric:tabular-nums}
-.mo-entry-datetime .mo-date,.mo-entry-datetime .mo-time{display:block}
-.mo-entry-datetime .mo-date{font-weight:900}
-.mo-entry-datetime .mo-time{font-size:12px;font-weight:800;letter-spacing:.2px}
-@media(max-width:560px){.mo-final-table td{padding:8px 7px}.mo-entry-datetime{min-width:82px;font-size:12px}.mo-entry-datetime .mo-time{font-size:11px}}
-</style>
-</body>'));w.document.close();};
+  window.downloadChemicalPDF=function(){const w=window.open('','_blank');if(!w){alert('Popup blocked.');return}const html=activeChemicalFolder==='ALP'?alpReportHtml():activeChemicalFolder==='Delta'?deltaReportHtml():activeChemicalFolder==='Malathion'?malathionReportHtml():reportHtml();w.document.write(html.replace('</body>','<script>window.onload=function(){setTimeout(function(){window.print()},300)}<\/script></body>'));w.document.close();};
   window.downloadChemicalExcel=function(){const r=reportData(),html=activeChemicalFolder==='ALP'?alpReportHtml():activeChemicalFolder==='Delta'?deltaReportHtml():activeChemicalFolder==='Malathion'?malathionReportHtml():reportHtml();const blob=new Blob([html],{type:'application/vnd.ms-excel'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='SHAMBHU_SHED_Chemical_Report_'+r.m+'.xls';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);};
 function malathionEntries(){
     return chemRead().filter(x=>x.chemical==='Malathion').sort((a,b)=>String(a.date).localeCompare(String(b.date))||Number(a.id)-Number(b.id));
