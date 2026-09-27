@@ -1355,12 +1355,9 @@ function moisturePage(){
       <div class="mo-detail-card current-rmc-card"><span>CURRENT RMC</span><b id="mRmc">0.00 %</b><small id="mRmcMode">Auto from Master Sheet</small></div>
     </div>
 
-    <div class="mo-focus-section moisture-update-focus">
-      <div class="mo-focus-title">MOISTURE UPDATE</div>
-      <div class="mo-entry-grid">
-        <div style="grid-column:1/-1"><label>Bags + Moisture Entry</label><input id="mUpdateBags" type="text" readonly inputmode="none" placeholder="Tap here → Bags + Moisture %" onclick="openMoistureSaveModal()" style="cursor:pointer;background:#fffdf0;font-weight:800"></div>
-      </div>
-      <div class="mo-entry-note">Remaining bags auto show honge. Moisture update ke liye quantity par tap karein, Bags + Moisture % enter karke SAVE karein.</div>
+    <div class="mo-focus-section moisture-update-focus" id="moUpdateMoistureTab">
+      <button type="button" class="mo-focus-title mo-update-tab-btn" onclick="openMoistureSaveModal()">💧 UPDATE MOISTURE</button>
+      <div class="mo-entry-note">Tap karein — Bags + Moisture entry popup me khulegi.</div>
       <div id="mActivity" class="mo-pending-note" style="display:none"></div>
     </div>
 
@@ -1467,7 +1464,7 @@ function renderMoistureStackStatus(){
     // Zero-bag stacks must not appear in Moisture Under Issue.
     if(pending[pending.length-1] && num(pending[pending.length-1].bags)<=0) pending.pop();
   });
-  const item=(r,cls,label)=>{const rice=isRice(r);const st=String(r.stack||'');const safe=st.replaceAll('\\','\\\\').replaceAll("'","\\'");const selected=String(currentMoistureStack())===st;return `<div class="mo-stack-card ${rice?'rice':'wheat'} ${selected?'selected-mo-stack':''}" onclick="openUnderIssueStack('${safe}')"><div><b>${esc(st)}</b><span class="mo-stack-meta-line">${esc(r.commodity||'')} · ${esc(r.cropYear||'')}</span></div><div class="mo-stack-bags">${num(r.bags).toLocaleString()} bags</div><button class="mo-delete-btn" title="Delete" aria-label="Delete" onclick="event.stopPropagation();deleteMoistureStackWithPin('${safe}')">🗑</button></div>`};
+  const item=(r,cls,label)=>{const rice=isRice(r);const st=String(r.stack||'');const safe=st.replaceAll('\\','\\\\').replaceAll("'","\\'");const selected=String(currentMoistureStack())===st;return `<div class="mo-stack-card ${rice?'rice':'wheat'} ${selected?'selected-mo-stack':''}" onclick="openUnderIssueStack('${safe}')"><div><b>${esc(st)}</b><span class="mo-stack-meta-line">${esc(r.commodity||'')} · ${esc(r.cropYear||'')}</span></div><div class="mo-stack-remaining">Remaining: ${Math.max(0,num(r.bags)-stackUpdatedTotal(moistureStore()[st]||{})).toLocaleString()} bags</div><button class="mo-delete-btn" title="Delete" aria-label="Delete" onclick="event.stopPropagation();deleteMoistureStackWithPin('${safe}')">🗑</button></div>`};
   box.innerHTML=`<div class="mo-status-panel mo-pending"><div class="mo-status-head"><span>🟠 UNDER ISSUE STACK</span><span class="mo-status-count">${pending.length}</span></div><div class="smallmuted">Moisture issue wale stacks — Wheat aur Rice alag colour me</div><div class="mo-stack-list">${pending.length?pending.map(r=>item(r,'mo-pending','Pending')).join(''):'<div class="empty">No pending stack.</div>'}</div></div>`;
 }
 function selectMoistureStack(st){const key=String(st||'').trim();if(!key)return;const r=rows.find(x=>String(stack(x))===key);if(!r){alert('Selected stack Master Sheet me nahi mila.');return}localStorage.setItem('shambhuSelectedMoistureStack',key);const sel=$('mStack');if(sel)sel.value=key;loadMoistureStack();renderMoistureStackStatus();requestAnimationFrame(()=>{const target=document.querySelector('.saved-moisture-focus');if(target)target.scrollIntoView({behavior:'smooth',block:'start'});});}
@@ -2246,7 +2243,7 @@ document.addEventListener('DOMContentLoaded',function(){
   window.downloadChemicalPDF=function(){const w=window.open('','_blank');if(!w){alert('Popup blocked.');return}w.document.write((activeChemicalFolder==='ALP'?alpReportHtml():activeChemicalFolder==='Delta'?deltaReportHtml():activeChemicalFolder==='Malathion'?malathionReportHtml():reportHtml()).replace('
 </body>','<script>window.onload=function(){setTimeout(function(){window.print()},300)}<\\/script>
 <style id="moisture-requested-final-fix">
-.selected-mo-stack{outline:3px solid #1565c0!important;box-shadow:0 0 0 2px rgba(21,101,192,.18)!important;background:#e8f1ff!important}
+.selected-mo-stack{outline:4px solid #1565c0!important;box-shadow:0 0 0 4px rgba(21,101,192,.28),0 5px 14px rgba(21,101,192,.20)!important;background:#d9ebff!important;transform:scale(1.015);position:relative;z-index:2}.selected-mo-stack:after{content:"✓ SELECTED";font-size:10px;font-weight:1000;color:#0b4f91;background:#c5e0ff;border-radius:6px;padding:2px 5px;margin-left:5px;white-space:nowrap}.selected-mo-stack b{color:#084b8f!important}
 .mo-action-icon{width:34px;height:34px;border:0;border-radius:8px;font-size:20px;font-weight:900;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;margin:0 2px;background:#eef3f1;color:#073d2c}
 .mo-action-icon.delete{background:#ffe4e4!important;color:#c62828!important}
 .mo-action-icon.edit{background:#edf3ff!important;color:#185abc!important}
@@ -2528,3 +2525,16 @@ table.mir-test-check-table{width:max-content;min-width:1080px;table-layout:fixed
 </style>
 
 <div id="appErrorPopup" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:99999;align-items:center;justify-content:center;padding:18px;box-sizing:border-box"><div style="width:min(420px,100%);background:#fff;border-radius:14px;box-shadow:0 18px 50px rgba(0,0,0,.28);padding:18px;border:2px solid #c52635"><div style="font-weight:1000;color:#b31827;font-size:16px;margin-bottom:8px">⚠️ ERROR / WRONG ENTRY</div><div id="appErrorText" style="font-size:13px;line-height:1.5;color:#24342d;white-space:pre-wrap;word-break:break-word"></div><button onclick="document.getElementById('appErrorPopup').style.display='none'" style="margin-top:14px;width:100%;border:0;border-radius:9px;padding:10px;background:#b31827;color:#fff;font-weight:900">OK</button></div></div><script>window.__chemicalErrorContext=function(){try{return (typeof currentPage!=='undefined'&&currentPage==='chemical')||(window.currentPage==='chemical')||(typeof activeChemicalFolder!=='undefined'&&(activeChemicalFolder==='ALP'||activeChemicalFolder==='Delta'))||!!document.getElementById('chemRows');}catch(e){return false;}};window.showAppError=function(msg){try{var p=document.getElementById('appErrorPopup');if(window.__chemicalErrorContext()){if(p)p.style.display='none';return;}var t=document.getElementById('appErrorText');if(!p||!t)return;t.textContent=String(msg||'Unknown error');p.style.display='flex';}catch(e){console.error(e)}};window.addEventListener('error',function(e){if(window.__chemicalErrorContext()){var p=document.getElementById('appErrorPopup');if(p)p.style.display='none';e.preventDefault();return false;}window.showAppError('Something went wrong.\n'+(e&&e.message?e.message:'Please check the entry and try again.'));},true);window.addEventListener('unhandledrejection',function(e){if(window.__chemicalErrorContext()){var p=document.getElementById('appErrorPopup');if(p)p.style.display='none';e.preventDefault();return false;}var r=e&&e.reason;window.showAppError('Something went wrong.\n'+(r&&r.message?r.message:'Unexpected error.'));},true);</script>
+
+<style id="mo-update-tab-final">
+.mo-update-tab-btn{width:100%;border:0;border-radius:10px;cursor:pointer;text-align:left;background:linear-gradient(135deg,#073d2c,#0a7a4b);color:#fff;padding:12px 14px;font-weight:950;font-size:17px;box-shadow:0 4px 12px #0a7a4b22;}
+.mo-update-tab-btn:active{transform:scale(.99)}
+.mo-focus-section.moisture-update-focus{padding:8px!important;margin-bottom:8px!important}
+.mo-focus-section.moisture-update-focus .mo-entry-note{margin-top:5px}
+.mo-stack-card{display:grid!important;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:7px!important;padding:7px 8px!important;min-height:42px!important}
+.mo-stack-card .mo-stack-meta-line{font-size:10px!important;margin-left:5px}
+.mo-stack-remaining{font-size:11px;font-weight:900;color:#684600;background:#fff7df;border:1px solid #e3a018;border-radius:7px;padding:5px 7px;white-space:nowrap}
+.mo-stack-card .mo-delete-btn{margin:0!important;padding:5px 6px!important;font-size:0!important;line-height:1}
+.mo-stack-card .mo-delete-btn::first-letter{font-size:15px}
+@media(max-width:520px){.mo-stack-card{grid-template-columns:minmax(0,1fr) auto auto!important;gap:5px!important;padding:6px!important}.mo-stack-remaining{font-size:10px;padding:4px 5px}.mo-stack-card b{font-size:13px!important}}
+</style>
