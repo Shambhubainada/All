@@ -2612,3 +2612,14 @@ table.mir-test-check-table{width:max-content;min-width:1080px;table-layout:fixed
 .mo-stack-card.selected-mo-stack.wheat{background:#e8f7ed!important;border-color:#1565c0!important;border-left:5px solid #0d5bb5!important}
 .mo-stack-card.selected-mo-stack.rice{background:#fff2d6!important;border-color:#1565c0!important;border-left:5px solid #0d5bb5!important}
 </style>
+<style id="under-issue-wheat-rice-row-final">
+/* Under Issue: full row colour separation for Wheat vs Rice */
+.mo-stack-card.wheat{background:#e4f6e9!important;border:2px solid #55ad70!important;border-left:6px solid #168548!important;color:#145b32!important}
+.mo-stack-card.wheat b,.mo-stack-card.wheat .mo-stack-meta-line{color:#126b3a!important}
+.mo-stack-card.rice{background:#fff0d2!important;border:2px solid #e1a53a!important;border-left:6px solid #c47b08!important;color:#754800!important}
+.mo-stack-card.rice b,.mo-stack-card.rice .mo-stack-meta-line{color:#875500!important}
+/* Selected = blue outline only; keep Wheat/Rice row colour visible */
+.mo-stack-card.selected-mo-stack{outline:3px solid #1565c0!important;box-shadow:0 0 0 3px rgba(21,101,192,.22),0 4px 12px rgba(21,101,192,.20)!important;z-index:4!important}
+.mo-stack-card.selected-mo-stack.wheat{background:#e4f6e9!important;border-color:#1565c0!important;border-left:6px solid #168548!important}
+.mo-stack-card.selected-mo-stack.rice{background:#fff0d2!important;border-color:#1565c0!important;border-left:6px solid #c47b08!important}
+</style>
