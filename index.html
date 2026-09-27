@@ -492,6 +492,37 @@ body.dashboard-open .final-quick-row{display:none!important}
 .mo-stack-bags{white-space:nowrap!important;font-size:10px!important;font-weight:900!important;}
 .mo-stack-card .mo-delete-btn{flex:0 0 auto!important;padding:4px 6px!important;font-size:15px!important;line-height:1!important;}
 </style>
+
+<style id="under-issue-wheat-rice-row-colours">
+/* Under Issue Stack: keep Wheat and Rice visibly distinct even when selected. */
+.mo-stack-card.wheat{
+  background:#e9f7ee!important;
+  border:2px solid #43a047!important;
+  border-left:7px solid #1b7f3a!important;
+  color:#145a2d!important;
+}
+.mo-stack-card.wheat b{color:#176b35!important}
+.mo-stack-card.rice{
+  background:#fff4d6!important;
+  border:2px solid #e0a12b!important;
+  border-left:7px solid #b66b00!important;
+  color:#704500!important;
+}
+.mo-stack-card.rice b{color:#8a5200!important}
+/* Selection stays visible without removing the commodity colour. */
+.mo-stack-card.wheat.selected-mo-stack{
+  background:#dff1e5!important;
+  border-color:#1b7f3a!important;
+  outline:3px solid #1565c0!important;
+}
+.mo-stack-card.rice.selected-mo-stack{
+  background:#ffedbf!important;
+  border-color:#b66b00!important;
+  outline:3px solid #1565c0!important;
+}
+.mo-stack-card.wheat.selected-mo-stack b{color:#145a2d!important}
+.mo-stack-card.rice.selected-mo-stack b{color:#704500!important}
+</style>
 </head>
 <body>
 <div class="pin-screen" id="pinScreen">
