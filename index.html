@@ -483,6 +483,15 @@ body.dashboard-open .final-quick-row{display:none!important}
 .note-add-toggle{display:flex!important;width:100%;box-sizing:border-box;justify-content:space-between;align-items:center;cursor:pointer;border:0!important;margin:0 0 8px!important}
 @media(max-width:700px){.note-add-toggle{font-size:15px!important;padding:11px 13px!important}.note-entry-panel{margin-top:0!important}}
 </style>
+<style id="moisture-under-issue-compact-fix">
+/* Under Issue: only non-zero-bag stacks, one compact row per stack. */
+.mo-stack-list{display:grid!important;grid-template-columns:1fr!important;gap:4px!important;}
+.mo-stack-card{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:6px!important;min-height:34px!important;padding:5px 7px!important;border-radius:7px!important;box-sizing:border-box!important;}
+.mo-stack-card>div:first-child{min-width:0!important;flex:1 1 auto!important;display:flex!important;align-items:center!important;gap:6px!important;}
+.mo-stack-card .mo-stack-meta-line{white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;font-size:10px!important;}
+.mo-stack-bags{white-space:nowrap!important;font-size:10px!important;font-weight:900!important;}
+.mo-stack-card .mo-delete-btn{flex:0 0 auto!important;padding:4px 6px!important;font-size:15px!important;line-height:1!important;}
+</style>
 </head>
 <body>
 <div class="pin-screen" id="pinScreen">
@@ -1455,6 +1464,8 @@ function renderMoistureStackStatus(){
       bags:snap.bags!=null?snap.bags:(r?num(val(r,'Bags','Bags (Nos.)','No. of Bags')):0),
       qty:snap.qty!=null?snap.qty:(r?num(qty(r)):0)
     });
+    // Zero-bag stacks must not appear in Moisture Under Issue.
+    if(pending[pending.length-1] && num(pending[pending.length-1].bags)<=0) pending.pop();
   });
   const item=(r,cls,label)=>{const rice=isRice(r);const st=String(r.stack||'');const safe=st.replaceAll('\\','\\\\').replaceAll("'","\\'");const selected=String(currentMoistureStack())===st;return `<div class="mo-stack-card ${rice?'rice':'wheat'} ${selected?'selected-mo-stack':''}" onclick="openUnderIssueStack('${safe}')"><div><b>${esc(st)}</b><span class="mo-stack-meta-line">${esc(r.commodity||'')} · ${esc(r.cropYear||'')}</span></div><div class="mo-stack-bags">${num(r.bags).toLocaleString()} bags</div><button class="mo-delete-btn" title="Delete" aria-label="Delete" onclick="event.stopPropagation();deleteMoistureStackWithPin('${safe}')">🗑</button></div>`};
   box.innerHTML=`<div class="mo-status-panel mo-pending"><div class="mo-status-head"><span>🟠 UNDER ISSUE STACK</span><span class="mo-status-count">${pending.length}</span></div><div class="smallmuted">Moisture issue wale stacks — Wheat aur Rice alag colour me</div><div class="mo-stack-list">${pending.length?pending.map(r=>item(r,'mo-pending','Pending')).join(''):'<div class="empty">No pending stack.</div>'}</div></div>`;
