@@ -1462,7 +1462,7 @@ function renderMoistureStackStatus(){
     // Zero-bag stacks must not appear in Moisture Under Issue.
     if(pending[pending.length-1] && num(pending[pending.length-1].bags)<=0) pending.pop();
   });
-  const item=(r,cls,label)=>{const rice=isRice(r);const st=String(r.stack||'');const safe=st.replaceAll('\\','\\\\').replaceAll("'","\\'");const selected=String(currentMoistureStack())===st;return `<div class="mo-stack-card ${rice?'rice':'wheat'} ${selected?'selected-mo-stack':''}" onclick="openUnderIssueStack('${safe}')"><div><b>${esc(st)}</b><span class="mo-stack-meta-line">${esc(r.commodity||'')} · ${esc(r.cropYear||'')}</span></div><div class="mo-stack-remaining">Remaining: ${Math.max(0,num(r.bags)-stackUpdatedTotal(moistureStore()[st]||{})).toLocaleString()} bags</div><button class="mo-delete-btn" title="Delete" aria-label="Delete" onclick="event.stopPropagation();deleteMoistureStackWithPin('${safe}')">🗑</button></div>`};
+  const item=(r,cls,label)=>{const rice=isRice(r);const st=String(r.stack||'');const safe=st.replaceAll('\\','\\\\').replaceAll("'","\\'");const selected=String(currentMoistureStack())===st;return `<div class="mo-stack-card ${rice?'rice':'wheat'} ${selected?'selected-mo-stack':''}" onclick="openUnderIssueStack('${safe}')"><div><b>${esc(st)}</b><span class="mo-stack-meta-line">${esc(r.commodity||'')} · ${esc(r.cropYear||'')}</span></div><div class="mo-stack-remaining">Remaining: ${Math.max(0,num(r.bags)-stackUpdatedTotal(moistureStore()[st]||{})).toLocaleString()}</div><button class="mo-delete-btn" title="Delete" aria-label="Delete" onclick="event.stopPropagation();deleteMoistureStackWithPin('${safe}')">🗑</button></div>`};
   box.innerHTML=`<div class="mo-status-panel mo-pending"><div class="mo-status-head"><span>🟠 UNDER ISSUE STACK</span><span class="mo-status-count">${pending.length}</span></div><div class="smallmuted">Moisture issue wale stacks — Wheat aur Rice alag colour me</div><div class="mo-stack-list">${pending.length?pending.map(r=>item(r,'mo-pending','Pending')).join(''):'<div class="empty">No pending stack.</div>'}</div></div>`;
 }
 function selectMoistureStack(st){const key=String(st||'').trim();if(!key)return;const r=rows.find(x=>String(stack(x))===key);if(!r){alert('Selected stack Master Sheet me nahi mila.');return}localStorage.setItem('shambhuSelectedMoistureStack',key);const sel=$('mStack');if(sel)sel.value=key;loadMoistureStack();renderMoistureStackStatus();requestAnimationFrame(()=>{const target=document.querySelector('.saved-moisture-focus');if(target)target.scrollIntoView({behavior:'smooth',block:'start'});});}
@@ -1523,8 +1523,8 @@ function calcMoisture(){
   if($('mCompleteStatus')){const rem=total-issued;$('mCompleteStatus').textContent=total>0&&rem<=100&&rem>=-100&&issued>0&&updated>=issued?'READY — REMAINING 100 TO -100 + MOISTURE COMPLETE':'ACTIVE — '+rem.toLocaleString()+' bags remaining';}
   const remaining=total-issued;const canComplete=total>0&&remaining<=100&&remaining>=-100&&issued>0&&updated>=issued;
   const btn=$('mCompleteBtn');if(btn)btn.disabled=!canComplete;
-  const btnV=$('mCompleteBtnVisible');if(btnV)btnV.disabled=!st;
-  const bar=$('moCompleteBar');if(bar)bar.style.display=st?'flex':'none';
+  const btnV=$('mCompleteBtnVisible');if(btnV)btnV.disabled=!canComplete;
+  const bar=$('moCompleteBar');if(bar)bar.style.display=canComplete?'flex':'none';
 
 }
 function updateMoistureHeader(){const st=currentMoistureStack(),bar=$('mStackBar');if(!bar||!st)return;const rec=stackRecord(st),total=num($('mStackBags').value),issued=stackIssuedTotal(rec),updated=stackUpdatedTotal(rec);bar.style.display='flex';bar.innerHTML=`Stack: <b>${esc(st)}</b> | ${esc(commodity(rows.find(r=>stack(r)===st)||{}))} | Crop: <b>${esc(cropYearFromRow(rows.find(r=>stack(r)===st)||{}))}</b> | Total Bags: <b>${total.toLocaleString()}</b> | Issued: <b>${issued.toLocaleString()}</b> | Remaining: <b>${(total-issued).toLocaleString()}</b> | Moisture Updated: <b>${updated.toLocaleString()}</b>`;}
@@ -1623,7 +1623,7 @@ async function editSavedRmcWithPin(){
   calcMoisture();
   alert('RMC updated successfully.');
 }
-function completeMoistureStack(){const st=currentMoistureStack();if(!st)return;const rec=stackRecord(st),total=num($('mStackBags').value),issued=stackIssuedTotal(rec),updated=stackUpdatedTotal(rec);const remaining=total-issued;if(!(total>0&&remaining<=100&&issued>0&&updated>=issued)){alert('Complete Stack tabhi hoga jab remaining bags 100 ya usse kam ho aur issued bags ka moisture complete ho.');return}if(!confirm('Is stack ko Complete karke History me move karein?'))return;const all=moistureStore();delete all[st];saveMoistureStore(all);const r=rows.find(x=>stack(x)===st),h=JSON.parse(localStorage.getItem('shambhuMoistureHistory')||'[]');const completedAt=dateTimeNow(),receiptDate=r?dateText(receipt(r)):''; const receiptObj=r?receipt(r):null; const completedDate=parseDate(completedAt.split(' ')[0]),receiptDateObj=parseDate(receiptObj); const storageDays=(completedDate&&receiptDateObj)?Math.max(0,Math.floor((new Date(completedDate.getFullYear(),completedDate.getMonth(),completedDate.getDate())-new Date(receiptDateObj.getFullYear(),receiptDateObj.getMonth(),receiptDateObj.getDate()))/86400000)):0; const finalRmc=rec.manualRmc!=null?num(rec.manualRmc):stackMasterRmc(r||{}); const finalImc=updated?stackWtTotal(rec)/updated:0; h.unshift({...rec,id:Date.now(),stack:st,completedAt,shed:r?shed(r):'',receipt:receiptDate,storageDays,commodity:r?commodity(r):'',cropYear:r?cropYearFromRow(r):'',stackBags:total,rmc:finalRmc,dmc:finalImc,imc:finalImc});localStorage.setItem('shambhuMoistureHistory',JSON.stringify(h));alert('Stack History me move ho gaya.');clearMoisture(false);renderMoistureHistory();}
+function completeMoistureStack(){const st=currentMoistureStack();if(!st)return;const rec=stackRecord(st),total=num($('mStackBags').value),issued=stackIssuedTotal(rec),updated=stackUpdatedTotal(rec);const remaining=total-issued;if(!(total>0&&remaining<=50&&remaining>=-100&&issued>0&&updated>=issued)){alert('Complete Stack tabhi show/complete hoga jab remaining bags 50 se -100 ke beech ho aur issued bags ka moisture complete ho.');return}if(!confirm('Is stack ko Complete karke History me move karein?'))return;const all=moistureStore();delete all[st];saveMoistureStore(all);const r=rows.find(x=>stack(x)===st),h=JSON.parse(localStorage.getItem('shambhuMoistureHistory')||'[]');const completedAt=dateTimeNow(),receiptDate=r?dateText(receipt(r)):''; const receiptObj=r?receipt(r):null; const completedDate=parseDate(completedAt.split(' ')[0]),receiptDateObj=parseDate(receiptObj); const storageDays=(completedDate&&receiptDateObj)?Math.max(0,Math.floor((new Date(completedDate.getFullYear(),completedDate.getMonth(),completedDate.getDate())-new Date(receiptDateObj.getFullYear(),receiptDateObj.getMonth(),receiptDateObj.getDate()))/86400000)):0; const finalRmc=rec.manualRmc!=null?num(rec.manualRmc):stackMasterRmc(r||{}); const finalImc=updated?stackWtTotal(rec)/updated:0; h.unshift({...rec,id:Date.now(),stack:st,completedAt,shed:r?shed(r):'',receipt:receiptDate,storageDays,commodity:r?commodity(r):'',cropYear:r?cropYearFromRow(r):'',stackBags:total,rmc:finalRmc,dmc:finalImc,imc:finalImc});localStorage.setItem('shambhuMoistureHistory',JSON.stringify(h));alert('Stack History me move ho gaya.');clearMoisture(false);renderMoistureHistory();}
 function clearMoisture(confirmIt=true){if(confirmIt&&!confirm('Current screen clear karein? Saved truck entries delete nahi hongi.'))return;if($('mStack'))$('mStack').value='';if($('moSavedTitle'))$('moSavedTitle').textContent='SAVED MOISTURE ENTRY';for(const id of ['mReceipt','mCommodity','mCrop','mStackBags','mRmcAuto','mRmcManual','mRemainBags','mUpdateBags','mUpdateMoisture'])if($(id))$(id).value='';if($('mUpdateDate'))$('mUpdateDate').value=dateText(new Date());if($('mUpdateTime'))$('mUpdateTime').value=new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});if($('moTruckRows'))$('moTruckRows').innerHTML='<tr><td colspan="7" class="empty">Select a stack to view moisture entries.</td></tr>';if($('mStackBar'))$('mStackBar').style.display='none';if($('mActivity'))$('mActivity').style.display='none';if($('mRmc'))$('mRmc').textContent='0.00';if($('mImc'))$('mImc').textContent='0.00';if($('mDiff'))$('mDiff').textContent='0.00';if($('mCompleteStatus'))$('mCompleteStatus').textContent='Select a stack';if($('mCompleteBtn'))$('mCompleteBtn').disabled=true;if($('mCompleteBtnVisible'))$('mCompleteBtnVisible').disabled=true;}
 function newMoisture(){localStorage.removeItem('shambhuSelectedMoistureStack');clearMoisture();}
 function renderMoistureHistory(){
@@ -2233,6 +2233,23 @@ document.addEventListener('DOMContentLoaded',function(){
 .mo-completebar{display:flex!important;justify-content:flex-end!important;align-items:center!important;margin:6px 0 10px!important;padding:0!important;background:transparent!important;border:0!important;box-shadow:none!important}
 .mo-completebar #mCompleteBtnVisible{font-size:12px!important;padding:7px 11px!important;border-radius:7px!important}
 </style>
+
+<style id="moisture-user-requested-final">
+/* Compact Moisture controls and clear commodity/selection colours. */
+.mo-add-stack-btn{padding:6px 9px!important;border-radius:7px!important;font-size:11px!important;line-height:1.1!important}
+.mo-update-tab-btn{width:auto!important;min-width:0!important;padding:6px 10px!important;border-radius:7px!important;font-size:12px!important;line-height:1.1!important}
+.mo-focus-section.moisture-update-focus{padding:5px!important;margin-bottom:6px!important}
+.mo-stack-card.wheat{background:#e8f7ed!important;border:2px solid #35a05b!important;border-left:6px solid #178345!important;color:#125b32!important}
+.mo-stack-card.wheat b{color:#0d6b38!important}
+.mo-stack-card.rice{background:#fff2d6!important;border:2px solid #e2a12b!important;border-left:6px solid #b87508!important;color:#754900!important}
+.mo-stack-card.rice b{color:#8a5400!important}
+.mo-stack-card.selected-mo-stack{outline:3px solid #1565c0!important;box-shadow:0 0 0 3px rgba(21,101,192,.22),0 4px 12px rgba(21,101,192,.20)!important;background:#dcecff!important;border-color:#1565c0!important;z-index:4!important}
+.mo-stack-card.selected-mo-stack b{color:#084b8f!important}
+.mo-stack-card .mo-delete-btn{width:20px!important;height:20px!important;min-width:20px!important;padding:0!important;font-size:10px!important;border-radius:5px!important}
+.mo-stack-remaining{font-size:10px!important;padding:4px 6px!important}
+.mo-completebar{margin:5px 0 7px!important}
+.mo-completebar #mCompleteBtnVisible{font-size:11px!important;padding:6px 9px!important}
+</style>
 </html>`;}
   window.renderChemicalReport=function(){
   try{
@@ -2265,16 +2282,7 @@ document.addEventListener('DOMContentLoaded',function(){
   }catch(e){console.error('Chemical report render error',e);}
 };
   window.viewChemicalReport=function(){const w=window.open('','_blank');if(!w){alert('Popup blocked. Allow popups for View Report.');return}w.document.write(activeChemicalFolder==='ALP'?alpReportHtml():activeChemicalFolder==='Delta'?deltaReportHtml():activeChemicalFolder==='Malathion'?malathionReportHtml():reportHtml());w.document.close();};
-  window.downloadChemicalPDF=function(){const w=window.open('','_blank');if(!w){alert('Popup blocked.');return}w.document.write((activeChemicalFolder==='ALP'?alpReportHtml():activeChemicalFolder==='Delta'?deltaReportHtml():activeChemicalFolder==='Malathion'?malathionReportHtml():reportHtml()).replace('
-</body>','<script>window.onload=function(){setTimeout(function(){window.print()},300)}<\\/script>
-<style id="moisture-requested-final-fix">
-.selected-mo-stack{outline:4px solid #1565c0!important;box-shadow:0 0 0 4px rgba(21,101,192,.28),0 5px 14px rgba(21,101,192,.20)!important;background:#d9ebff!important;transform:scale(1.015);position:relative;z-index:2}.selected-mo-stack b{color:#084b8f!important}
-.mo-action-icon{width:34px;height:34px;border:0;border-radius:8px;font-size:20px;font-weight:900;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;margin:0 2px;background:#eef3f1;color:#073d2c}
-.mo-action-icon.delete{background:#ffe4e4!important;color:#c62828!important}
-.mo-action-icon.edit{background:#edf3ff!important;color:#185abc!important}
-.mo-delete-btn{border:0;background:#ffe3e3!important;color:#c62828!important;border-radius:8px;padding:7px 9px;font-size:18px;font-weight:900;cursor:pointer}
-</style>
-</body>'));w.document.close();};
+  window.downloadChemicalPDF=function(){const w=window.open('','_blank');if(!w){alert('Popup blocked.');return}w.document.write((activeChemicalFolder==='ALP'?alpReportHtml():activeChemicalFolder==='Delta'?deltaReportHtml():activeChemicalFolder==='Malathion'?malathionReportHtml():reportHtml()).replace('</body>','<script>window.onload=function(){setTimeout(function(){window.print()},300)}<\/script></body>'));w.document.close();};
   window.downloadChemicalExcel=function(){const r=reportData(),html=activeChemicalFolder==='ALP'?alpReportHtml():activeChemicalFolder==='Delta'?deltaReportHtml():activeChemicalFolder==='Malathion'?malathionReportHtml():reportHtml();const blob=new Blob([html],{type:'application/vnd.ms-excel'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='SHAMBHU_SHED_Chemical_Report_'+r.m+'.xls';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);};
 function malathionEntries(){
     return chemRead().filter(x=>x.chemical==='Malathion').sort((a,b)=>String(a.date).localeCompare(String(b.date))||Number(a.id)-Number(b.id));
