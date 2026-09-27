@@ -523,6 +523,15 @@ body.dashboard-open .final-quick-row{display:none!important}
 .mo-stack-card.wheat.selected-mo-stack b{color:#145a2d!important}
 .mo-stack-card.rice.selected-mo-stack b{color:#704500!important}
 </style>
+<style id="under-issue-wheat-rice-final-visible">
+/* FINAL: Under Issue Stack commodity colours — full row, including selected rows. */
+#moStatusGrid .mo-stack-list .mo-stack-card[data-commodity="wheat"]{background:#dff4e6!important;border:2px solid #36a65c!important;border-left:8px solid #168548!important;color:#145b32!important;box-shadow:inset 0 0 0 1px rgba(22,133,72,.08)!important}
+#moStatusGrid .mo-stack-list .mo-stack-card[data-commodity="wheat"] b,#moStatusGrid .mo-stack-list .mo-stack-card[data-commodity="wheat"] .mo-stack-meta-line{color:#126b3a!important}
+#moStatusGrid .mo-stack-list .mo-stack-card[data-commodity="rice"]{background:#fff0c9!important;border:2px solid #e0a12b!important;border-left:8px solid #bd7100!important;color:#754800!important;box-shadow:inset 0 0 0 1px rgba(189,113,0,.08)!important}
+#moStatusGrid .mo-stack-list .mo-stack-card[data-commodity="rice"] b,#moStatusGrid .mo-stack-list .mo-stack-card[data-commodity="rice"] .mo-stack-meta-line{color:#875500!important}
+#moStatusGrid .mo-stack-list .mo-stack-card[data-commodity="wheat"].selected-mo-stack{background:#dff4e6!important;border-color:#168548!important;border-left-color:#0e6f39!important;outline:3px solid #1565c0!important}
+#moStatusGrid .mo-stack-list .mo-stack-card[data-commodity="rice"].selected-mo-stack{background:#fff0c9!important;border-color:#bd7100!important;border-left-color:#a35e00!important;outline:3px solid #1565c0!important}
+</style>
 </head>
 <body>
 <div class="pin-screen" id="pinScreen">
@@ -683,8 +692,14 @@ function dayDiff(x,base=new Date()){const d=parseDate(x);if(!d)return null;const
 function addDays(x,n){const d=parseDate(x);if(!d)return null;d.setDate(d.getDate()+n);return d}
 function dateDiffFromToday(x){return dayDiff(x)}
 function commodity(r){return val(r,"Commodity / Crop Year","Commodity/Crop Year","Commodity","Crop Year","Commodity Name") }
-function isRice(r){return /rice|frk|rra/i.test(commodity(r))}
-function isWheat(r){return !isRice(r)&&/wheat/i.test(commodity(r))}
+function isRice(r){
+  const text=Object.values(r||{}).map(v=>String(v??'')).join(' ');
+  return /rice|frk|rra|rrc|धान/i.test(text);
+}
+function isWheat(r){
+  const text=Object.values(r||{}).map(v=>String(v??'')).join(' ');
+  return !isRice(r)&&/wheat|गेहूं|गेहूँ/i.test(text);
+}
 function shed(r){return val(r,"Shed No.","Shed No","Shed","Godown No.","Shed Number","Godown Number") }
 function stack(r){return val(r,"Stack No.","Stack No","Stack Number","Stack No. ","Stack") }
 function qty(r){return num(val(r,"Qty (MT)","Qty","Quantity (MT)","Quantity","Qty in MT","Quantity in MT","Stock (MT)","Stock MT","MT","Total Qty (MT)"))}
@@ -1493,7 +1508,7 @@ function renderMoistureStackStatus(){
     // Zero-bag stacks must not appear in Moisture Under Issue.
     if(pending[pending.length-1] && num(pending[pending.length-1].bags)<=0) pending.pop();
   });
-  const item=(r,cls,label)=>{const rice=isRice(r);const st=String(r.stack||'');const safe=st.replaceAll('\\','\\\\').replaceAll("'","\\'");const selected=String(currentMoistureStack())===st;return `<div class="mo-stack-card ${rice?'rice':'wheat'} ${selected?'selected-mo-stack':''}" onclick="openUnderIssueStack('${safe}')"><div><b>${esc(st)}</b><span class="mo-stack-meta-line">${esc(r.commodity||'')} · ${esc(r.cropYear||'')}</span></div><div class="mo-stack-remaining">Remaining: ${Math.max(0,num(r.bags)-stackUpdatedTotal(moistureStore()[st]||{})).toLocaleString()}</div><button class="mo-delete-btn" title="Delete" aria-label="Delete" onclick="event.stopPropagation();deleteMoistureStackWithPin('${safe}')">🗑</button></div>`};
+  const item=(r,cls,label)=>{const rice=isRice(r);const st=String(r.stack||'');const safe=st.replaceAll('\\','\\\\').replaceAll("'","\\'");const selected=String(currentMoistureStack())===st;return `<div class="mo-stack-card ${rice?'rice':'wheat'} ${selected?'selected-mo-stack':''}" data-commodity="${rice?'rice':'wheat'}" onclick="openUnderIssueStack('${safe}')"><div><b>${esc(st)}</b><span class="mo-stack-meta-line">${esc(r.commodity||'')} · ${esc(r.cropYear||'')}</span></div><div class="mo-stack-remaining">Remaining: ${Math.max(0,num(r.bags)-stackUpdatedTotal(moistureStore()[st]||{})).toLocaleString()}</div><button class="mo-delete-btn" title="Delete" aria-label="Delete" onclick="event.stopPropagation();deleteMoistureStackWithPin('${safe}')">🗑</button></div>`};
   box.innerHTML=`<div class="mo-status-panel mo-pending"><div class="mo-status-head"><span>🟠 UNDER ISSUE STACK</span><span class="mo-status-count">${pending.length}</span></div><div class="mo-stack-list">${pending.length?pending.map(r=>item(r,'mo-pending','Pending')).join(''):'<div class="empty">No pending stack.</div>'}</div></div>`;
 }
 function selectMoistureStack(st){const key=String(st||'').trim();if(!key)return;const r=rows.find(x=>String(stack(x))===key);if(!r){alert('Selected stack Master Sheet me nahi mila.');return}localStorage.setItem('shambhuSelectedMoistureStack',key);const sel=$('mStack');if(sel)sel.value=key;loadMoistureStack();renderMoistureStackStatus();requestAnimationFrame(()=>{const target=document.querySelector('.saved-moisture-focus');if(target)target.scrollIntoView({behavior:'smooth',block:'start'});});}
