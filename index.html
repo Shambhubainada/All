@@ -1360,14 +1360,14 @@ function moisturePage(){
       <div id="moStatusGrid" class="mo-status-grid"></div>
     </div>
 
+    <div class="mo-focus-section moisture-update-focus" id="moUpdateMoistureTab">
+      <button type="button" class="mo-focus-title mo-update-tab-btn" onclick="openMoistureSaveModal()">💧 UPDATE MOISTURE</button>
+      <div id="mActivity" class="mo-pending-note" style="display:none"></div>
+    </div>
+
     <div class="mo-completebar" id="moCompleteBar" style="display:none">
       <div><b id="mCompleteStatusVisible">Select a stack</b><div class="smallmuted">Complete option: Remaining ≤ 100 bags + moisture entries complete</div></div>
       <button id="mCompleteBtnVisible" onclick="completeMoistureStack()" disabled>✅ COMPLETE & MOVE TO HISTORY</button>
-    </div>
-
-    <div class="mo-focus-section moisture-update-focus" id="moUpdateMoistureTab">
-      <button type="button" class="mo-update-tab-btn" onclick="openMoistureSaveModal()">💧 UPDATE MOISTURE</button>
-      <div id="mActivity" class="mo-pending-note" style="display:none"></div>
     </div>
 
     <div class="mo-focus-section saved-moisture-focus">
@@ -1463,7 +1463,7 @@ function renderMoistureStackStatus(){
     // Zero-bag stacks must not appear in Moisture Under Issue.
     if(pending[pending.length-1] && num(pending[pending.length-1].bags)<=0) pending.pop();
   });
-  const item=(r,cls,label)=>{const rice=isRice(r);const st=String(r.stack||'');const safe=st.replaceAll('\\','\\\\').replaceAll("'","\\'");const selected=String(currentMoistureStack())===st;return `<div class="mo-stack-card ${rice?'rice':'wheat'} ${selected?'selected-mo-stack':''}" onclick="openUnderIssueStack('${safe}')"><div><b>${esc(st)}</b><span class="mo-stack-meta-line">${esc(r.commodity||'')} · ${esc(r.cropYear||'')}</span></div><div class="mo-stack-remaining">Remaining: ${Math.max(0,num(r.bags)-stackUpdatedTotal(moistureStore()[st]||{})).toLocaleString()} bags</div><button class="mo-delete-btn" title="Delete" aria-label="Delete" onclick="event.stopPropagation();deleteMoistureStackWithPin('${safe}')">🗑</button></div>`};
+  const item=(r,cls,label)=>{const rice=isRice(r);const st=String(r.stack||'');const safe=st.replaceAll('\\','\\\\').replaceAll("'","\\'");const selected=String(currentMoistureStack())===st;return `<div class="mo-stack-card ${rice?'rice':'wheat'} ${selected?'selected-mo-stack':''}" onclick="openUnderIssueStack('${safe}')"><div><b>${esc(st)}</b><span class="mo-stack-meta-line">${esc(r.commodity||'')} · ${esc(r.cropYear||'')}</span></div><div class="mo-stack-remaining">Remaining ${Math.max(0,num(r.bags)-stackUpdatedTotal(moistureStore()[st]||{})).toLocaleString()}</div><button class="mo-delete-btn" title="Delete" aria-label="Delete" onclick="event.stopPropagation();deleteMoistureStackWithPin('${safe}')">🗑</button></div>`};
   box.innerHTML=`<div class="mo-status-panel mo-pending"><div class="mo-status-head"><span>🟠 UNDER ISSUE STACK</span><span class="mo-status-count">${pending.length}</span></div><div class="smallmuted">Moisture issue wale stacks — Wheat aur Rice alag colour me</div><div class="mo-stack-list">${pending.length?pending.map(r=>item(r,'mo-pending','Pending')).join(''):'<div class="empty">No pending stack.</div>'}</div></div>`;
 }
 function selectMoistureStack(st){const key=String(st||'').trim();if(!key)return;const r=rows.find(x=>String(stack(x))===key);if(!r){alert('Selected stack Master Sheet me nahi mila.');return}localStorage.setItem('shambhuSelectedMoistureStack',key);const sel=$('mStack');if(sel)sel.value=key;loadMoistureStack();renderMoistureStackStatus();requestAnimationFrame(()=>{const target=document.querySelector('.saved-moisture-focus');if(target)target.scrollIntoView({behavior:'smooth',block:'start'});});}
@@ -2196,19 +2196,7 @@ document.addEventListener('DOMContentLoaded',function(){
 .moisture-focused-page .mo-stack-details{display:none!important}
 </style>
 </html>`;}
-  function malathionReportHtml(){const r=reportData(),month=new Date(r.m+'-01T00:00:00').toLocaleDateString('en-IN',{month:'long',year:'numeric'}),w=chemNum(r.monthWheatQty),ri=chemNum(r.monthRiceQty),t=w+ri,aw=chemNum(r.allWheatQty),ar=chemNum(r.allRiceQty),at=aw+ar,done=(r.mm||[]).reduce((s,x)=>s+Math.round(chemNum(x.qty)),0),allDone=(r.total||[]).reduce((s,x)=>s+Math.round(chemNum(x.qty)),0),target=t*0.20,allTarget=at*0.20,remain=Math.max(0,target-done),allRemain=Math.max(0,allTarget-allDone);return `<!doctype html><html><head><meta charset="utf-8"><title>Malathion Report</title><style>body{font-family:Arial;margin:28px;color:#172d25}h1{text-align:center;margin:0;font-size:24px}h2{text-align:center;margin:5px 0 18px;font-size:18px}.sum{margin:14px 0;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.card{border:1px solid #aaa;padding:10px;text-align:center}.card b{display:block;font-size:16px;margin-top:4px}.indicator{border:2px solid #b8860b;padding:12px;margin:16px 0;text-align:center;background:#fffaf0}.indicator strong{font-size:18px}</style><style id="compact-colour-summary-row">.report-summary-row td{font-weight:600;padding:4px 3px;line-height:1.15;background:#fff7d6;border:1px solid #d6b656;color:#243126}.report-summary-row td:nth-child(1),.report-summary-row td:nth-child(2){background:#e8eefc;color:#244a8f}.report-summary-row td:nth-child(3){background:#e8f7ec;color:#168a45}.report-summary-row td:nth-child(4){background:#fff0e1;color:#b45b16}.report-summary-row td:nth-child(5){background:#eee8ff;color:#6542a5}.report-summary-row td:nth-child(6){background:#e7f7f7;color:#16757a}.report-summary-row b{font-size:12px}</style>
-<style id="moisture-under-issue-final-ui">
-/* Requested Moisture UI only */
-.mo-update-tab-btn{display:inline-flex!important;align-items:center;justify-content:center;width:auto!important;min-width:150px!important;margin:0!important;padding:7px 12px!important;border:1px solid #2d73c8!important;border-radius:8px!important;background:#eaf3ff!important;color:#15549a!important;font-size:13px!important;font-weight:900!important;line-height:1.1!important;box-shadow:0 2px 6px rgba(21,101,192,.16)!important;cursor:pointer!important}
-.moisture-update-focus{padding:5px 0!important;margin:4px 0 7px!important;background:transparent!important;border:0!important;box-shadow:none!important}
-.mo-stack-card .mo-delete-btn{width:24px!important;height:24px!important;padding:0!important;font-size:12px!important;line-height:1!important;border-radius:5px!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;flex:0 0 24px!important}
-.mo-stack-card.selected-mo-stack{background:linear-gradient(90deg,#d5eaff,#eef7ff)!important;border:2px solid #1565c0!important;border-left:6px solid #0d5bb5!important;outline:3px solid rgba(21,101,192,.28)!important;box-shadow:0 0 0 3px rgba(21,101,192,.12),0 5px 14px rgba(21,101,192,.22)!important;transform:translateY(-1px) scale(1.01)!important;position:relative!important;z-index:3!important}
-.mo-stack-card.selected-mo-stack b{color:#084b8f!important;font-weight:1000!important}
-.mo-stack-card.selected-mo-stack .mo-stack-meta-line{color:#15549a!important;font-weight:800!important}
-.mo-stack-card.selected-mo-stack:after{content:'✓ SELECTED';font-size:9px;font-weight:1000;color:#084b8f;background:#c5e0ff;border:1px solid #6fa8dc;border-radius:5px;padding:2px 4px;white-space:nowrap;margin-left:2px}
-@media(max-width:560px){.mo-update-tab-btn{min-width:135px!important;font-size:12px!important;padding:6px 10px!important}.mo-stack-card.selected-mo-stack{transform:translateY(-1px) scale(1.005)!important}}
-</style>
-</head><body><h1>SHED NO. 9 / 14 / 18 / 20</h1><h2>MALATHION REQUIREMENT REPORT — ${month}</h2><div class="sum"><div class="card">ALP Wheat Qty<b>${Math.round(w)} MT</b></div><div class="card">ALP Rice Qty<b>${Math.round(ri)} MT</b></div><div class="card">Total ALP Qty<b>${Math.round(t)} MT</b></div><div class="card">Malathion 20% Target<b>${target.toFixed(2)} MT</b></div><div class="card">Malathion Done<b>${done.toFixed(2)} MT</b></div><div class="card">Malathion Baki<b>${remain.toFixed(2)} MT</b></div></div><div class="indicator"><b>20% MALATHION REQUIREMENT</b><br>Target ${target.toFixed(2)} MT · Done ${done.toFixed(2)} MT · <strong>Baki ${remain.toFixed(2)} MT</strong></div><p><b>Abhi tak:</b> Wheat ALP ${Math.round(aw)} MT | Rice ALP ${Math.round(ar)} MT | Total ALP ${Math.round(at)} MT | 20% Target ${allTarget.toFixed(2)} MT | Done ${allDone.toFixed(2)} MT | <b>Baki ${allRemain.toFixed(2)} MT</b></p>
+  function malathionReportHtml(){const r=reportData(),month=new Date(r.m+'-01T00:00:00').toLocaleDateString('en-IN',{month:'long',year:'numeric'}),w=chemNum(r.monthWheatQty),ri=chemNum(r.monthRiceQty),t=w+ri,aw=chemNum(r.allWheatQty),ar=chemNum(r.allRiceQty),at=aw+ar,done=(r.mm||[]).reduce((s,x)=>s+Math.round(chemNum(x.qty)),0),allDone=(r.total||[]).reduce((s,x)=>s+Math.round(chemNum(x.qty)),0),target=t*0.20,allTarget=at*0.20,remain=Math.max(0,target-done),allRemain=Math.max(0,allTarget-allDone);return `<!doctype html><html><head><meta charset="utf-8"><title>Malathion Report</title><style>body{font-family:Arial;margin:28px;color:#172d25}h1{text-align:center;margin:0;font-size:24px}h2{text-align:center;margin:5px 0 18px;font-size:18px}.sum{margin:14px 0;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.card{border:1px solid #aaa;padding:10px;text-align:center}.card b{display:block;font-size:16px;margin-top:4px}.indicator{border:2px solid #b8860b;padding:12px;margin:16px 0;text-align:center;background:#fffaf0}.indicator strong{font-size:18px}</style><style id="compact-colour-summary-row">.report-summary-row td{font-weight:600;padding:4px 3px;line-height:1.15;background:#fff7d6;border:1px solid #d6b656;color:#243126}.report-summary-row td:nth-child(1),.report-summary-row td:nth-child(2){background:#e8eefc;color:#244a8f}.report-summary-row td:nth-child(3){background:#e8f7ec;color:#168a45}.report-summary-row td:nth-child(4){background:#fff0e1;color:#b45b16}.report-summary-row td:nth-child(5){background:#eee8ff;color:#6542a5}.report-summary-row td:nth-child(6){background:#e7f7f7;color:#16757a}.report-summary-row b{font-size:12px}</style></head><body><h1>SHED NO. 9 / 14 / 18 / 20</h1><h2>MALATHION REQUIREMENT REPORT — ${month}</h2><div class="sum"><div class="card">ALP Wheat Qty<b>${Math.round(w)} MT</b></div><div class="card">ALP Rice Qty<b>${Math.round(ri)} MT</b></div><div class="card">Total ALP Qty<b>${Math.round(t)} MT</b></div><div class="card">Malathion 20% Target<b>${target.toFixed(2)} MT</b></div><div class="card">Malathion Done<b>${done.toFixed(2)} MT</b></div><div class="card">Malathion Baki<b>${remain.toFixed(2)} MT</b></div></div><div class="indicator"><b>20% MALATHION REQUIREMENT</b><br>Target ${target.toFixed(2)} MT · Done ${done.toFixed(2)} MT · <strong>Baki ${remain.toFixed(2)} MT</strong></div><p><b>Abhi tak:</b> Wheat ALP ${Math.round(aw)} MT | Rice ALP ${Math.round(ar)} MT | Total ALP ${Math.round(at)} MT | 20% Target ${allTarget.toFixed(2)} MT | Done ${allDone.toFixed(2)} MT | <b>Baki ${allRemain.toFixed(2)} MT</b></p>
 </body>
 <style id="alp-few-heavy-final-fix">
 .stack-item.stack-weight-toggle.weight-few em{background:#e7f7ec!important;color:#168a45!important;border:1px solid #9bd3ad!important}
@@ -2548,4 +2536,17 @@ table.mir-test-check-table{width:max-content;min-width:1080px;table-layout:fixed
 .mo-stack-card .mo-delete-btn{margin:0!important;padding:5px 6px!important;font-size:0!important;line-height:1}
 .mo-stack-card .mo-delete-btn::first-letter{font-size:15px}
 @media(max-width:520px){.mo-stack-card{grid-template-columns:minmax(0,1fr) auto auto!important;gap:5px!important;padding:6px!important}.mo-stack-remaining{font-size:10px;padding:4px 5px}.mo-stack-card b{font-size:13px!important}}
+</style>
+
+<style id="moisture-final-selected-compact-2026">
+/* Requested final Moisture UI only */
+.mo-focus-section.moisture-update-focus{padding:4px 0!important;margin:5px 0 7px!important}
+.mo-update-tab-btn{width:auto!important;display:inline-flex!important;align-items:center!important;border:1px solid #0a7a4b!important;border-radius:7px!important;padding:6px 10px!important;font-size:12px!important;line-height:1!important;box-shadow:0 2px 7px rgba(10,122,75,.18)!important}
+.mo-stack-card .mo-stack-remaining{font-size:10px!important;padding:3px 6px!important;border-radius:6px!important;font-weight:900!important}
+.mo-stack-card .mo-delete-btn{width:24px!important;height:24px!important;padding:0!important;min-width:24px!important;font-size:0!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;border-radius:5px!important}
+.mo-stack-card .mo-delete-btn::before{content:'🗑';font-size:11px!important}
+.mo-stack-card.selected-mo-stack{background:linear-gradient(135deg,#d9edff,#eef7ff)!important;border:2px solid #1976d2!important;box-shadow:0 0 0 2px #8ec5ff,0 4px 12px rgba(25,118,210,.28)!important;transform:scale(1.01)!important;position:relative!important}
+.mo-stack-card.selected-mo-stack::after{content:'✓ SELECTED';font-size:8px;font-weight:1000;color:#07579e;background:#c9e5ff;border:1px solid #69aef0;border-radius:5px;padding:2px 4px;position:absolute;right:33px;top:-8px;letter-spacing:.2px}
+.mo-stack-card.selected-mo-stack>b,.mo-stack-card.selected-mo-stack b{color:#07579e!important}
+@media(max-width:520px){.mo-update-tab-btn{font-size:11px!important;padding:6px 9px!important}.mo-stack-card.selected-mo-stack::after{font-size:7px;right:31px}}
 </style>
