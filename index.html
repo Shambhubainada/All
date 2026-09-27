@@ -2570,3 +2570,37 @@ table.mir-test-check-table{width:max-content;min-width:1080px;table-layout:fixed
 .mo-stack-card .mo-delete-btn::first-letter{font-size:15px}
 @media(max-width:520px){.mo-stack-card{grid-template-columns:minmax(0,1fr) auto auto!important;gap:5px!important;padding:6px!important}.mo-stack-remaining{font-size:10px;padding:4px 5px}.mo-stack-card b{font-size:13px!important}}
 </style>
+<style id="moisture-final-ui-fix">
+/* Final moisture compact visual fixes */
+.mo-add-stack-btn{
+  width:auto!important;min-width:0!important;padding:5px 8px!important;font-size:10px!important;
+  line-height:1!important;border-radius:6px!important
+}
+.mo-update-tab-btn{
+  width:auto!important;min-width:0!important;padding:5px 8px!important;font-size:10px!important;
+  line-height:1!important;border-radius:6px!important
+}
+.mo-stack-card .mo-delete-btn{
+  width:18px!important;height:18px!important;min-width:18px!important;padding:0!important;
+  font-size:9px!important;line-height:1!important;border-radius:4px!important
+}
+/* Wheat / Rice keep their own colours */
+.mo-stack-card.wheat{
+  background:#e8f7ed!important;border-color:#35a05b!important;border-left:5px solid #178345!important;color:#125b32!important
+}
+.mo-stack-card.wheat b{color:#0d6b38!important}
+.mo-stack-card.rice{
+  background:#fff2d6!important;border-color:#e2a12b!important;border-left:5px solid #b87508!important;color:#754900!important
+}
+.mo-stack-card.rice b{color:#8a5400!important}
+/* Selected = strong highlight/outline, while Wheat/Rice background remains visible */
+.mo-stack-card.selected-mo-stack{
+  outline:3px solid #1565c0!important;
+  outline-offset:1px!important;
+  box-shadow:0 0 0 3px rgba(21,101,192,.20),0 4px 12px rgba(21,101,192,.22)!important;
+  transform:translateY(-1px)!important;z-index:4!important
+}
+.mo-stack-card.selected-mo-stack.wheat{background:#e8f7ed!important;border-color:#1565c0!important;border-left:5px solid #0d5bb5!important}
+.mo-stack-card.selected-mo-stack.rice{background:#fff2d6!important;border-color:#1565c0!important;border-left:5px solid #0d5bb5!important}
+.mo-stack-card.selected-mo-stack b{color:#084b8f!important}
+</style>
