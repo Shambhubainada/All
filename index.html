@@ -1440,6 +1440,8 @@ function renderMoistureStackStatus(){
   const pending=[];
   Object.keys(store).forEach(st=>{
     const rec=store[st]||{};
+    // Completed Moisture stacks must not remain in Under Issue.
+    if(rec.completed===true || rec.status==='Completed' || rec.completedAt)return;
     if(!(rec.addedToMoisture||((rec.activities||rec.truckEntries||rec.entries||[]).some(e=>num(e.bags)>0))))return;
     const snap=rec.sourceSnapshot||{};
     const r=rows.find(x=>String(stack(x))===String(st));
