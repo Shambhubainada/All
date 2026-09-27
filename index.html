@@ -532,6 +532,14 @@ body.dashboard-open .final-quick-row{display:none!important}
 #moStatusGrid .mo-stack-list .mo-stack-card[data-commodity="wheat"].selected-mo-stack{background:#dff4e6!important;border-color:#168548!important;border-left-color:#0e6f39!important;outline:3px solid #1565c0!important}
 #moStatusGrid .mo-stack-list .mo-stack-card[data-commodity="rice"].selected-mo-stack{background:#fff0c9!important;border-color:#bd7100!important;border-left-color:#a35e00!important;outline:3px solid #1565c0!important}
 </style>
+<style id="saved-moisture-time-date-real-fix">
+/* REAL PAGE FIX: Saved Moisture Entry only. Time first, Date second. */
+#moTruckRows td.mo-entry-datetime{white-space:normal!important;vertical-align:middle!important;text-align:center!important;min-width:70px!important;width:70px!important;padding:6px 4px!important;line-height:1.15!important;}
+#moTruckRows td.mo-entry-datetime .mo-time{display:block!important;font-size:12px!important;font-weight:900!important;line-height:1.2!important;white-space:nowrap!important;}
+#moTruckRows td.mo-entry-datetime .mo-date{display:block!important;font-size:11px!important;font-weight:900!important;line-height:1.2!important;white-space:nowrap!important;}
+#moTruckRows td.mo-entry-datetime .mo-sep{display:none!important;}
+#moTruckRows td.mo-entry-datetime br{display:none!important;}
+</style>
 </head>
 <body>
 <div class="pin-screen" id="pinScreen">
@@ -1417,7 +1425,7 @@ function moisturePage(){
 
     <div class="mo-focus-section saved-moisture-focus">
       <div class="mo-focus-title" id="moSavedTitle">SAVED MOISTURE ENTRY</div>
-      <div class="mo-table-wrap"><table class="mo-final-table"><thead><tr><th>Sr. No.</th><th>Bags</th><th>Moisture (%)</th><th>Slip</th><th>Date / Time</th><th>Action</th></tr></thead><tbody id="moTruckRows"></tbody></table></div>
+      <div class="mo-table-wrap"><table class="mo-final-table"><thead><tr><th>Sr. No.</th><th>Bags</th><th>Moisture (%)</th><th>Slip</th><th></th><th>Action</th></tr></thead><tbody id="moTruckRows"></tbody></table></div>
       <div class="mo-saved-rmc-strip"><div class="mo-saved-rmc-edit" role="button" tabindex="0" title="Tap to edit RMC (PIN required)" onclick="editSavedRmcWithPin()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();editSavedRmcWithPin()}"><span>RMC ✏️</span><b id="moSavedRmc">0.00 %</b><small>Tap to edit • PIN</small></div><div><span>IMC</span><b id="moSavedImc">0.00 %</b></div><div><span>DIFFERENCE</span><b id="moSavedDiff">0.00 %</b></div></div>
     </div>
 
