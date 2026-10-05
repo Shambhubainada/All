@@ -567,10 +567,10 @@ body.dashboard-open .final-quick-row{display:none!important}
 </style>
 <style id="exact-request-final-fix">
 /* Exact requested UI fixes only */
-#liveIndicator{display:inline-flex!important;align-items:center;font-weight:900!important;gap:4px;white-space:nowrap}
-#liveIndicator.live-ok{color:#087a45!important}
-#liveIndicator.live-bad{color:#d92d3b!important;animation:liveBadBlink .8s steps(2,end) infinite}
-@keyframes liveBadBlink{50%{opacity:.35}}
+#liveIndicator{display:inline-block!important;width:24px!important;height:24px!important;padding:0!important;border-radius:50%!important;background:#18a957!important;box-shadow:0 0 0 2px rgba(255,255,255,.25),0 2px 8px rgba(0,0,0,.25)!important;vertical-align:middle!important}
+#liveIndicator.live-ok{background:#18a957!important;animation:none!important}
+#liveIndicator.live-bad{background:#e3293b!important;animation:liveLightBlink .8s steps(2,end) infinite!important}
+@keyframes liveLightBlink{50%{opacity:.25;box-shadow:0 0 0 2px rgba(255,255,255,.2),0 2px 8px rgba(0,0,0,.12)!important}}
 #status{display:none!important}
 #refresh{font-size:20px!important;font-weight:900!important;line-height:1!important;padding:7px 10px!important;min-width:40px!important}
 body.page-open:not(.dashboard-open) #backBtn{background:#d92d3b!important;color:#fff!important;border-color:#a91625!important;font-weight:900!important;animation:backBlink .8s steps(2,end) infinite!important}
@@ -769,7 +769,7 @@ async function load(){
   const keepMoistureStack=(currentPage==='moisture')?(localStorage.getItem('shambhuSelectedMoistureStack')||$('mStack')?.value||''):'';
   if(!loadedAt) setStatus("Connecting to Google Sheet…");
   try{const u=`https://docs.google.com/spreadsheets/d/${CONFIG.SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(CONFIG.SHEET_NAME)}`;const t=await fetch(u,{cache:"no-store"}).then(r=>{if(!r.ok)throw Error("HTTP "+r.status);return r.text()});const m=t.match(/google\.visualization\.Query\.setResponse\((.*)\);?$/s);if(!m)throw Error("Unreadable Google Sheet response");const j=JSON.parse(m[1]);const cols=j.table.cols.map(c=>(c.label||"").trim());rows=j.table.rows.map(rr=>{const o={};cols.forEach((c,i)=>o[c]=rr.c[i]?(rr.c[i].f??rr.c[i].v??""):"");return o}).filter(r=>String(mirStackNo(r)||stack(r)||"").trim()!=='');loadedAt=new Date();setStatus(`✓ Live data connected · ${rows.length} rows · Last refresh ${loadedAt.toLocaleTimeString("en-IN")}`);renderAll();if(currentPage==='moisture'&&keepMoistureStack){const sel=$('mStack');if(sel&&[...sel.options].some(o=>o.value===keepMoistureStack)){sel.value=keepMoistureStack;localStorage.setItem('shambhuSelectedMoistureStack',keepMoistureStack);loadMoistureStack()}}}catch(e){console.error(e);setStatus("⚠ Google Sheet could not be read. Set the Master Stock tab to Anyone with the link → Viewer, then refresh.",true);renderAll();if(currentPage==='moisture'&&keepMoistureStack){const sel=$('mStack');if(sel&&[...sel.options].some(o=>o.value===keepMoistureStack)){sel.value=keepMoistureStack;loadMoistureStack()}}}}
-function setStatus(t,bad=false){const st=$("status");if(st)st.style.display="none";const li=$("liveIndicator");if(li){li.textContent=bad?"● Data Not Live":"● Data Live";li.classList.toggle("live-bad",!!bad);li.classList.toggle("live-ok",!bad)}}
+function setStatus(t,bad=false){const st=$("status");if(st)st.style.display="none";const li=$("liveIndicator");if(li){li.textContent="";li.classList.toggle("live-bad",!!bad);li.classList.toggle("live-ok",!bad)}}
 function activeRows(){return filterRows(rows).filter(r=>qty(r)>0)}
 function mirSourceRows(){return rows.filter(r=>{const k=mirStackKey(r);if(!k||k==='|')return false;const bags=num(val(r,'Bags','Bags (Nos.)','No. of Bags','No of Bags','Bags Nos'));return qty(r)>0||bags>0||stack(r)!==''})}
 function renderAll(){if(currentPage==="dashboard")renderDashboard();else renderPage(currentPage);updateWorkAlert();$("today").textContent="Today: "+dateText(new Date());$("updated").textContent="Last Update: "+(loadedAt?loadedAt.toLocaleString("en-IN",{dateStyle:"short",timeStyle:"short"}):"--")}
@@ -2296,10 +2296,10 @@ document.addEventListener('DOMContentLoaded',function(){
   window.deleteChemicalEntry=async function(id){const pin=await qcPinPrompt('Delete ke liye PIN enter karein');if(pin===null||String(pin)!==String(getSitePin())){if(pin!==null)alert('Wrong PIN.');return;}if(!confirm('Delete this chemical entry?'))return;chemWrite(chemRead().filter(x=>String(x.id)!==String(id)));const r=document.getElementById('chemRows');if(r)r.innerHTML=chemTableRows();renderChemicalReport();};
   function alpReportHtml(){const r=reportData(),month=new Date(r.m+'-01T00:00:00').toLocaleDateString('en-IN',{month:'long',year:'numeric'});let progW=0,progR=0,progCons=0;const split=(w,r)=>`<div class="prog-split"><span>Wheat: <b>${Math.round(w)} MT</b></span><span>Rice: <b>${Math.round(r)} MT</b></span></div>`;const rows=r.mm.map((x,i)=>{const w=chemNum(x.wheatMt||0),ri=chemNum(x.riceMt||0),c=chemNum(x.consumption);progW+=w;progR+=ri;progCons+=c;return `<tr><td>${i+1}</td><td>${chemDate(x.date)}</td><td>${escC(x.stackText)}</td><td>${Math.round(w)}</td><td>${Math.round(ri)}</td><td>${split(progW,progR)}</td><td>${c.toFixed(3)}</td><td><b>${progCons.toFixed(3)}</b></td></tr>`}).join('');return `<!doctype html><html><head><meta charset="utf-8"><title>ALP Report</title><style>body{font-family:Arial;margin:28px;color:#172d25}h1{text-align:center;margin:0;font-size:24px}h2{text-align:center;margin:5px 0 18px;font-size:18px}table{border-collapse:collapse;width:100%;font-size:12px}th,td{border:1px solid #999;padding:7px;text-align:center;vertical-align:middle}th{background:#073d2c;color:white}.prog-split{display:grid;grid-template-columns:1fr 1fr;min-width:150px}.prog-split span:first-child{border-right:3px solid #555;padding-right:8px}.prog-split span:last-child{padding-left:8px}.prog-split.no-divider span:first-child{border-right:0;padding-right:8px}@media(max-width:700px){body{margin:12px}table{font-size:10px}th,td{padding:5px}.prog-split{min-width:125px}}</style><style id="exact-request-final-fix">
 /* Exact requested UI fixes only */
-#liveIndicator{display:inline-flex!important;align-items:center;font-weight:900!important;gap:4px;white-space:nowrap}
-#liveIndicator.live-ok{color:#087a45!important}
-#liveIndicator.live-bad{color:#d92d3b!important;animation:liveBadBlink .8s steps(2,end) infinite}
-@keyframes liveBadBlink{50%{opacity:.35}}
+#liveIndicator{display:inline-block!important;width:24px!important;height:24px!important;padding:0!important;border-radius:50%!important;background:#18a957!important;box-shadow:0 0 0 2px rgba(255,255,255,.25),0 2px 8px rgba(0,0,0,.25)!important;vertical-align:middle!important}
+#liveIndicator.live-ok{background:#18a957!important;animation:none!important}
+#liveIndicator.live-bad{background:#e3293b!important;animation:liveLightBlink .8s steps(2,end) infinite!important}
+@keyframes liveLightBlink{50%{opacity:.25;box-shadow:0 0 0 2px rgba(255,255,255,.2),0 2px 8px rgba(0,0,0,.12)!important}}
 #status{display:none!important}
 #refresh{font-size:20px!important;font-weight:900!important;line-height:1!important;padding:7px 10px!important;min-width:40px!important}
 body.page-open:not(.dashboard-open) #backBtn{background:#d92d3b!important;color:#fff!important;border-color:#a91625!important;font-weight:900!important;animation:backBlink .8s steps(2,end) infinite!important}
@@ -2346,10 +2346,10 @@ body.tight-back-gap #dynamicPage{margin-top:0!important}
 </html>`;}
   function deltaReportHtml(){const r=reportData(),month=new Date(r.m+'-01T00:00:00').toLocaleDateString('en-IN',{month:'long',year:'numeric'});let prog=0;const lines=a=>Array.isArray(a)?a.map(st=>`<div>${escC(st)}</div>`).join(''):'',rows=r.mm.map((x,i)=>{const w=chemNum(x.wheatMt||0),ri=chemNum(x.riceMt||0),cons=chemNum(x.consumption||0);prog+=cons;return `<tr><td>${i+1}</td><td>${chemDate(x.date)}</td><td>${lines(x.stacksWheat)}</td><td>${lines(x.stacksRice)}</td><td>${w.toFixed(0)} MT</td><td>${ri.toFixed(0)} MT</td><td>${(w+ri).toFixed(0)} MT</td><td>${cons.toFixed(3)} kg</td><td><b>${prog.toFixed(3)} kg</b></td></tr>`}).join('');const totalRow=`<tr class="delta-total-row"><td colspan="4"><b>TOTAL</b></td><td><b>${chemNum(r.wheatQty||0).toFixed(0)} MT</b></td><td><b>${chemNum(r.riceQty||0).toFixed(0)} MT</b></td><td><b>${(chemNum(r.wheatQty||0)+chemNum(r.riceQty||0)).toFixed(0)} MT</b></td><td><b>${chemNum(r.totalDelta||0).toFixed(3)} kg</b></td><td><b>${chemNum(r.totalDelta||0).toFixed(3)} kg</b></td></tr>`;return `<!doctype html><html><head><meta charset="utf-8"><title>Delta Report</title><style>body{font-family:Arial;margin:28px;color:#172d25}h1{text-align:center;margin:0;font-size:24px}h2{text-align:center;margin:5px 0 18px;font-size:18px}table{border-collapse:collapse;width:100%;font-size:12px}th,td{border:1px solid #999;padding:7px;text-align:center;vertical-align:top}th{background:#073d2c;color:white}td div{line-height:1.35;font-weight:600}.delta-total-row td{font-weight:700;background:#fff7d6;border-top:2px solid #555}@media(max-width:700px){body{margin:12px}table{font-size:10px}th,td{padding:5px}}</style><style id="exact-request-final-fix">
 /* Exact requested UI fixes only */
-#liveIndicator{display:inline-flex!important;align-items:center;font-weight:900!important;gap:4px;white-space:nowrap}
-#liveIndicator.live-ok{color:#087a45!important}
-#liveIndicator.live-bad{color:#d92d3b!important;animation:liveBadBlink .8s steps(2,end) infinite}
-@keyframes liveBadBlink{50%{opacity:.35}}
+#liveIndicator{display:inline-block!important;width:24px!important;height:24px!important;padding:0!important;border-radius:50%!important;background:#18a957!important;box-shadow:0 0 0 2px rgba(255,255,255,.25),0 2px 8px rgba(0,0,0,.25)!important;vertical-align:middle!important}
+#liveIndicator.live-ok{background:#18a957!important;animation:none!important}
+#liveIndicator.live-bad{background:#e3293b!important;animation:liveLightBlink .8s steps(2,end) infinite!important}
+@keyframes liveLightBlink{50%{opacity:.25;box-shadow:0 0 0 2px rgba(255,255,255,.2),0 2px 8px rgba(0,0,0,.12)!important}}
 #status{display:none!important}
 #refresh{font-size:20px!important;font-weight:900!important;line-height:1!important;padding:7px 10px!important;min-width:40px!important}
 body.page-open:not(.dashboard-open) #backBtn{background:#d92d3b!important;color:#fff!important;border-color:#a91625!important;font-weight:900!important;animation:backBlink .8s steps(2,end) infinite!important}
@@ -2382,10 +2382,10 @@ body.page-open:not(.dashboard-open) #backBtn{background:#d92d3b!important;color:
 </body></html>`;}
   function reportHtml(){const r=reportData(),month=new Date(r.m+'-01T00:00:00').toLocaleDateString('en-IN',{month:'long',year:'numeric'}), rows=r.mm.map((x,i)=>`<tr><td>${i+1}</td><td>${chemDate(x.date)}</td><td>${escC(x.shed)}</td><td>${escC(x.stack)}</td><td>${escC(x.commodity)}</td><td>${escC(x.chemical)}</td><td>${chemNum(x.qty).toFixed(2)}</td><td>${escC(x.unit)}</td><td>${escC(x.purpose)}</td><td>${escC(x.remarks)}</td></tr>`).join('');return `<!doctype html><html><head><meta charset="utf-8"><title>Chemical Report</title><style>body{font-family:Arial;margin:28px;color:#172d25}h1{text-align:center;margin:0;font-size:24px}h2{text-align:center;margin:5px 0 18px;font-size:18px}table{border-collapse:collapse;width:100%;font-size:11px}th,td{border:1px solid #999;padding:7px}th{background:#073d2c;color:white}.sum{margin:14px 0;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.card{border:1px solid #aaa;padding:10px}.card b{display:block;font-size:16px;margin-top:4px}</style><style id="compact-colour-summary-row">.report-summary-row td{font-weight:600;padding:4px 3px;line-height:1.15;background:#fff7d6;border:1px solid #d6b656;color:#243126}.report-summary-row td:nth-child(1),.report-summary-row td:nth-child(2){background:#e8eefc;color:#244a8f}.report-summary-row td:nth-child(3){background:#e8f7ec;color:#168a45}.report-summary-row td:nth-child(4){background:#fff0e1;color:#b45b16}.report-summary-row td:nth-child(5){background:#eee8ff;color:#6542a5}.report-summary-row td:nth-child(6){background:#e7f7f7;color:#16757a}.report-summary-row b{font-size:12px}</style><style id="exact-request-final-fix">
 /* Exact requested UI fixes only */
-#liveIndicator{display:inline-flex!important;align-items:center;font-weight:900!important;gap:4px;white-space:nowrap}
-#liveIndicator.live-ok{color:#087a45!important}
-#liveIndicator.live-bad{color:#d92d3b!important;animation:liveBadBlink .8s steps(2,end) infinite}
-@keyframes liveBadBlink{50%{opacity:.35}}
+#liveIndicator{display:inline-block!important;width:24px!important;height:24px!important;padding:0!important;border-radius:50%!important;background:#18a957!important;box-shadow:0 0 0 2px rgba(255,255,255,.25),0 2px 8px rgba(0,0,0,.25)!important;vertical-align:middle!important}
+#liveIndicator.live-ok{background:#18a957!important;animation:none!important}
+#liveIndicator.live-bad{background:#e3293b!important;animation:liveLightBlink .8s steps(2,end) infinite!important}
+@keyframes liveLightBlink{50%{opacity:.25;box-shadow:0 0 0 2px rgba(255,255,255,.2),0 2px 8px rgba(0,0,0,.12)!important}}
 #status{display:none!important}
 #refresh{font-size:20px!important;font-weight:900!important;line-height:1!important;padding:7px 10px!important;min-width:40px!important}
 body.page-open:not(.dashboard-open) #backBtn{background:#d92d3b!important;color:#fff!important;border-color:#a91625!important;font-weight:900!important;animation:backBlink .8s steps(2,end) infinite!important}
@@ -2440,10 +2440,10 @@ body.page-open:not(.dashboard-open) #backBtn{background:#d92d3b!important;color:
 </style>
 <style id="exact-request-final-fix">
 /* Exact requested UI fixes only */
-#liveIndicator{display:inline-flex!important;align-items:center;font-weight:900!important;gap:4px;white-space:nowrap}
-#liveIndicator.live-ok{color:#087a45!important}
-#liveIndicator.live-bad{color:#d92d3b!important;animation:liveBadBlink .8s steps(2,end) infinite}
-@keyframes liveBadBlink{50%{opacity:.35}}
+#liveIndicator{display:inline-block!important;width:24px!important;height:24px!important;padding:0!important;border-radius:50%!important;background:#18a957!important;box-shadow:0 0 0 2px rgba(255,255,255,.25),0 2px 8px rgba(0,0,0,.25)!important;vertical-align:middle!important}
+#liveIndicator.live-ok{background:#18a957!important;animation:none!important}
+#liveIndicator.live-bad{background:#e3293b!important;animation:liveLightBlink .8s steps(2,end) infinite!important}
+@keyframes liveLightBlink{50%{opacity:.25;box-shadow:0 0 0 2px rgba(255,255,255,.2),0 2px 8px rgba(0,0,0,.12)!important}}
 #status{display:none!important}
 #refresh{font-size:20px!important;font-weight:900!important;line-height:1!important;padding:7px 10px!important;min-width:40px!important}
 body.page-open:not(.dashboard-open) #backBtn{background:#d92d3b!important;color:#fff!important;border-color:#a91625!important;font-weight:900!important;animation:backBlink .8s steps(2,end) infinite!important}
@@ -2881,4 +2881,12 @@ table.mir-test-check-table{width:max-content;min-width:1080px;table-layout:fixed
 .mo-stack-card.selected-mo-stack{outline:3px solid #1565c0!important;box-shadow:0 0 0 3px rgba(21,101,192,.22),0 4px 12px rgba(21,101,192,.20)!important;z-index:4!important}
 .mo-stack-card.selected-mo-stack.wheat{background:#e4f6e9!important;border-color:#1565c0!important;border-left:6px solid #168548!important}
 .mo-stack-card.selected-mo-stack.rice{background:#fff0d2!important;border-color:#1565c0!important;border-left:6px solid #c47b08!important}
+</style>
+
+<style id="only-select-commodity-height-fix">
+/* Only reduce SELECT SHED / COMMODITY filter height */
+.filters .filter-select-group{gap:3px!important}
+.filters .filter-select-group label{font-size:11px!important;line-height:1!important}
+.filters .filter-select{min-height:28px!important;height:28px!important;padding-top:4px!important;padding-bottom:4px!important}
+@media(max-width:700px){.filters .filter-select{min-height:26px!important;height:26px!important;padding-top:3px!important;padding-bottom:3px!important}.filters .filter-select-group label{font-size:10px!important}}
 </style>
