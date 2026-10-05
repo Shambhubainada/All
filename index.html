@@ -437,7 +437,7 @@ body.dashboard-open .final-quick-row{display:none!important}
 </style>
 
 <style id="chemical-folders-style">
-.chem-folder-grid{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:12px;width:100%;}.chem-folder{border:2px solid #d7e3dd;border-radius:12px;padding:14px 10px;background:#fff;text-align:center;cursor:pointer;display:flex!important;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:125px;width:100%;box-sizing:border-box;}.chem-folder:hover{transform:translateY(-1px);box-shadow:0 5px 18px #0001}.chem-folder-icon{font-size:32px;line-height:1}.chem-folder b{font-size:16px}.chem-folder small{font-size:11px;color:#5b7067}.chem-folder.alp{background:linear-gradient(145deg,#f8fff9,#e6f8ed);border-color:#8ed0a8}.chem-folder.delta{background:linear-gradient(145deg,#fffdf5,#fff0c9);border-color:#e1b24b}.chem-folder.mal{background:linear-gradient(145deg,#f8f7ff,#ece8ff);border-color:#aaa0df}.chem-folder.alp b{color:#08733f}.chem-folder.delta b{color:#8a5a00}.chem-folder.mal b{color:#5e4a9d}@media(max-width:700px){.chem-folder-grid{grid-template-columns:1fr!important}.chem-folder{min-height:88px;padding:11px 8px}.chem-folder-icon{font-size:27px}}
+.chem-folder-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px}.chem-folder{border:2px solid #d7e3dd;border-radius:14px;padding:20px 12px;background:#fff;text-align:center;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:7px;min-height:150px}.chem-folder:hover{transform:translateY(-1px);box-shadow:0 5px 18px #0001}.chem-folder-icon{font-size:38px}.chem-folder b{font-size:17px}.chem-folder small{font-size:11px;color:#5b7067}.chem-folder.alp{background:linear-gradient(145deg,#f8fff9,#e6f8ed);border-color:#8ed0a8}.chem-folder.delta{background:linear-gradient(145deg,#fffdf5,#fff0c9);border-color:#e1b24b}.chem-folder.mal{background:linear-gradient(145deg,#f8f7ff,#ece8ff);border-color:#aaa0df}.chem-folder.alp b{color:#08733f}.chem-folder.delta b{color:#8a5a00}.chem-folder.mal b{color:#5e4a9d}@media(max-width:700px){.chem-folder-grid{grid-template-columns:1fr 1fr}.chem-folder{min-height:125px;padding:14px 8px}.chem-folder-icon{font-size:30px}}@media(max-width:430px){.chem-folder-grid{grid-template-columns:1fr}}
 </style>
 <style id="chemical-register-final">
 .chemical-grid{display:grid;grid-template-columns:1fr 1.5fr;gap:12px}.chemical-form{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}.chemical-form label{font-size:11px;font-weight:900;color:#49645a}.chemical-form input,.chemical-form select{width:100%;padding:10px;border:1px solid #cbd9d3;border-radius:8px;background:#fff}.chemical-form .full{grid-column:1/-1}.chemical-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.chemical-actions button{border:0;border-radius:8px;padding:10px 13px;color:#fff;font-weight:900}.chem-register-downloads button{font-size:10px;padding:6px 9px}.chem-save{background:#0a7a4b}.chem-blue{background:#2d73c8}.chem-orange{background:#c77a00}.chem-red{background:#c52635}.chem-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}.chem-kpi{border:1px solid var(--line);border-radius:9px;background:#fff;padding:10px;text-align:center}.chem-kpi b{display:block;font-size:20px;margin-top:4px}.chem-table{min-width:900px!important}.chem-report-head{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap}.chem-month{display:flex;gap:7px;align-items:center;flex-wrap:wrap}.chem-month input{padding:8px;border:1px solid #cbd9d3;border-radius:7px}.chem-report-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}.chem-report-card{border:1px solid var(--line);border-radius:9px;padding:10px;background:#fff}.chem-report-card h4{margin:0 0 5px;font-size:11px}.chem-report-card strong{font-size:20px}.chem-note{background:#f1f7f4;border:1px solid #dbe9e3;border-radius:8px;padding:9px;font-size:11px;color:#49645a;margin-top:9px}
@@ -555,6 +555,16 @@ body.dashboard-open .final-quick-row{display:none!important}
 #moTruckRows td.mo-entry-datetime .mo-sep{display:none!important;}
 #moTruckRows td.mo-entry-datetime br{display:none!important;}
 </style>
+<style id="final-under-fum-compact-fix">
+.stack-compact-panel .tablewrap{overflow-x:hidden!important;width:100%!important}
+.stack-compact-panel .stack-compact-table{width:100%!important;min-width:0!important;table-layout:auto!important;border-collapse:collapse!important}
+.stack-compact-panel .stack-compact-table th,.stack-compact-panel .stack-compact-table td{font-size:13px!important;font-weight:800!important;padding:7px 5px!important;line-height:1.2!important;white-space:normal!important;word-break:break-word!important;overflow-wrap:anywhere!important;text-align:center!important;vertical-align:middle!important}
+.stack-compact-panel .stack-compact-table th{font-weight:900!important}
+.stack-compact-panel .stack-compact-table th:first-child,.stack-compact-panel .stack-compact-table td:first-child{width:7%!important;white-space:nowrap!important}
+.stack-compact-panel .stack-compact-table th:nth-child(2),.stack-compact-panel .stack-compact-table td:nth-child(2){width:11%!important;white-space:nowrap!important}
+.stack-compact-panel .stack-compact-table th:nth-child(3),.stack-compact-panel .stack-compact-table td:nth-child(3){width:15%!important;white-space:nowrap!important}
+@media(max-width:600px){.stack-compact-panel .stack-compact-table th,.stack-compact-panel .stack-compact-table td{font-size:12px!important;padding:6px 3px!important}.stack-compact-panel .panelhead{font-size:13px!important}}
+</style>
 </head>
 <body>
 <div class="pin-screen" id="pinScreen">
@@ -600,10 +610,10 @@ body.dashboard-open .final-quick-row{display:none!important}
   <div class="sidefoot">● Live Google Sheet<br>View Only</div>
 </aside>
 <main class="main">
-<header class="top"><div class="top-left"><button class="top-menu-btn" id="topMenuBtn" onclick="toggleTopMenu()">☰ MAIN MENU</button><button class="page-nav-btn" id="backBtn" onclick="goBackPage()" style="display:none">← BACK</button><button class="page-nav-btn" id="homeBtn" onclick="openPage('dashboard')" style="display:none">⌂ HOME</button><div class="title"><h1>SHAMBHU SHED</h1><p>FSD SABARMATI · QC TREATMENT CONTROL</p></div></div><div class="topright"><span id="today">Today: --</span><span id="updated">Last Update: --</span><span id="liveIndicator" class="live live-ok"><i class="live-dot"></i><span>Data Live</span></span><button id="installAppBtn" class="install-app-btn" onclick="installShambhuApp()">📲 INSTALL APP</button><button id="alertBell" class="alert-bell" onclick="openPage('notepad')">🔔 Alerts <b id="alertCount">0</b></button><button id="refresh" class="refresh-mini" type="button" title="Refresh Data" aria-label="Refresh Data">↻</button><button id="alertSoundBtn" class="alert-sound-mini" type="button" onclick="event.stopPropagation();toggleAlertMute()" title="Mute / Unmute alert">🔊</button></div></header><div id="topMenu" class="top-menu"></div>
+<header class="top"><div class="top-left"><button class="top-menu-btn" id="topMenuBtn" onclick="toggleTopMenu()">☰ MAIN MENU</button><button class="page-nav-btn" id="backBtn" onclick="goBackPage()" style="display:none">← BACK</button><button class="page-nav-btn" id="homeBtn" onclick="openPage('dashboard')" style="display:none">⌂ HOME</button><div class="title"><h1>SHAMBHU SHED</h1><p>FSD SABARMATI · QC TREATMENT CONTROL</p></div></div><div class="topright"><span id="today">Today: --</span><span id="updated">Last Update: --</span><span class="live">● Data Live</span><button id="installAppBtn" class="install-app-btn" onclick="installShambhuApp()">📲 INSTALL APP</button><button id="alertBell" class="alert-bell" onclick="openPage('notepad')">🔔 Alerts <b id="alertCount">0</b></button><button id="alertSoundBtn" class="alert-sound-mini" type="button" onclick="event.stopPropagation();toggleAlertMute()" title="Mute / Unmute alert">🔊</button></div></header><div id="topMenu" class="top-menu"></div>
 <div class="content">
-<div class="filters"><div class="group filter-select-group"><label>SELECT SHED</label><select id="shedSelect" class="filter-select"><option value="all">All Sheds</option><option value="9">Shed 9</option><option value="14">Shed 14</option><option value="18">Shed 18</option><option value="20">Shed 20</option></select></div><div class="group filter-select-group"><label>COMMODITY</label><select id="commoditySelect" class="filter-select"><option value="all">All Commodity</option><option value="wheat">Wheat</option><option value="rice">Rice</option></select></div></div>
-<div class="status" id="status" aria-hidden="true">Connecting to Google Sheet…</div>
+<div class="filters"><div class="group filter-select-group"><label>SELECT SHED</label><select id="shedSelect" class="filter-select"><option value="all">All Sheds</option><option value="9">Shed 9</option><option value="14">Shed 14</option><option value="18">Shed 18</option><option value="20">Shed 20</option></select></div><div class="group filter-select-group"><label>COMMODITY</label><select id="commoditySelect" class="filter-select"><option value="all">All Commodity</option><option value="wheat">Wheat</option><option value="rice">Rice</option></select></div><button class="refresh" id="refresh">↻ Refresh Data</button></div>
+<div class="status" id="status">Connecting to Google Sheet…</div>
 <div class="mobile-folder-grid final-quick-grid">
   <button class="mobile-folder moisture-icon" onclick="openPage('moisture')">
     <span class="mf-icon">💧</span><span class="mf-title">Moisture Update</span><small>Update moisture</small>
@@ -737,16 +747,15 @@ function malDue(r){const d=malDate(r);return d?dateDiffFromToday(d)>=CONFIG.MAL_
 function filterRows(source=rows){return source.filter(r=>{const s=shed(r),c=isRice(r)?"rice":"wheat";return (shedFilter==="all"||s===shedFilter)&& (commodityFilter==="all"||c===commodityFilter)})}
 async function load(){
   const keepMoistureStack=(currentPage==='moisture')?(localStorage.getItem('shambhuSelectedMoistureStack')||$('mStack')?.value||''):'';
-    const keepChemicalFolder=(currentPage==='chemical')?(activeChemicalFolder||localStorage.getItem('shambhuChemicalFolder')||''):'';
   if(!loadedAt) setStatus("Connecting to Google Sheet…");
-  try{const u=`https://docs.google.com/spreadsheets/d/${CONFIG.SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(CONFIG.SHEET_NAME)}`;const t=await fetch(u,{cache:"no-store"}).then(r=>{if(!r.ok)throw Error("HTTP "+r.status);return r.text()});const m=t.match(/google\.visualization\.Query\.setResponse\((.*)\);?$/s);if(!m)throw Error("Unreadable Google Sheet response");const j=JSON.parse(m[1]);const cols=j.table.cols.map(c=>(c.label||"").trim());rows=j.table.rows.map(rr=>{const o={};cols.forEach((c,i)=>o[c]=rr.c[i]?(rr.c[i].f??rr.c[i].v??""):"");return o}).filter(r=>String(mirStackNo(r)||stack(r)||"").trim()!=='');loadedAt=new Date();setStatus(`✓ Live data connected · Last refresh ${loadedAt.toLocaleTimeString("en-IN")}`);renderAll();if(currentPage==='chemical'&&keepChemicalFolder){activeChemicalFolder=keepChemicalFolder;localStorage.setItem('shambhuChemicalFolder',keepChemicalFolder);const dp=$('dynamicPage');if(dp){dp.innerHTML=chemicalPage();if(typeof restoreChemicalReportState==='function')restoreChemicalReportState();renderChemicalReport()}}if(currentPage==='moisture'&&keepMoistureStack){const sel=$('mStack');if(sel&&[...sel.options].some(o=>o.value===keepMoistureStack)){sel.value=keepMoistureStack;localStorage.setItem('shambhuSelectedMoistureStack',keepMoistureStack);loadMoistureStack()}}}catch(e){console.error(e);setStatus("⚠ Google Sheet could not be read. Set the Master Stock tab to Anyone with the link → Viewer, then refresh.",true);renderAll();if(currentPage==='chemical'&&keepChemicalFolder){activeChemicalFolder=keepChemicalFolder;localStorage.setItem('shambhuChemicalFolder',keepChemicalFolder);const dp=$('dynamicPage');if(dp){dp.innerHTML=chemicalPage();if(typeof restoreChemicalReportState==='function')restoreChemicalReportState();renderChemicalReport()}}if(currentPage==='moisture'&&keepMoistureStack){const sel=$('mStack');if(sel&&[...sel.options].some(o=>o.value===keepMoistureStack)){sel.value=keepMoistureStack;loadMoistureStack()}}}}
-function setStatus(t,bad=false){const st=$("status");if(st){st.textContent=t;st.style.borderLeftColor=bad?"#d92d3b":"#0a7a4b"}const li=$("liveIndicator");if(li){li.classList.toggle("live-bad",!!bad);li.classList.toggle("live-ok",!bad);li.innerHTML=`<i class="live-dot"></i><span>${bad?"Data Not Live":"Data Live"}</span>`}}
+  try{const u=`https://docs.google.com/spreadsheets/d/${CONFIG.SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(CONFIG.SHEET_NAME)}`;const t=await fetch(u,{cache:"no-store"}).then(r=>{if(!r.ok)throw Error("HTTP "+r.status);return r.text()});const m=t.match(/google\.visualization\.Query\.setResponse\((.*)\);?$/s);if(!m)throw Error("Unreadable Google Sheet response");const j=JSON.parse(m[1]);const cols=j.table.cols.map(c=>(c.label||"").trim());rows=j.table.rows.map(rr=>{const o={};cols.forEach((c,i)=>o[c]=rr.c[i]?(rr.c[i].f??rr.c[i].v??""):"");return o}).filter(r=>String(mirStackNo(r)||stack(r)||"").trim()!=='');loadedAt=new Date();setStatus(`✓ Live data connected · ${rows.length} rows · Last refresh ${loadedAt.toLocaleTimeString("en-IN")}`);renderAll();if(currentPage==='moisture'&&keepMoistureStack){const sel=$('mStack');if(sel&&[...sel.options].some(o=>o.value===keepMoistureStack)){sel.value=keepMoistureStack;localStorage.setItem('shambhuSelectedMoistureStack',keepMoistureStack);loadMoistureStack()}}}catch(e){console.error(e);setStatus("⚠ Google Sheet could not be read. Set the Master Stock tab to Anyone with the link → Viewer, then refresh.",true);renderAll();if(currentPage==='moisture'&&keepMoistureStack){const sel=$('mStack');if(sel&&[...sel.options].some(o=>o.value===keepMoistureStack)){sel.value=keepMoistureStack;loadMoistureStack()}}}}
+function setStatus(t,bad=false){$("status").textContent=t;$("status").style.borderLeftColor=bad?"#d92d3b":"#0a7a4b"}
 function activeRows(){return filterRows(rows).filter(r=>qty(r)>0)}
 function mirSourceRows(){return rows.filter(r=>{const k=mirStackKey(r);if(!k||k==='|')return false;const bags=num(val(r,'Bags','Bags (Nos.)','No. of Bags','No of Bags','Bags Nos'));return qty(r)>0||bags>0||stack(r)!==''})}
 function renderAll(){if(currentPage==="dashboard")renderDashboard();else renderPage(currentPage);updateWorkAlert();$("today").textContent="Today: "+dateText(new Date());$("updated").textContent="Last Update: "+(loadedAt?loadedAt.toLocaleString("en-IN",{dateStyle:"short",timeStyle:"short"}):"--")}
 function renderDashboard(){const a=activeRows(), all=rows.filter(r=>qty(r)>0);$("kTotal").textContent=a.length;$("kWheat").textContent=a.filter(isWheat).length;$("kRice").textContent=a.filter(isRice).length;if($("ovTotal")){$("ovTotal").textContent=a.length;$("ovWheat").textContent=a.filter(isWheat).length;$("ovRice").textContent=a.filter(isRice).length;$("ovUnder").textContent=a.filter(underFlag).length;$("ovFum").textContent=a.filter(fumFlag).length;}$("kEmpty").textContent=filterRows(rows).filter(r=>qty(r)<=0).length;$("kUnder").textContent=a.filter(underFlag).length;$("kFum").textContent=a.filter(fumFlag).length;$("kDeg").textContent=a.filter(degFlag).length;$("kInf").textContent=a.filter(infestedFlag).length;$("kMal").textContent=a.filter(malDue).length;const availableBags=a.reduce((s,r)=>s+num(val(r,"Bags","Bags (Nos.)","No. of Bags")),0),availableMt=a.reduce((s,r)=>s+qty(r),0);if($("kAvailBags"))$("kAvailBags").textContent=Math.round(availableBags).toLocaleString("en-IN");if($("kAvailMt"))$("kAvailMt").textContent=availableMt.toFixed(3);$("donutTotal").textContent=a.length;$("commodityCenter").textContent=a.length;$("sumActive").textContent=a.length;$("sumQty").textContent=a.reduce((s,r)=>s+qty(r),0).toFixed(2);const ds=a.map(r=>parseDate(receipt(r))).filter(Boolean).sort((x,y)=>x-y);$("sumOldest").textContent=ds.length?dateText(ds[0]):"—";const statusData=[['Normal',a.filter(r=>!infestedFlag(r)&&!underFlag(r)&&!fumFlag(r)&&!degFlag(r)).length,'#0a7a4b'],['Infested',a.filter(infestedFlag).length,'#d92d3b'],['Under Cover',a.filter(underFlag).length,'#e39a18'],['Fumigation Due',a.filter(fumFlag).length,'#c92f78'],['Degassing Due',a.filter(degFlag).length,'#7040c8']];$("statusLegend").innerHTML=statusData.map(x=>`<div><span class="dot" style="background:${x[2]}"></span>${x[0]} <b>${x[1]}</b></div>`).join("");const w=a.filter(isWheat).length,ri=a.filter(isRice).length;$("commodityLegend").innerHTML=`<div><span class="dot" style="background:#0a7a4b"></span>Wheat <b>${w}</b></div><div><span class="dot" style="background:#e39a18"></span>Rice / FRK RRA <b>${ri}</b></div>`;const max=Math.max(1,...CONFIG.SHEDS.map(s=>a.filter(r=>shed(r)===s).length));$("shedBars").innerHTML=CONFIG.SHEDS.map(s=>{const n=a.filter(r=>shed(r)===s).length,h=Math.max(6,120*n/max);return `<div class="bar" style="height:${h}px"><b>${n}</b><small>${s}</small></div>`}).join("");const today=filterRows(rows).filter(r=>qty(r)>0);$("todayFum").textContent=today.filter(r=>fumFlag(r)&&dayDiff(lastFum(r))===CONFIG.FUM_DAYS).length;$("todayDeg").textContent=today.filter(r=>degFlag(r)&&dayDiff(val(r,"Fumigation Date"))===5).length;$("todayMal").textContent=today.filter(r=>malDue(r)&&dayDiff(malDate(r))===CONFIG.MAL_DAYS).length;$("todayIns").textContent="—";$("upFum").textContent=today.filter(r=>{const d=dayDiff(lastFum(r));return d!==null&&d>CONFIG.FUM_DAYS&&d<=CONFIG.FUM_DAYS+7}).length;$("upDeg").textContent=today.filter(r=>{const d=dayDiff(val(r,"Fumigation Date"));return d!==null&&d>=0&&d<5}).length;$("upMal").textContent=today.filter(r=>{const d=dayDiff(malDate(r));return d!==null&&d>=8&&d<CONFIG.MAL_DAYS}).length;$("upIns").textContent="—"}
-function table(title,head,body){const compact=(title==='CURRENTLY UNDER COVER'||title==='FUMIGATION DUE — MORE THAN 30 DAYS')?' compact-treatment-panel':'';return `<div class="panel${compact}"><div class="panelhead">${title}</div><div class="tablewrap"><table><thead><tr>${head.map(h=>`<th>${h}</th>`).join("")}</tr></thead><tbody>${body||`<tr><td colspan="${head.length}" class="empty">No matching stack found.</td></tr>`}</tbody></table></div></div>`}
-function rowsHtml(a,kind){return a.map((r,i)=>{if(kind==='priority')return `<tr><td><b>${i+1}</b></td><td>${i+1}</td><td>${esc(shed(r))}</td><td><b>${esc(stack(r))}</b></td><td>${dateText(receipt(r))}</td><td>${esc(commodity(r))}</td><td>${qty(r).toFixed(3)}</td><td>A</td><td>${esc(val(r,'Remarks','Remarks.1'))}</td><td><button class="pill" onclick='showStack(${JSON.stringify(stack(r))})'>View</button></td></tr>`;if(kind==='under')return `<tr><td>${i+1}</td><td>${esc(shed(r))}</td><td><b>${esc(stack(r))}</b></td><td>${dateText(receipt(r))}</td><td>${esc(commodity(r))}</td><td>${dateText(val(r,'Fumigation Date'))}</td></tr>`;if(kind==='fum')return `<tr><td>${i+1}</td><td>${esc(shed(r))}</td><td><b>${esc(stack(r))}</b></td><td>${dateText(receipt(r))}</td><td>${esc(commodity(r))}</td><td>${dateText(lastFum(r))}</td><td>${dayDiff(lastFum(r))??'—'}</td></tr>`;if(kind==='deg')return `<tr><td>${i+1}</td><td>${esc(shed(r))}</td><td><b>${esc(stack(r))}</b></td><td>${esc(commodity(r))}</td><td>${dateText(val(r,'Fumigation Date'))}</td><td>${dateText(val(r,'Degassing Date'))}</td><td>${dayDiff(val(r,'Fumigation Date'))??'—'}</td><td><span class="badge due">DEGASSING DUE</span></td><td><button class="pill" onclick='showStack(${JSON.stringify(stack(r))})'>View</button></td></tr>`;if(kind==='infested')return `<tr><td>${i+1}</td><td>${esc(shed(r))}</td><td><b>${esc(stack(r))}</b></td><td>${dateText(receipt(r))}</td><td>${esc(commodity(r))}</td><td>${qty(r).toFixed(3)}</td><td>${esc(val(r,'Status'))}</td><td><span class="badge due">ATTENTION</span></td><td><button class="pill" onclick='showStack(${JSON.stringify(stack(r))})'>View</button></td></tr>`;if(kind==='mal')return `<tr><td>${i+1}</td><td><b>${esc(stack(r))}</b></td><td>${esc(shed(r))}</td><td>${esc(commodity(r))}</td><td>${dateText(malDate(r))||'—'}</td><td>${dateText(addDays(malDate(r),15))||'—'}</td><td>${malDate(r)?dayDiff(malDate(r)):'—'}</td><td><span class="badge ${malDue(r)?'due':'ok'}">${malDue(r)?'DUE':'OK'}</span></td><td><button class="pill" onclick='showStack(${JSON.stringify(stack(r))})'>View</button></td></tr>`;return ''}).join('')}
+function table(title,head,body){const compact=/CURRENTLY UNDER COVER|FUMIGATION DUE/.test(String(title));return `<div class="panel ${compact?'stack-compact-panel':''}"><div class="panelhead">${title}</div><div class="tablewrap"><table class="${compact?'stack-compact-table':''}"><thead><tr>${head.map(h=>`<th>${h}</th>`).join("")}</tr></thead><tbody>${body||`<tr><td colspan="${head.length}" class="empty">No matching stack found.</td></tr>`}</tbody></table></div></div>`}
+function rowsHtml(a,kind){return a.map((r,i)=>{if(kind==='priority')return `<tr><td><b>${i+1}</b></td><td>${i+1}</td><td>${esc(shed(r))}</td><td><b>${esc(stack(r))}</b></td><td>${dateText(receipt(r))}</td><td>${esc(commodity(r))}</td><td>${qty(r).toFixed(3)}</td><td>A</td><td>${esc(val(r,'Remarks','Remarks.1'))}</td><td><button class="pill" onclick='showStack(${JSON.stringify(stack(r))})'>View</button></td></tr>`;if(kind==='under')return `<tr><td>${i+1}</td><td>${esc(shed(r))}</td><td><b>${esc(stack(r))}</b></td><td>${dateText(receipt(r))}</td><td>${esc(commodity(r))}</td><td>${dateText(val(r,'Fumigation Date','FumigationDate','Cover Date','Under Cover Date'))}</td></tr>`;if(kind==='fum')return `<tr><td>${i+1}</td><td>${esc(shed(r))}</td><td><b>${esc(stack(r))}</b></td><td>${dateText(receipt(r))}</td><td>${esc(commodity(r))}</td><td>${dateText(lastFum(r))}</td><td><b>${dayDiff(lastFum(r))??'—'}</b></td></tr>`;if(kind==='deg')return `<tr><td>${i+1}</td><td>${esc(shed(r))}</td><td><b>${esc(stack(r))}</b></td><td>${esc(commodity(r))}</td><td>${dateText(val(r,'Fumigation Date'))}</td><td>${dateText(val(r,'Degassing Date'))}</td><td>${dayDiff(val(r,'Fumigation Date'))??'—'}</td><td><span class="badge due">DEGASSING DUE</span></td><td><button class="pill" onclick='showStack(${JSON.stringify(stack(r))})'>View</button></td></tr>`;if(kind==='infested')return `<tr><td>${i+1}</td><td>${esc(shed(r))}</td><td><b>${esc(stack(r))}</b></td><td>${dateText(receipt(r))}</td><td>${esc(commodity(r))}</td><td>${qty(r).toFixed(3)}</td><td>${esc(val(r,'Status'))}</td><td><span class="badge due">ATTENTION</span></td><td><button class="pill" onclick='showStack(${JSON.stringify(stack(r))})'>View</button></td></tr>`;if(kind==='mal')return `<tr><td>${i+1}</td><td><b>${esc(stack(r))}</b></td><td>${esc(shed(r))}</td><td>${esc(commodity(r))}</td><td>${dateText(malDate(r))||'—'}</td><td>${dateText(addDays(malDate(r),15))||'—'}</td><td>${malDate(r)?dayDiff(malDate(r)):'—'}</td><td><span class="badge ${malDue(r)?'due':'ok'}">${malDue(r)?'DUE':'OK'}</span></td><td><button class="pill" onclick='showStack(${JSON.stringify(stack(r))})'>View</button></td></tr>`;return ''}).join('')}
 function renderPage(page){const a=activeRows();let html='';if(page==='under')html=table('CURRENTLY UNDER COVER',['Sr No.','Shed','Stack','Receipt Date','Commodity','Fumigation Date'],rowsHtml(a.filter(underFlag),'under'));if(page==='fum')html=table('FUMIGATION DUE — MORE THAN 30 DAYS',['Sr No.','Shed','Stack','Receipt Date','Commodity','Last Fumigation','Days'],rowsHtml(a.filter(fumFlag),'fum'));if(page==='deg')html=table('DEGASSING DUE',['Sr No.','Shed','Stack','Commodity','Fumigation Date','Degassing Date','Days','Status','Action'],rowsHtml(a.filter(degFlag),'deg'));if(page==='infested')html=table('INFESTED / ATTENTION STACKS',['Sr No.','Shed','Stack','Receipt Date','Commodity','Qty (MT)','Status','Action'],rowsHtml(a.filter(infestedFlag),'infested'));if(page==='priority')html=priorityPage(a);if(page==='malathion')html=malPage(a);if(page==='search')html=searchPage();if(page==='reports')html=reportsPage();if(page==='moistureHistory')html=moistureHistoryPage();if(page==='moistureReports')html=moistureReportsPage();if(page==='calendar')html=calendarPage(a);if(page==='notepad')html=notepadPage(a);if(page==='mir')html=mirPage(a);$("dynamicPage").innerHTML=html}
 function priorityCropKey(r){const c=String(cropYearFromRow(r)||'').trim();const m=c.match(/(20\d{2})/);return m?Number(m[1]):9999;}
 function priorityCompare(x,y){const cy=priorityCropKey(x)-priorityCropKey(y);if(cy)return cy;return (parseDate(receipt(x))||new Date(8640000000000000))-(parseDate(receipt(y))||new Date(8640000000000000));}
@@ -1283,7 +1292,7 @@ window.qcAlertMuted=localStorage.getItem('shambhuQCAlertMuted')==='1';window.tog
 function updateWorkAlert(){const box=$('workAlert');if(!box)return;const a=activeRows(),notes=JSON.parse(localStorage.getItem('shambhuWorkNotes')||'[]'),today=new Date();today.setHours(0,0,0,0);const due=a.filter(degFlag),pendingNotes=notes.filter(n=>{const d=parseDate(n.date);return d&&d<=today}),mirPending=mirPendingItems(mirData());const total=pendingNotes.length+due.length+mirPending.length;updateAlertBadge(total);const sig='D'+due.map(r=>stack(r)).join(',')+'N'+pendingNotes.map(n=>n.id).join(',')+'M'+mirPending.map(x=>x.stackKey).join(',');if(!total){box.classList.remove('show');box.innerHTML='';shambhuAlertSignature='';return}const noteItems=[];pendingNotes.forEach(n=>noteItems.push(`<li>${esc(n.text||'Note')} <span class="smallmuted">(${dateText(n.date)})</span></li>`));mirPending.forEach(x=>noteItems.push(`<li><b>🔴 MIR Infested Stack – Need Fumigation</b> · Shed ${esc(x.shed)} · Stack ${esc(x.stack)} <button class="pill" onclick="mirFumigationDone('${esc(x.stackKey)}')">✓ Done</button></li>`));box.innerHTML=`<button type="button" class="pending-summary-row" onclick="togglePendingHomeDetails()"><span>🔔 <b>PENDING WORK</b></span><span class="pending-total">Total Pending <b>${total}</b></span><span class="pending-chevron" id="pendingHomeChevron">▸</span></button><div class="pending-home-details" id="pendingHomeDetails"><div class="pending-detail-grid"><div><b>🧪 DEGASSING DUE — ${due.length}</b><ul>${due.length?due.map(r=>`<li>Stack ${esc(stack(r))} — ${dayDiff(val(r,'Fumigation Date'))||0} days</li>`).join(''):'<li>No Degassing Due</li>'}</ul></div><div><b>📝 NOTE — ${pendingNotes.length+mirPending.length}</b><ul>${noteItems.length?noteItems.join(''):'<li>No pending notes</li>'}</ul></div></div></div>`;box.classList.add('show');if(sig!==shambhuAlertSignature){const wasReady=shambhuAlertReady;shambhuAlertSignature=sig;shambhuAlertReady=true;if(!window.qcAlertMuted)playWorkAlertSound();if(wasReady)sendWorkNotification((due.length?'Degassing Due: '+due.length+' · ':'')+(pendingNotes.length+mirPending.length?'Notes: '+(pendingNotes.length+mirPending.length):''));}}
 function openGoogleSheet(){const b=$('sheetBtn');if(b)b.click();else if(CONFIG&&CONFIG.GOOGLE_SHEET_URL)window.open(CONFIG.GOOGLE_SHEET_URL,'_blank');}
 function openPage(page){
-  if(page==='chemical'){ activeChemicalFolder=''; localStorage.removeItem('shambhuChemicalFolder'); }
+  if(page==='chemical' && currentPage!=='chemical'){ try{localStorage.removeItem('shambhuChemicalFolder');}catch(e){} }
   document.body.classList.toggle("moisture-active",page==="moisture");
   document.body.classList.add("page-open");
   document.body.classList.toggle("dashboard-open",page==="dashboard");
@@ -2125,7 +2134,7 @@ document.addEventListener('DOMContentLoaded',function(){
     if(table)table.classList.toggle('stack-details-open');
   };
   function alpTableRows(){
-    const a=alpAutoGroups().filter(x=>chemCurrentMonthKey(x.date)); let progressive=0;
+    const a=alpAutoGroups(); let progressive=0;
     let overrides={}; try{overrides=JSON.parse(localStorage.getItem('shambhuALPOverridesV1')||'{}')}catch(e){}
     let editing={}; try{editing=JSON.parse(localStorage.getItem('shambhuALPEditingV1')||'{}')}catch(e){}
     return a.length?a.map((x,i)=>{
@@ -2153,7 +2162,7 @@ document.addEventListener('DOMContentLoaded',function(){
     Object.keys(overrides).forEach(k=>{const ov=overrides[k];if(!ov||!ov.locked)return;if(!groups[k])groups[k]={date:k,fumDate:ov.fumDate||'',stacks:[],wheat:0,rice:0,wheatMt:0,riceMt:0};});
     return Object.values(groups).map(g=>{const ov=overrides[g.date];if(ov?.locked)return {...g,...ov,stackText:String(ov.stackText??''),count:Number(ov.count??0),wheat:Number(ov.wheat??0),rice:Number(ov.rice??0),wheatMt:chemNum(ov.wheatMt),riceMt:chemNum(ov.riceMt),consumption:Number(ov.count??0)*0.250,locked:true};return {...g,...(ov||{}),stackText:ov?.stackText!=null?ov.stackText:g.stacks.join(', '),count:g.stacks.length,wheat:Number(g.wheat||0),rice:Number(g.rice||0),consumption:g.stacks.length*0.250,locked:false};}).sort((a,b)=>String(a.date).localeCompare(String(b.date)));
   }
-  function deltaTableRows(){const a=deltaAutoGroups().filter(x=>chemCurrentMonthKey(x.date));let progressive=0;let overrides={};try{overrides=JSON.parse(localStorage.getItem('shambhuDeltaOverridesV1')||'{}')}catch(e){};return a.length?a.map((x,i)=>{const ov=overrides[x.date]||{};const isLocked=!!ov.locked;progressive+=chemNum(x.consumption);const ws=[],rs=[];if(isLocked){(ov.wheatStacks||[]).forEach(st=>{if(!ws.includes(st))ws.push(st)});(ov.riceStacks||[]).forEach(st=>{if(!rs.includes(st))rs.push(st)});if(!ws.length&&!rs.length){String(ov.stackText||x.stackText||'').split(',').map(v=>v.trim()).filter(Boolean).forEach(st=>{if(!ws.includes(st)&&!rs.includes(st))ws.push(st)});}}else{String(x.stackText||'').split(',').map(v=>v.trim()).filter(Boolean).forEach(st=>{const rr=rows.find(row=>String(stack(row)||'').trim()===st && String(deltaDateText(String(val(row,'Fumigation Date')).trim()))===String(x.date));if(rr){if(isWheat(rr)&&!ws.includes(st))ws.push(st);else if(isRice(rr)&&!rs.includes(st))rs.push(st);}});}const action=isLocked?`<div class="chem-action-group"><span class="alp-lock-badge">🔒 Locked</span><button class="pill chem-edit-btn" onclick="editDeltaAuto('${escC(x.date)}')">✏️ Edit</button><button class="pill chem-delete-btn" onclick="deleteDeltaAuto('${escC(x.date)}')">🗑 Delete</button></div>`:`<div class="chem-action-group"><button class="pill chem-save-btn" onclick="saveDeltaAuto('${escC(x.date)}')">💾 Save</button></div>`;return `<tr class="${isLocked?'alp-row-locked':''}"><td>${i+1}</td><td>${chemDate(x.date)}</td><td><div class="delta-stack-split"><div class="delta-wheat-stacks">${ws.map(st=>`<span>${escC(st)}</span>`).join('')||'—'}</div><div class="delta-rice-stacks">${rs.map(st=>`<span>${escC(st)}</span>`).join('')||'—'}</div></div></td><td>${chemNum(x.consumption).toFixed(3)} kg</td><td><b>${progressive.toFixed(3)} kg</b></td><td>${x.wheat} Wheat / ${x.rice} Rice</td><td>${action}</td></tr>`;}).join(''):'<tr><td colspan="7" class="empty">No fumigated stacks found.</td></tr>';}
+  function deltaTableRows(){const a=deltaAutoGroups();let progressive=0;let overrides={};try{overrides=JSON.parse(localStorage.getItem('shambhuDeltaOverridesV1')||'{}')}catch(e){};return a.length?a.map((x,i)=>{const ov=overrides[x.date]||{};const isLocked=!!ov.locked;progressive+=chemNum(x.consumption);const ws=[],rs=[];if(isLocked){(ov.wheatStacks||[]).forEach(st=>{if(!ws.includes(st))ws.push(st)});(ov.riceStacks||[]).forEach(st=>{if(!rs.includes(st))rs.push(st)});if(!ws.length&&!rs.length){String(ov.stackText||x.stackText||'').split(',').map(v=>v.trim()).filter(Boolean).forEach(st=>{if(!ws.includes(st)&&!rs.includes(st))ws.push(st)});}}else{String(x.stackText||'').split(',').map(v=>v.trim()).filter(Boolean).forEach(st=>{const rr=rows.find(row=>String(stack(row)||'').trim()===st && String(deltaDateText(String(val(row,'Fumigation Date')).trim()))===String(x.date));if(rr){if(isWheat(rr)&&!ws.includes(st))ws.push(st);else if(isRice(rr)&&!rs.includes(st))rs.push(st);}});}const action=isLocked?`<div class="chem-action-group"><span class="alp-lock-badge">🔒 Locked</span><button class="pill chem-edit-btn" onclick="editDeltaAuto('${escC(x.date)}')">✏️ Edit</button><button class="pill chem-delete-btn" onclick="deleteDeltaAuto('${escC(x.date)}')">🗑 Delete</button></div>`:`<div class="chem-action-group"><button class="pill chem-save-btn" onclick="saveDeltaAuto('${escC(x.date)}')">💾 Save</button></div>`;return `<tr class="${isLocked?'alp-row-locked':''}"><td>${i+1}</td><td>${chemDate(x.date)}</td><td><div class="delta-stack-split"><div class="delta-wheat-stacks">${ws.map(st=>`<span>${escC(st)}</span>`).join('')||'—'}</div><div class="delta-rice-stacks">${rs.map(st=>`<span>${escC(st)}</span>`).join('')||'—'}</div></div></td><td>${chemNum(x.consumption).toFixed(3)} kg</td><td><b>${progressive.toFixed(3)} kg</b></td><td>${x.wheat} Wheat / ${x.rice} Rice</td><td>${action}</td></tr>`;}).join(''):'<tr><td colspan="7" class="empty">No fumigated stacks found.</td></tr>';}
 
   function chemDateRange(){
     const now=new Date(), ym=now.toISOString().slice(0,7);
@@ -2232,11 +2241,6 @@ document.addEventListener('DOMContentLoaded',function(){
   window.editDeltaAuto=async function(dateKey){const pin=await qcPinPrompt('Edit ke liye PIN enter karein');if(pin===null||String(pin)!==String(getSitePin())){if(pin!==null)alert('Wrong PIN.');return;}const g=deltaAutoGroups().find(x=>x.date===dateKey);if(!g)return;const old=(JSON.parse(localStorage.getItem('shambhuDeltaOverridesV1')||'{}')[g.date])||{};const newDate=await qcDatePrompt('Delta Spray Date select karein',g.date);if(newDate===null)return;if(!/^\d{4}-\d{2}-\d{2}$/.test(newDate))return;const stacks=await qcInputPrompt('Stack Number(s)',g.stackText,'text');if(stacks===null)return;const count=await qcInputPrompt('Number of stacks',g.count,'number');if(count===null)return;let o={};try{o=JSON.parse(localStorage.getItem('shambhuDeltaOverridesV1')||'{}')}catch(e){}const n=Math.max(0,Math.round(chemNum(count)));if(newDate!==g.date)delete o[g.date];o[newDate]={...old,date:newDate,fumDate:g.fumDate||old.fumDate||'',stackText:String(stacks).trim(),count:n,wheat:Number(old.wheat??g.wheat??0),rice:Number(old.rice??g.rice??0),wheatStacks:Array.isArray(old.wheatStacks)?old.wheatStacks:[],riceStacks:Array.isArray(old.riceStacks)?old.riceStacks:[],wheatMt:chemNum(old.wheatMt??g.wheatMt??0),riceMt:chemNum(old.riceMt??g.riceMt??0),consumption:n*0.250,locked:true,sourceLockedAt:old.sourceLockedAt||new Date().toISOString()};localStorage.setItem('shambhuDeltaOverridesV1',JSON.stringify(o));const r=document.getElementById('chemRows');if(r)r.innerHTML=deltaTableRows();renderChemicalReport();};
   window.deleteDeltaAuto=async function(dateKey){const pin=await qcPinPrompt('Delete ke liye PIN enter karein');if(pin===null||String(pin)!==String(getSitePin())){if(pin!==null)alert('Wrong PIN.');return;}if(!confirm('Delete saved Delta register entry? Automatic fumigation data will remain available.'))return;let o={};try{o=JSON.parse(localStorage.getItem('shambhuDeltaOverridesV1')||'{}')}catch(e){}delete o[dateKey];localStorage.setItem('shambhuDeltaOverridesV1',JSON.stringify(o));const r=document.getElementById('chemRows');if(r)r.innerHTML=deltaTableRows();renderChemicalReport();};
   // Restore the generic Chemical register renderer used by existing save/edit/delete actions.
-  function chemCurrentMonthKey(v){
-    const d=typeof chemISODateValue==='function'?chemISODateValue(v):String(v||'').slice(0,10);
-    const now=new Date(); const k=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
-    return String(d||'').slice(0,7)===k;
-  }
   function chemTableRows(){
     if(activeChemicalFolder==='ALP') return alpTableRows();
     if(activeChemicalFolder==='Delta') return deltaTableRows();
@@ -2280,100 +2284,11 @@ document.addEventListener('DOMContentLoaded',function(){
 .mo-entry-datetime .mo-time{font-size:12px;font-weight:800;letter-spacing:.2px}
 @media(max-width:560px){.mo-final-table td{padding:8px 7px}.mo-entry-datetime{min-width:82px;font-size:12px}.mo-entry-datetime .mo-time{font-size:11px}}
 </style>
-
-<style id="final-under-fum-table-fit">
-/* Only requested: Under Cover / Fumigation Due responsive column sizing and bold readable text. */
-.compact-treatment-panel .tablewrap{overflow-x:auto!important;width:100%!important}
-.compact-treatment-panel table{width:100%!important;min-width:0!important;table-layout:auto!important;border-collapse:collapse!important}
-.compact-treatment-panel th,.compact-treatment-panel td{font-weight:700!important;white-space:nowrap!important;word-break:normal!important;overflow-wrap:normal!important;padding:6px 5px!important;font-size:12px!important;line-height:1.2!important}
-.compact-treatment-panel th{font-weight:800!important}
-.compact-treatment-panel th:nth-child(1),.compact-treatment-panel td:nth-child(1){width:1%!important}
-.compact-treatment-panel th:nth-child(2),.compact-treatment-panel td:nth-child(2){width:1%!important}
-.compact-treatment-panel th:nth-child(3),.compact-treatment-panel td:nth-child(3){width:1%!important}
-.compact-treatment-panel th:nth-child(4),.compact-treatment-panel td:nth-child(4){width:1%!important}
-.compact-treatment-panel th:nth-child(5),.compact-treatment-panel td:nth-child(5){width:1%!important}
-.compact-treatment-panel th:nth-child(6),.compact-treatment-panel td:nth-child(6){width:1%!important}
-.compact-treatment-panel th:nth-child(7),.compact-treatment-panel td:nth-child(7){width:1%!important}
-@media(max-width:600px){
- .compact-treatment-panel th,.compact-treatment-panel td{font-size:11px!important;padding:5px 4px!important}
-}
-</style>
-
-<style id="final-05oct-treatment-compact-bold-fix">
-/* FINAL ONLY: Under Cover + Fumigation Due compact, readable, bold, responsive. */
-.compact-treatment-panel .tablewrap{overflow-x:hidden!important;width:100%!important;-webkit-overflow-scrolling:touch!important}
-.compact-treatment-panel table{width:100%!important;min-width:0!important;table-layout:fixed!important;border-collapse:collapse!important;font-size:12px!important}
-.compact-treatment-panel th,.compact-treatment-panel td{font-weight:800!important;font-size:12px!important;line-height:1.2!important;padding:6px 4px!important;white-space:normal!important;word-break:break-word!important;overflow-wrap:anywhere!important;vertical-align:middle!important}
-.compact-treatment-panel th{font-weight:900!important}
-/* Under Cover: Sr, Shed, Stack, Receipt, Commodity, Fumigation Date */
-.compact-treatment-panel:has(.tablewrap table thead th:nth-child(6)):not(:has(.tablewrap table thead th:nth-child(7))) th:nth-child(1),.compact-treatment-panel:has(.tablewrap table thead th:nth-child(6)):not(:has(.tablewrap table thead th:nth-child(7))) td:nth-child(1){width:7%!important}
-.compact-treatment-panel:has(.tablewrap table thead th:nth-child(6)):not(:has(.tablewrap table thead th:nth-child(7))) th:nth-child(2),.compact-treatment-panel:has(.tablewrap table thead th:nth-child(6)):not(:has(.tablewrap table thead th:nth-child(7))) td:nth-child(2){width:10%!important}
-.compact-treatment-panel:has(.tablewrap table thead th:nth-child(6)):not(:has(.tablewrap table thead th:nth-child(7))) th:nth-child(3),.compact-treatment-panel:has(.tablewrap table thead th:nth-child(6)):not(:has(.tablewrap table thead th:nth-child(7))) td:nth-child(3){width:17%!important}
-.compact-treatment-panel:has(.tablewrap table thead th:nth-child(6)):not(:has(.tablewrap table thead th:nth-child(7))) th:nth-child(4),.compact-treatment-panel:has(.tablewrap table thead th:nth-child(6)):not(:has(.tablewrap table thead th:nth-child(7))) td:nth-child(4){width:18%!important}
-.compact-treatment-panel:has(.tablewrap table thead th:nth-child(6)):not(:has(.tablewrap table thead th:nth-child(7))) th:nth-child(5),.compact-treatment-panel:has(.tablewrap table thead th:nth-child(6)):not(:has(.tablewrap table thead th:nth-child(7))) td:nth-child(5){width:18%!important}
-.compact-treatment-panel:has(.tablewrap table thead th:nth-child(6)):not(:has(.tablewrap table thead th:nth-child(7))) th:nth-child(6),.compact-treatment-panel:has(.tablewrap table thead th:nth-child(6)):not(:has(.tablewrap table thead th:nth-child(7))) td:nth-child(6){width:30%!important}
-/* Fumigation Due: Sr, Shed, Stack, Receipt, Commodity, Last Fumigation, Days */
-.compact-treatment-panel:has(.tablewrap table thead th:nth-child(7)) th:nth-child(1),.compact-treatment-panel:has(.tablewrap table thead th:nth-child(7)) td:nth-child(1){width:6%!important}
-.compact-treatment-panel:has(.tablewrap table thead th:nth-child(7)) th:nth-child(2),.compact-treatment-panel:has(.tablewrap table thead th:nth-child(7)) td:nth-child(2){width:9%!important}
-.compact-treatment-panel:has(.tablewrap table thead th:nth-child(7)) th:nth-child(3),.compact-treatment-panel:has(.tablewrap table thead th:nth-child(7)) td:nth-child(3){width:16%!important}
-.compact-treatment-panel:has(.tablewrap table thead th:nth-child(7)) th:nth-child(4),.compact-treatment-panel:has(.tablewrap table thead th:nth-child(7)) td:nth-child(4){width:17%!important}
-.compact-treatment-panel:has(.tablewrap table thead th:nth-child(7)) th:nth-child(5),.compact-treatment-panel:has(.tablewrap table thead th:nth-child(7)) td:nth-child(5){width:17%!important}
-.compact-treatment-panel:has(.tablewrap table thead th:nth-child(7)) th:nth-child(6),.compact-treatment-panel:has(.tablewrap table thead th:nth-child(7)) td:nth-child(6){width:25%!important}
-.compact-treatment-panel:has(.tablewrap table thead th:nth-child(7)) th:nth-child(7),.compact-treatment-panel:has(.tablewrap table thead th:nth-child(7)) td:nth-child(7){width:10%!important;text-align:center!important}
-@media(max-width:600px){.compact-treatment-panel .panelhead{font-size:13px!important;padding:7px 8px!important}.compact-treatment-panel th,.compact-treatment-panel td{font-size:11.5px!important;padding:5px 3px!important;line-height:1.18!important}}
-</style>
 </body><style id="moisture-update-rmc-hide-only">
 /* Only requested Moisture Update change: keep Add New Stack, hide Manual/Current RMC cards. */
 .moisture-focused-page .mo-stack-details{display:none!important}
 </style>
-
-<style id="requested-live-refresh-treatment-fix">
-/* Requested only: hide live-data status row; keep compact live indicator in header. */
-#status{display:none!important}
-.refresh-mini{border:0;background:rgba(255,255,255,.14);color:#fff;border-radius:8px;padding:5px 8px;font-size:18px;font-weight:900;line-height:1;min-width:34px;height:32px}
-.refresh-mini:hover{background:rgba(255,255,255,.24)}
-.live-ok{background:#14894f!important;color:#fff!important}
-.live-bad{background:#d92d3b!important;color:#fff!important}
-.compact-treatment-panel .panelhead{padding:7px 9px;margin:-10px -10px 8px;font-size:13px}
-.compact-treatment-panel{padding:10px;margin-bottom:8px}
-.compact-treatment-panel .tablewrap{max-height:430px}
-.compact-treatment-panel table{font-size:11px;min-width:760px}
-.compact-treatment-panel th{padding:6px 5px}
-.compact-treatment-panel td{padding:5px 5px}
-.compact-treatment-panel .pill{padding:4px 7px;font-size:10px}
-@media(max-width:600px){
-  .compact-treatment-panel{padding:8px;border-radius:8px}
-  .compact-treatment-panel .panelhead{padding:6px 8px;margin:-8px -8px 6px;font-size:12px}
-  .compact-treatment-panel table{font-size:10px;min-width:700px}
-  .compact-treatment-panel th{padding:5px 4px}
-  .compact-treatment-panel td{padding:4px}
-  .compact-treatment-panel .tablewrap{max-height:380px}
-}
-</style>
-
-<style id="requested-only-consumption-fumigation-fix">
-/* Only requested display changes: compact mobile treatment tables + blinking BACK. */
-body.page-open:not(.dashboard-open) #backBtn{animation:requestedBackBlink 1s steps(2,end) infinite!important;background:#d92d3b!important;color:#fff!important;border-color:#b31827!important;font-weight:900!important;}
-@keyframes requestedBackBlink{50%{opacity:.35}}
-.compact-treatment-panel .tablewrap{overflow-x:hidden!important}
-.compact-treatment-panel table{width:100%!important;min-width:0!important;table-layout:fixed!important;font-size:11px!important}
-.compact-treatment-panel th,.compact-treatment-panel td{padding:4px 3px!important;white-space:normal!important;word-break:break-word!important}
-.compact-treatment-panel th:nth-child(1),.compact-treatment-panel td:nth-child(1){width:34px!important}
-.compact-treatment-panel th:nth-child(2),.compact-treatment-panel td:nth-child(2){width:42px!important}
-.compact-treatment-panel th:nth-child(3),.compact-treatment-panel td:nth-child(3){width:64px!important}
-.compact-treatment-panel th:nth-child(4),.compact-treatment-panel td:nth-child(4){width:70px!important}
-@media(max-width:600px){.compact-treatment-panel .panelhead{padding:7px 9px!important;font-size:13px!important}.compact-treatment-panel table{font-size:10px!important}.compact-treatment-panel th,.compact-treatment-panel td{padding:3px 2px!important}}
-</style>
 </html>`;}
-<style id="final-request-05oct-auto-refresh-table-font">
-/* Only requested: preserve open page/folder on auto-refresh; bold, slightly larger responsive treatment tables. */
-.compact-treatment-panel .tablewrap{overflow-x:auto!important;width:100%!important}
-.compact-treatment-panel table{width:100%!important;min-width:0!important;table-layout:auto!important}
-.compact-treatment-panel th,.compact-treatment-panel td{font-weight:800!important;font-size:13px!important;line-height:1.25!important;padding:7px 6px!important}
-.compact-treatment-panel th{font-size:13px!important;font-weight:900!important}
-@media(max-width:600px){.compact-treatment-panel th,.compact-treatment-panel td{font-size:12px!important;padding:6px 5px!important}}
-</style>
-
   function deltaReportHtml(){const r=reportData(),month=new Date(r.m+'-01T00:00:00').toLocaleDateString('en-IN',{month:'long',year:'numeric'});let prog=0;const lines=a=>Array.isArray(a)?a.map(st=>`<div>${escC(st)}</div>`).join(''):'',rows=r.mm.map((x,i)=>{const w=chemNum(x.wheatMt||0),ri=chemNum(x.riceMt||0),cons=chemNum(x.consumption||0);prog+=cons;return `<tr><td>${i+1}</td><td>${chemDate(x.date)}</td><td>${lines(x.stacksWheat)}</td><td>${lines(x.stacksRice)}</td><td>${w.toFixed(0)} MT</td><td>${ri.toFixed(0)} MT</td><td>${(w+ri).toFixed(0)} MT</td><td>${cons.toFixed(3)} kg</td><td><b>${prog.toFixed(3)} kg</b></td></tr>`}).join('');const totalRow=`<tr class="delta-total-row"><td colspan="4"><b>TOTAL</b></td><td><b>${chemNum(r.wheatQty||0).toFixed(0)} MT</b></td><td><b>${chemNum(r.riceQty||0).toFixed(0)} MT</b></td><td><b>${(chemNum(r.wheatQty||0)+chemNum(r.riceQty||0)).toFixed(0)} MT</b></td><td><b>${chemNum(r.totalDelta||0).toFixed(3)} kg</b></td><td><b>${chemNum(r.totalDelta||0).toFixed(3)} kg</b></td></tr>`;return `<!doctype html><html><head><meta charset="utf-8"><title>Delta Report</title><style>body{font-family:Arial;margin:28px;color:#172d25}h1{text-align:center;margin:0;font-size:24px}h2{text-align:center;margin:5px 0 18px;font-size:18px}table{border-collapse:collapse;width:100%;font-size:12px}th,td{border:1px solid #999;padding:7px;text-align:center;vertical-align:top}th{background:#073d2c;color:white}td div{line-height:1.35;font-weight:600}.delta-total-row td{font-weight:700;background:#fff7d6;border-top:2px solid #555}@media(max-width:700px){body{margin:12px}table{font-size:10px}th,td{padding:5px}}</style></head><body><h1>SHED NO. 9 / 14 / 18 / 20</h1><h2>DELTA SPRAY REPORT — ${month}</h2><table><thead><tr><th>Sr Number</th><th>Date of Delta Spray</th><th>Stacks Numbers – Wheat</th><th>Stacks Numbers – Rice</th><th>Wheat Spray (MT)</th><th>Rice Spray (MT)</th><th>Total Spray (MT)</th><th>Consumption (kg)</th><th>Progressive Consumption (kg)</th></tr></thead><tbody>${rows||'<tr><td colspan="9">No Delta entries for this month.</td></tr>'}</tbody><tfoot>${totalRow}</tfoot></table>
 
 <style id="moisture-saved-entry-datetime-final">
@@ -2389,49 +2304,7 @@ body.page-open:not(.dashboard-open) #backBtn{animation:requestedBackBlink 1s ste
 .mo-entry-datetime .mo-time{font-size:12px;font-weight:800;letter-spacing:.2px}
 @media(max-width:560px){.mo-final-table td{padding:8px 7px}.mo-entry-datetime{min-width:82px;font-size:12px}.mo-entry-datetime .mo-time{font-size:11px}}
 </style>
-
-<style id="final-under-fum-table-fit">
-/* Only requested: Under Cover / Fumigation Due responsive column sizing and bold readable text. */
-.compact-treatment-panel .tablewrap{overflow-x:auto!important;width:100%!important}
-.compact-treatment-panel table{width:100%!important;min-width:0!important;table-layout:auto!important;border-collapse:collapse!important}
-.compact-treatment-panel th,.compact-treatment-panel td{font-weight:700!important;white-space:nowrap!important;word-break:normal!important;overflow-wrap:normal!important;padding:6px 5px!important;font-size:12px!important;line-height:1.2!important}
-.compact-treatment-panel th{font-weight:800!important}
-.compact-treatment-panel th:nth-child(1),.compact-treatment-panel td:nth-child(1){width:1%!important}
-.compact-treatment-panel th:nth-child(2),.compact-treatment-panel td:nth-child(2){width:1%!important}
-.compact-treatment-panel th:nth-child(3),.compact-treatment-panel td:nth-child(3){width:1%!important}
-.compact-treatment-panel th:nth-child(4),.compact-treatment-panel td:nth-child(4){width:1%!important}
-.compact-treatment-panel th:nth-child(5),.compact-treatment-panel td:nth-child(5){width:1%!important}
-.compact-treatment-panel th:nth-child(6),.compact-treatment-panel td:nth-child(6){width:1%!important}
-.compact-treatment-panel th:nth-child(7),.compact-treatment-panel td:nth-child(7){width:1%!important}
-@media(max-width:600px){
- .compact-treatment-panel th,.compact-treatment-panel td{font-size:11px!important;padding:5px 4px!important}
-}
-</style>
-</body>
-<style id="requested-live-refresh-treatment-fix">
-/* Requested only: hide live-data status row; keep compact live indicator in header. */
-#status{display:none!important}
-.refresh-mini{border:0;background:rgba(255,255,255,.14);color:#fff;border-radius:8px;padding:5px 8px;font-size:18px;font-weight:900;line-height:1;min-width:34px;height:32px}
-.refresh-mini:hover{background:rgba(255,255,255,.24)}
-.live-ok{background:#14894f!important;color:#fff!important}
-.live-bad{background:#d92d3b!important;color:#fff!important}
-.compact-treatment-panel .panelhead{padding:7px 9px;margin:-10px -10px 8px;font-size:13px}
-.compact-treatment-panel{padding:10px;margin-bottom:8px}
-.compact-treatment-panel .tablewrap{max-height:430px}
-.compact-treatment-panel table{font-size:11px;min-width:760px}
-.compact-treatment-panel th{padding:6px 5px}
-.compact-treatment-panel td{padding:5px 5px}
-.compact-treatment-panel .pill{padding:4px 7px;font-size:10px}
-@media(max-width:600px){
-  .compact-treatment-panel{padding:8px;border-radius:8px}
-  .compact-treatment-panel .panelhead{padding:6px 8px;margin:-8px -8px 6px;font-size:12px}
-  .compact-treatment-panel table{font-size:10px;min-width:700px}
-  .compact-treatment-panel th{padding:5px 4px}
-  .compact-treatment-panel td{padding:4px}
-  .compact-treatment-panel .tablewrap{max-height:380px}
-}
-</style>
-</html>`;}
+</body></html>`;}
   function reportHtml(){const r=reportData(),month=new Date(r.m+'-01T00:00:00').toLocaleDateString('en-IN',{month:'long',year:'numeric'}), rows=r.mm.map((x,i)=>`<tr><td>${i+1}</td><td>${chemDate(x.date)}</td><td>${escC(x.shed)}</td><td>${escC(x.stack)}</td><td>${escC(x.commodity)}</td><td>${escC(x.chemical)}</td><td>${chemNum(x.qty).toFixed(2)}</td><td>${escC(x.unit)}</td><td>${escC(x.purpose)}</td><td>${escC(x.remarks)}</td></tr>`).join('');return `<!doctype html><html><head><meta charset="utf-8"><title>Chemical Report</title><style>body{font-family:Arial;margin:28px;color:#172d25}h1{text-align:center;margin:0;font-size:24px}h2{text-align:center;margin:5px 0 18px;font-size:18px}table{border-collapse:collapse;width:100%;font-size:11px}th,td{border:1px solid #999;padding:7px}th{background:#073d2c;color:white}.sum{margin:14px 0;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.card{border:1px solid #aaa;padding:10px}.card b{display:block;font-size:16px;margin-top:4px}</style><style id="compact-colour-summary-row">.report-summary-row td{font-weight:600;padding:4px 3px;line-height:1.15;background:#fff7d6;border:1px solid #d6b656;color:#243126}.report-summary-row td:nth-child(1),.report-summary-row td:nth-child(2){background:#e8eefc;color:#244a8f}.report-summary-row td:nth-child(3){background:#e8f7ec;color:#168a45}.report-summary-row td:nth-child(4){background:#fff0e1;color:#b45b16}.report-summary-row td:nth-child(5){background:#eee8ff;color:#6542a5}.report-summary-row td:nth-child(6){background:#e7f7f7;color:#16757a}.report-summary-row b{font-size:12px}</style></head><body><h1>SHED NO. 9 / 14 / 18 / 20</h1><h2>CHEMICAL CONSUMPTION REPORT — ${month}</h2><div class="sum"><div class="card">Wheat ${activeChemicalFolder||"Chemical"}<b>${r.mm.filter(x=>x.commodity==="Wheat").reduce((s,x)=>s+chemNum(x.qty),0).toFixed(2)} Kg</b></div><div class="card">Rice ${activeChemicalFolder||"Chemical"}<b>${r.mm.filter(x=>x.commodity==="Rice").reduce((s,x)=>s+chemNum(x.qty),0).toFixed(2)} Kg</b></div><div class="card">Total ${activeChemicalFolder||"Chemical"}<b>${r.mm.reduce((s,x)=>s+chemNum(x.qty),0).toFixed(2)} Kg</b></div></div><table><thead><tr><th>Sr</th><th>Date</th><th>Shed</th><th>Stack</th><th>Commodity</th><th>Chemical</th><th>Qty</th><th>Unit</th><th>Purpose</th><th>Remarks</th></tr></thead><tbody>${rows||'<tr><td colspan="10">No entries for this month.</td></tr>'}</tbody></table><p><b>Abhi tak:</b> Wheat ${activeChemicalFolder||"Chemical"} ${r.total.filter(x=>x.commodity==="Wheat").reduce((s,x)=>s+chemNum(x.qty),0).toFixed(2)} Kg | Rice ${activeChemicalFolder||"Chemical"} ${r.total.filter(x=>x.commodity==="Rice").reduce((s,x)=>s+chemNum(x.qty),0).toFixed(2)} Kg | Total ${(r.total.reduce((s,x)=>s+chemNum(x.qty),0)).toFixed(2)} Kg</p>
 
 <style id="moisture-saved-entry-datetime-final">
@@ -2447,24 +2320,6 @@ body.page-open:not(.dashboard-open) #backBtn{animation:requestedBackBlink 1s ste
 .mo-entry-datetime .mo-time{font-size:12px;font-weight:800;letter-spacing:.2px}
 @media(max-width:560px){.mo-final-table td{padding:8px 7px}.mo-entry-datetime{min-width:82px;font-size:12px}.mo-entry-datetime .mo-time{font-size:11px}}
 </style>
-
-<style id="final-under-fum-table-fit">
-/* Only requested: Under Cover / Fumigation Due responsive column sizing and bold readable text. */
-.compact-treatment-panel .tablewrap{overflow-x:auto!important;width:100%!important}
-.compact-treatment-panel table{width:100%!important;min-width:0!important;table-layout:auto!important;border-collapse:collapse!important}
-.compact-treatment-panel th,.compact-treatment-panel td{font-weight:700!important;white-space:nowrap!important;word-break:normal!important;overflow-wrap:normal!important;padding:6px 5px!important;font-size:12px!important;line-height:1.2!important}
-.compact-treatment-panel th{font-weight:800!important}
-.compact-treatment-panel th:nth-child(1),.compact-treatment-panel td:nth-child(1){width:1%!important}
-.compact-treatment-panel th:nth-child(2),.compact-treatment-panel td:nth-child(2){width:1%!important}
-.compact-treatment-panel th:nth-child(3),.compact-treatment-panel td:nth-child(3){width:1%!important}
-.compact-treatment-panel th:nth-child(4),.compact-treatment-panel td:nth-child(4){width:1%!important}
-.compact-treatment-panel th:nth-child(5),.compact-treatment-panel td:nth-child(5){width:1%!important}
-.compact-treatment-panel th:nth-child(6),.compact-treatment-panel td:nth-child(6){width:1%!important}
-.compact-treatment-panel th:nth-child(7),.compact-treatment-panel td:nth-child(7){width:1%!important}
-@media(max-width:600px){
- .compact-treatment-panel th,.compact-treatment-panel td{font-size:11px!important;padding:5px 4px!important}
-}
-</style>
 </body>
 <style id="alp-few-heavy-final-fix">
 .stack-item.stack-weight-toggle.weight-few em{background:#e7f7ec!important;color:#168a45!important;border:1px solid #9bd3ad!important}
@@ -2474,30 +2329,6 @@ body.page-open:not(.dashboard-open) #backBtn{animation:requestedBackBlink 1s ste
 <style id="moisture-update-rmc-hide-only">
 /* Only requested Moisture Update change: keep Add New Stack, hide Manual/Current RMC cards. */
 .moisture-focused-page .mo-stack-details{display:none!important}
-</style>
-
-<style id="requested-live-refresh-treatment-fix">
-/* Requested only: hide live-data status row; keep compact live indicator in header. */
-#status{display:none!important}
-.refresh-mini{border:0;background:rgba(255,255,255,.14);color:#fff;border-radius:8px;padding:5px 8px;font-size:18px;font-weight:900;line-height:1;min-width:34px;height:32px}
-.refresh-mini:hover{background:rgba(255,255,255,.24)}
-.live-ok{background:#14894f!important;color:#fff!important}
-.live-bad{background:#d92d3b!important;color:#fff!important}
-.compact-treatment-panel .panelhead{padding:7px 9px;margin:-10px -10px 8px;font-size:13px}
-.compact-treatment-panel{padding:10px;margin-bottom:8px}
-.compact-treatment-panel .tablewrap{max-height:430px}
-.compact-treatment-panel table{font-size:11px;min-width:760px}
-.compact-treatment-panel th{padding:6px 5px}
-.compact-treatment-panel td{padding:5px 5px}
-.compact-treatment-panel .pill{padding:4px 7px;font-size:10px}
-@media(max-width:600px){
-  .compact-treatment-panel{padding:8px;border-radius:8px}
-  .compact-treatment-panel .panelhead{padding:6px 8px;margin:-8px -8px 6px;font-size:12px}
-  .compact-treatment-panel table{font-size:10px;min-width:700px}
-  .compact-treatment-panel th{padding:5px 4px}
-  .compact-treatment-panel td{padding:4px}
-  .compact-treatment-panel .tablewrap{max-height:380px}
-}
 </style>
 </html>`;}
   function malathionReportHtml(){const r=reportData(),month=new Date(r.m+'-01T00:00:00').toLocaleDateString('en-IN',{month:'long',year:'numeric'}),w=chemNum(r.monthWheatQty),ri=chemNum(r.monthRiceQty),t=w+ri,aw=chemNum(r.allWheatQty),ar=chemNum(r.allRiceQty),at=aw+ar,done=(r.mm||[]).reduce((s,x)=>s+Math.round(chemNum(x.qty)),0),allDone=(r.total||[]).reduce((s,x)=>s+Math.round(chemNum(x.qty)),0),target=t*0.20,allTarget=at*0.20,remain=Math.max(0,target-done),allRemain=Math.max(0,allTarget-allDone);return `<!doctype html><html><head><meta charset="utf-8"><title>Malathion Report</title><style>body{font-family:Arial;margin:28px;color:#172d25}h1{text-align:center;margin:0;font-size:24px}h2{text-align:center;margin:5px 0 18px;font-size:18px}.sum{margin:14px 0;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.card{border:1px solid #aaa;padding:10px;text-align:center}.card b{display:block;font-size:16px;margin-top:4px}.indicator{border:2px solid #b8860b;padding:12px;margin:16px 0;text-align:center;background:#fffaf0}.indicator strong{font-size:18px}</style><style id="compact-colour-summary-row">.report-summary-row td{font-weight:600;padding:4px 3px;line-height:1.15;background:#fff7d6;border:1px solid #d6b656;color:#243126}.report-summary-row td:nth-child(1),.report-summary-row td:nth-child(2){background:#e8eefc;color:#244a8f}.report-summary-row td:nth-child(3){background:#e8f7ec;color:#168a45}.report-summary-row td:nth-child(4){background:#fff0e1;color:#b45b16}.report-summary-row td:nth-child(5){background:#eee8ff;color:#6542a5}.report-summary-row td:nth-child(6){background:#e7f7f7;color:#16757a}.report-summary-row b{font-size:12px}</style>
@@ -2526,24 +2357,6 @@ body.page-open:not(.dashboard-open) #backBtn{animation:requestedBackBlink 1s ste
 .mo-entry-datetime .mo-date{font-weight:900}
 .mo-entry-datetime .mo-time{font-size:12px;font-weight:800;letter-spacing:.2px}
 @media(max-width:560px){.mo-final-table td{padding:8px 7px}.mo-entry-datetime{min-width:82px;font-size:12px}.mo-entry-datetime .mo-time{font-size:11px}}
-</style>
-
-<style id="final-under-fum-table-fit">
-/* Only requested: Under Cover / Fumigation Due responsive column sizing and bold readable text. */
-.compact-treatment-panel .tablewrap{overflow-x:auto!important;width:100%!important}
-.compact-treatment-panel table{width:100%!important;min-width:0!important;table-layout:auto!important;border-collapse:collapse!important}
-.compact-treatment-panel th,.compact-treatment-panel td{font-weight:700!important;white-space:nowrap!important;word-break:normal!important;overflow-wrap:normal!important;padding:6px 5px!important;font-size:12px!important;line-height:1.2!important}
-.compact-treatment-panel th{font-weight:800!important}
-.compact-treatment-panel th:nth-child(1),.compact-treatment-panel td:nth-child(1){width:1%!important}
-.compact-treatment-panel th:nth-child(2),.compact-treatment-panel td:nth-child(2){width:1%!important}
-.compact-treatment-panel th:nth-child(3),.compact-treatment-panel td:nth-child(3){width:1%!important}
-.compact-treatment-panel th:nth-child(4),.compact-treatment-panel td:nth-child(4){width:1%!important}
-.compact-treatment-panel th:nth-child(5),.compact-treatment-panel td:nth-child(5){width:1%!important}
-.compact-treatment-panel th:nth-child(6),.compact-treatment-panel td:nth-child(6){width:1%!important}
-.compact-treatment-panel th:nth-child(7),.compact-treatment-panel td:nth-child(7){width:1%!important}
-@media(max-width:600px){
- .compact-treatment-panel th,.compact-treatment-panel td{font-size:11px!important;padding:5px 4px!important}
-}
 </style>
 </body>
 <style id="alp-few-heavy-final-fix">
@@ -2580,30 +2393,6 @@ body.page-open:not(.dashboard-open) #backBtn{animation:requestedBackBlink 1s ste
 .mo-stack-remaining{font-size:10px!important;padding:4px 6px!important}
 .mo-completebar{margin:5px 0 7px!important}
 .mo-completebar #mCompleteBtnVisible{font-size:11px!important;padding:6px 9px!important}
-</style>
-
-<style id="requested-live-refresh-treatment-fix">
-/* Requested only: hide live-data status row; keep compact live indicator in header. */
-#status{display:none!important}
-.refresh-mini{border:0;background:rgba(255,255,255,.14);color:#fff;border-radius:8px;padding:5px 8px;font-size:18px;font-weight:900;line-height:1;min-width:34px;height:32px}
-.refresh-mini:hover{background:rgba(255,255,255,.24)}
-.live-ok{background:#14894f!important;color:#fff!important}
-.live-bad{background:#d92d3b!important;color:#fff!important}
-.compact-treatment-panel .panelhead{padding:7px 9px;margin:-10px -10px 8px;font-size:13px}
-.compact-treatment-panel{padding:10px;margin-bottom:8px}
-.compact-treatment-panel .tablewrap{max-height:430px}
-.compact-treatment-panel table{font-size:11px;min-width:760px}
-.compact-treatment-panel th{padding:6px 5px}
-.compact-treatment-panel td{padding:5px 5px}
-.compact-treatment-panel .pill{padding:4px 7px;font-size:10px}
-@media(max-width:600px){
-  .compact-treatment-panel{padding:8px;border-radius:8px}
-  .compact-treatment-panel .panelhead{padding:6px 8px;margin:-8px -8px 6px;font-size:12px}
-  .compact-treatment-panel table{font-size:10px;min-width:700px}
-  .compact-treatment-panel th{padding:5px 4px}
-  .compact-treatment-panel td{padding:4px}
-  .compact-treatment-panel .tablewrap{max-height:380px}
-}
 </style>
 </html>`;}
   window.renderChemicalReport=function(){
@@ -2647,7 +2436,7 @@ function malathionEntries(){
     return x.stack?[{stack:String(x.stack),commodity:x.commodity||'Rice',qty:Math.round(chemNum(x.qty||0))}]:[];
   }
   function malathionTableRows(){
-    const a=malathionEntries().filter(x=>chemCurrentMonthKey(x.date)); let progressive=0;
+    const a=malathionEntries(); let progressive=0;
     return a.length?a.map((x,i)=>{
       const ss=malEntryStacks(x), qty=ss.reduce((n,v)=>n+Math.round(chemNum(v.qty)),0);
       const cons=chemNum(x.consumption)!=null&&x.consumption!==''?chemNum(x.consumption):ss.length*0.061;
@@ -2755,7 +2544,7 @@ function malathionEntries(){
   };
 
   const oldRender=window.renderPage;
-  window.renderPage=function(page){if(page==='chemical'){var ep=document.getElementById('appErrorPopup');if(ep)ep.style.display='none';document.body.classList.remove('moisture-active');activeChemicalFolder='';localStorage.removeItem('shambhuChemicalFolder');document.getElementById('dynamicPage').innerHTML=chemicalFolderPage();return;}return oldRender(page);};
+  window.renderPage=function(page){if(page==='chemical'){var ep=document.getElementById('appErrorPopup');if(ep)ep.style.display='none';document.body.classList.remove('moisture-active');document.getElementById('dynamicPage').innerHTML=chemicalPage();if(typeof restoreChemicalReportState==='function')restoreChemicalReportState();renderChemicalReport();setTimeout(renderChemicalReport,50);return;}return oldRender(page);};
 })();
 </script>
 <style id="chemical-final-interaction-fix">
@@ -2977,23 +2766,4 @@ table.mir-test-check-table{width:max-content;min-width:1080px;table-layout:fixed
 .mo-stack-card.selected-mo-stack{outline:3px solid #1565c0!important;box-shadow:0 0 0 3px rgba(21,101,192,.22),0 4px 12px rgba(21,101,192,.20)!important;z-index:4!important}
 .mo-stack-card.selected-mo-stack.wheat{background:#e4f6e9!important;border-color:#1565c0!important;border-left:6px solid #168548!important}
 .mo-stack-card.selected-mo-stack.rice{background:#fff0d2!important;border-color:#1565c0!important;border-left:6px solid #c47b08!important}
-</style>
-
-<style id="final-request-only-fix-05oct2026">
-/* Only requested fixes: compact Under Cover/Fumigation Due, hide Home status row, live light, blinking BACK. */
-.dashboard-open .status{display:none!important}
-.live{background:transparent!important;padding:4px 2px!important;display:inline-flex!important;align-items:center!important;gap:6px!important;font-weight:900!important}
-.live-dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:#18c66a;box-shadow:0 0 0 2px rgba(24,198,106,.16);flex:0 0 9px}
-.live.live-bad .live-dot{background:#e53935;box-shadow:0 0 0 2px rgba(229,57,53,.16)}
-.live.live-bad{color:#ffb3b3!important;animation:liveNotBlink 1s steps(2,end) infinite!important}
-@keyframes liveNotBlink{50%{opacity:.35}}
-body.page-open:not(.dashboard-open) #backBtn{display:inline-flex!important;align-items:center!important;justify-content:center!important;background:#d92d3b!important;color:#fff!important;border-color:#b31827!important;font-weight:900!important;animation:requestedBackBlink 1s steps(2,end) infinite!important}
-@keyframes requestedBackBlink{50%{opacity:.35;box-shadow:0 0 0 2px rgba(217,45,59,.15)}}
-.compact-treatment-panel .tablewrap{overflow-x:hidden!important}
-.compact-treatment-panel table{width:100%!important;min-width:0!important;table-layout:fixed!important;font-size:11px!important}
-.compact-treatment-panel th,.compact-treatment-panel td{padding:4px 3px!important;white-space:normal!important;word-break:break-word!important}
-.compact-treatment-panel th:nth-child(1),.compact-treatment-panel td:nth-child(1){width:36px!important}
-.compact-treatment-panel th:nth-child(2),.compact-treatment-panel td:nth-child(2){width:44px!important}
-.compact-treatment-panel th:nth-child(3),.compact-treatment-panel td:nth-child(3){width:62px!important}
-@media(max-width:600px){.compact-treatment-panel table{font-size:10px!important}.compact-treatment-panel th,.compact-treatment-panel td{padding:3px 2px!important}}
 </style>
