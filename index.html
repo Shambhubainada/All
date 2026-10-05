@@ -1305,6 +1305,11 @@ function openPage(page,fromBack=false){
   window.scrollTo({top:0,behavior:'smooth'});
 }
 function goBackPage(){
+  // Chemical register -> return to the Chemical folder page first.
+  // The next BACK then returns to the actual page that opened Chemical.
+  if(currentPage==='chemical' && typeof activeChemicalFolder!=='undefined' && activeChemicalFolder){
+    if(typeof openChemicalFolders==='function'){openChemicalFolders();return;}
+  }
   while(shambhuPageHistory.length){
     const prev=shambhuPageHistory.pop();
     if(prev && prev!==currentPage){openPage(prev,true);return;}
@@ -1882,6 +1887,12 @@ body.page-open:not(.dashboard-open) .top{justify-content:flex-start;padding:8px 
 body.page-open:not(.dashboard-open) .top-left{width:100%;gap:0}
 body.page-open:not(.dashboard-open) #backBtn{display:inline-flex!important;align-items:center;justify-content:center}
 .install-app-btn{border:0;border-radius:8px;padding:8px 11px;background:#fff;color:#063b2b;font-weight:900}
+</style>
+<style id="standalone-no-extra-top-space">
+body.page-open:not(.dashboard-open) .content{padding-top:0!important}
+body.page-open:not(.dashboard-open) .content>#dynamicPage{margin-top:0!important}
+body.page-open:not(.dashboard-open) #dynamicPage>.panel:first-child{margin-top:0!important}
+body.page-open:not(.dashboard-open) .top{padding-top:5px!important;padding-bottom:5px!important;min-height:42px!important}
 </style>
 <style id="moisture-standalone-final-fix">
 body.moisture-active .top-menu-btn,body.moisture-active #homeBtn,body.moisture-active .topright,body.moisture-active .title,body.moisture-active .status,body.moisture-active .work-alert,body.moisture-active .filters,body.moisture-active .final-quick-grid,body.moisture-active .final-quick-row,body.moisture-active .dashboard-overview-folder,body.moisture-active #dashboardPage,body.moisture-active .side{display:none!important}
