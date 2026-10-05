@@ -231,6 +231,8 @@ body.page-open:not(.dashboard-open) .dashboard-overview-folder,
 body.page-open:not(.dashboard-open) #dashboardPage { display:none!important; }
 .page-nav-btn{border:1px solid #8fd0b5;background:#fff;color:#073d2c;border-radius:9px;padding:8px 10px;font-weight:900;white-space:nowrap}
 .page-nav-btn:hover{background:#e8f5ed}
+#backBtn{background:#c52635!important;border-color:#a91825!important;color:#fff!important;animation:backBtnBlink 1s infinite}
+@keyframes backBtnBlink{0%,100%{opacity:1}50%{opacity:.45}}
 @media(max-width:700px){.page-nav-btn{padding:7px 8px;font-size:11px}.top-left{gap:5px}}
 /* Final mobile-first navigation/layout */
 .side .brand,.side .shedbox,.side .sidefoot{display:none}
@@ -1287,7 +1289,7 @@ function openPage(page){
   document.body.classList.toggle("dashboard-open",page==="dashboard");
   currentPage=page; localStorage.setItem("shambhuCurrentPage",page);
   document.querySelectorAll('.nav button[data-page]').forEach(b=>b.classList.toggle('active',b.dataset.page===page));
-  const globalFilters=document.querySelector('.filters'); if(globalFilters)globalFilters.style.display=/^moisture/.test(page)?'none':'';
+  const globalFilters=document.querySelector('.filters'); if(globalFilters)globalFilters.style.display=(/^moisture/.test(page)||['chemical','notepad','under','fum'].includes(page))?'none':'';
   const back=$('backBtn'),home=$('homeBtn');
   if(back)back.style.display=page==='dashboard'?'none':'inline-block';
   if(home)home.style.display=page==='dashboard'?'none':'inline-block';
