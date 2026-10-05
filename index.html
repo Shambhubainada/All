@@ -2123,7 +2123,7 @@ document.addEventListener('DOMContentLoaded',function(){
     if(table)table.classList.toggle('stack-details-open');
   };
   function alpTableRows(){
-    const a=alpAutoGroups(); let progressive=0;
+    const a=currentChemicalMonthOnly(alpAutoGroups()); let progressive=0;
     let overrides={}; try{overrides=JSON.parse(localStorage.getItem('shambhuALPOverridesV1')||'{}')}catch(e){}
     let editing={}; try{editing=JSON.parse(localStorage.getItem('shambhuALPEditingV1')||'{}')}catch(e){}
     return a.length?a.map((x,i)=>{
@@ -2151,7 +2151,7 @@ document.addEventListener('DOMContentLoaded',function(){
     Object.keys(overrides).forEach(k=>{const ov=overrides[k];if(!ov||!ov.locked)return;if(!groups[k])groups[k]={date:k,fumDate:ov.fumDate||'',stacks:[],wheat:0,rice:0,wheatMt:0,riceMt:0};});
     return Object.values(groups).map(g=>{const ov=overrides[g.date];if(ov?.locked)return {...g,...ov,stackText:String(ov.stackText??''),count:Number(ov.count??0),wheat:Number(ov.wheat??0),rice:Number(ov.rice??0),wheatMt:chemNum(ov.wheatMt),riceMt:chemNum(ov.riceMt),consumption:Number(ov.count??0)*0.250,locked:true};return {...g,...(ov||{}),stackText:ov?.stackText!=null?ov.stackText:g.stacks.join(', '),count:g.stacks.length,wheat:Number(g.wheat||0),rice:Number(g.rice||0),consumption:g.stacks.length*0.250,locked:false};}).sort((a,b)=>String(a.date).localeCompare(String(b.date)));
   }
-  function deltaTableRows(){const a=deltaAutoGroups();let progressive=0;let overrides={};try{overrides=JSON.parse(localStorage.getItem('shambhuDeltaOverridesV1')||'{}')}catch(e){};return a.length?a.map((x,i)=>{const ov=overrides[x.date]||{};const isLocked=!!ov.locked;progressive+=chemNum(x.consumption);const ws=[],rs=[];if(isLocked){(ov.wheatStacks||[]).forEach(st=>{if(!ws.includes(st))ws.push(st)});(ov.riceStacks||[]).forEach(st=>{if(!rs.includes(st))rs.push(st)});if(!ws.length&&!rs.length){String(ov.stackText||x.stackText||'').split(',').map(v=>v.trim()).filter(Boolean).forEach(st=>{if(!ws.includes(st)&&!rs.includes(st))ws.push(st)});}}else{String(x.stackText||'').split(',').map(v=>v.trim()).filter(Boolean).forEach(st=>{const rr=rows.find(row=>String(stack(row)||'').trim()===st && String(deltaDateText(String(val(row,'Fumigation Date')).trim()))===String(x.date));if(rr){if(isWheat(rr)&&!ws.includes(st))ws.push(st);else if(isRice(rr)&&!rs.includes(st))rs.push(st);}});}const action=isLocked?`<div class="chem-action-group"><span class="alp-lock-badge">🔒 Locked</span><button class="pill chem-edit-btn" onclick="editDeltaAuto('${escC(x.date)}')">✏️ Edit</button><button class="pill chem-delete-btn" onclick="deleteDeltaAuto('${escC(x.date)}')">🗑 Delete</button></div>`:`<div class="chem-action-group"><button class="pill chem-save-btn" onclick="saveDeltaAuto('${escC(x.date)}')">💾 Save</button></div>`;return `<tr class="${isLocked?'alp-row-locked':''}"><td>${i+1}</td><td>${chemDate(x.date)}</td><td><div class="delta-stack-split"><div class="delta-wheat-stacks">${ws.map(st=>`<span>${escC(st)}</span>`).join('')||'—'}</div><div class="delta-rice-stacks">${rs.map(st=>`<span>${escC(st)}</span>`).join('')||'—'}</div></div></td><td>${chemNum(x.consumption).toFixed(3)} kg</td><td><b>${progressive.toFixed(3)} kg</b></td><td>${x.wheat} Wheat / ${x.rice} Rice</td><td>${action}</td></tr>`;}).join(''):'<tr><td colspan="7" class="empty">No fumigated stacks found.</td></tr>';}
+  function deltaTableRows(){const a=currentChemicalMonthOnly(deltaAutoGroups());let progressive=0;let overrides={};try{overrides=JSON.parse(localStorage.getItem('shambhuDeltaOverridesV1')||'{}')}catch(e){};return a.length?a.map((x,i)=>{const ov=overrides[x.date]||{};const isLocked=!!ov.locked;progressive+=chemNum(x.consumption);const ws=[],rs=[];if(isLocked){(ov.wheatStacks||[]).forEach(st=>{if(!ws.includes(st))ws.push(st)});(ov.riceStacks||[]).forEach(st=>{if(!rs.includes(st))rs.push(st)});if(!ws.length&&!rs.length){String(ov.stackText||x.stackText||'').split(',').map(v=>v.trim()).filter(Boolean).forEach(st=>{if(!ws.includes(st)&&!rs.includes(st))ws.push(st)});}}else{String(x.stackText||'').split(',').map(v=>v.trim()).filter(Boolean).forEach(st=>{const rr=rows.find(row=>String(stack(row)||'').trim()===st && String(deltaDateText(String(val(row,'Fumigation Date')).trim()))===String(x.date));if(rr){if(isWheat(rr)&&!ws.includes(st))ws.push(st);else if(isRice(rr)&&!rs.includes(st))rs.push(st);}});}const action=isLocked?`<div class="chem-action-group"><span class="alp-lock-badge">🔒 Locked</span><button class="pill chem-edit-btn" onclick="editDeltaAuto('${escC(x.date)}')">✏️ Edit</button><button class="pill chem-delete-btn" onclick="deleteDeltaAuto('${escC(x.date)}')">🗑 Delete</button></div>`:`<div class="chem-action-group"><button class="pill chem-save-btn" onclick="saveDeltaAuto('${escC(x.date)}')">💾 Save</button></div>`;return `<tr class="${isLocked?'alp-row-locked':''}"><td>${i+1}</td><td>${chemDate(x.date)}</td><td><div class="delta-stack-split"><div class="delta-wheat-stacks">${ws.map(st=>`<span>${escC(st)}</span>`).join('')||'—'}</div><div class="delta-rice-stacks">${rs.map(st=>`<span>${escC(st)}</span>`).join('')||'—'}</div></div></td><td>${chemNum(x.consumption).toFixed(3)} kg</td><td><b>${progressive.toFixed(3)} kg</b></td><td>${x.wheat} Wheat / ${x.rice} Rice</td><td>${action}</td></tr>`;}).join(''):'<tr><td colspan="7" class="empty">No fumigated stacks found.</td></tr>';}
 
   function chemDateRange(){
     const now=new Date(), ym=now.toISOString().slice(0,7);
@@ -2162,6 +2162,14 @@ document.addEventListener('DOMContentLoaded',function(){
   }
   function chemISODateValue(date){const d=parseDate(date);if(!d)return String(date||'').slice(0,10);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
   function inChemRange(date,from,to){const d=chemISODateValue(date);return d>=from&&d<=to;}
+  /* Chemical registers show only the current month's entries. Older entries are
+     retained in the same data and remain available through the month-wise History/report. */
+  function currentChemicalMonthOnly(list){
+    const now=new Date();
+    const from=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-01';
+    const to=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
+    return Array.isArray(list)?list.filter(x=>{const d=chemISODateValue(x?.date);return d>=from&&d<=to;}):[];
+  }
   function reportData(){
     const rg=chemDateRange(),from=rg.from,to=rg.to,m=rg.m;
     if(activeChemicalFolder==='ALP'){
@@ -2418,7 +2426,7 @@ document.addEventListener('DOMContentLoaded',function(){
   window.downloadChemicalPDF=function(){const w=window.open('','_blank');if(!w){alert('Popup blocked.');return}w.document.write(activeChemicalFolder==='ALP'?alpReportHtml():activeChemicalFolder==='Delta'?deltaReportHtml():activeChemicalFolder==='Malathion'?malathionReportHtml():reportHtml());w.document.close();setTimeout(()=>{try{w.print()}catch(e){}},300);};
   window.downloadChemicalExcel=function(){const r=reportData(),html=activeChemicalFolder==='ALP'?alpReportHtml():activeChemicalFolder==='Delta'?deltaReportHtml():activeChemicalFolder==='Malathion'?malathionReportHtml():reportHtml();const blob=new Blob([html],{type:'application/vnd.ms-excel'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='SHAMBHU_SHED_Chemical_Report_'+r.m+'.xls';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);};
 function malathionEntries(){
-    return chemRead().filter(x=>x.chemical==='Malathion').sort((a,b)=>String(a.date).localeCompare(String(b.date))||Number(a.id)-Number(b.id));
+    return currentChemicalMonthOnly(chemRead().filter(x=>x.chemical==='Malathion')).sort((a,b)=>String(a.date).localeCompare(String(b.date))||Number(a.id)-Number(b.id));
   }
   function malEntryStacks(x){
     if(Array.isArray(x.stacks) && x.stacks.length) return x.stacks.map(v=>({stack:String(v.stack||v.s||''),commodity:v.commodity||x.commodity||'Rice',qty:Math.round(chemNum(v.qty||0))})).filter(v=>v.stack);
