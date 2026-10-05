@@ -1307,7 +1307,7 @@ function openPage(page,fromBack=false){
 function goBackPage(){
   // Chemical register -> return to the Chemical folder page first.
   // The next BACK then returns to the actual page that opened Chemical.
-  if(currentPage==='chemical' && typeof activeChemicalFolder!=='undefined' && activeChemicalFolder){
+  if(currentPage==='chemical' && localStorage.getItem('shambhuChemicalFolder')){
     if(typeof openChemicalFolders==='function'){openChemicalFolders();return;}
   }
   while(shambhuPageHistory.length){
@@ -2567,7 +2567,7 @@ function malathionEntries(){
   };
 
   const oldRender=window.renderPage;
-  window.renderPage=function(page){if(page==='chemical'){var ep=document.getElementById('appErrorPopup');if(ep)ep.style.display='none';document.body.classList.remove('moisture-active');document.getElementById('dynamicPage').innerHTML=chemicalPage();if(typeof restoreChemicalReportState==='function')restoreChemicalReportState();renderChemicalReport();setTimeout(renderChemicalReport,50);return;}return oldRender(page);};
+  window.renderPage=function(page){if(page==='chemical'){var ep=document.getElementById('appErrorPopup');if(ep)ep.style.display='none';document.body.classList.remove('moisture-active');document.getElementById('dynamicPage').innerHTML=chemicalFolderPage();return;}return oldRender(page);};
 })();
 </script>
 <style id="chemical-final-interaction-fix">
