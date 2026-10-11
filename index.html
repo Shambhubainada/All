@@ -3415,3 +3415,86 @@ table.mir-test-check-table{width:max-content;min-width:1080px;table-layout:fixed
  setTimeout(placeHomeControls,100);setTimeout(placeHomeControls,500);setTimeout(placeHomeControls,1200);
 })();
 </script>
+
+
+<style id="SHAMBHU_HEADER_TOP_RIGHT_OVERVIEW_RESTORE_11OCT">
+/* Requested final correction: header at the top, controls in its upper-right, overview restored below folders. */
+@media(max-width:700px){
+ body.dashboard-open>.app .main>header.top{display:flex!important;position:relative!important;top:0!important;z-index:100!important;width:100%!important;min-height:54px!important;height:auto!important;box-sizing:border-box!important;margin:0!important;padding:5px 6px!important;align-items:center!important;justify-content:space-between!important;gap:4px!important;border-radius:0!important;}
+ body.dashboard-open>.app .main>header.top .top-left{display:flex!important;flex:1 1 auto!important;min-width:0!important;align-items:center!important;gap:4px!important;}
+ body.dashboard-open>.app .main>header.top .title{display:block!important;min-width:0!important;flex:1 1 auto!important;}
+ body.dashboard-open>.app .main>header.top .title h1{font-size:clamp(13px,3.7vw,18px)!important;line-height:1.05!important;margin:0!important;white-space:nowrap!important;}
+ body.dashboard-open>.app .main>header.top .title p{font-size:6px!important;line-height:1.1!important;margin:2px 0 0!important;white-space:nowrap!important;}
+ body.dashboard-open>.app .main>header.top .topright{display:flex!important;flex:0 0 auto!important;width:auto!important;max-width:48%!important;align-items:center!important;justify-content:flex-end!important;gap:4px!important;margin:0!important;}
+ body.dashboard-open>.app .main>header.top .topright #today,body.dashboard-open>.app .main>header.top .topright #updated{display:none!important;}
+ body.dashboard-open>.app .main>header.top .topright #installAppBtn,body.dashboard-open>.app .main>header.top .topright #alertBell,body.dashboard-open>.app .main>header.top .topright #alertSoundBtn{display:inline-grid!important;visibility:visible!important;opacity:1!important;place-items:center!important;width:27px!important;height:27px!important;min-width:27px!important;padding:0!important;margin:0!important;overflow:hidden!important;font-size:0!important;line-height:1!important;border-radius:7px!important;}
+ body.dashboard-open>.app .main>header.top .topright #installAppBtn:before{content:'⬇️'!important;font-size:16px!important;}
+ body.dashboard-open>.app .main>header.top .topright #alertBell:before{content:'🔔'!important;font-size:15px!important;}
+ body.dashboard-open>.app .main>header.top .topright #alertSoundBtn{font-size:16px!important;}
+ body.dashboard-open>.app .main>header.top .topright #liveIndicator,body.dashboard-open>.app .main>header.top .topright #liveIndicator.live-ok{display:inline-block!important;visibility:visible!important;opacity:1!important;flex:0 0 11px!important;width:11px!important;height:11px!important;min-width:11px!important;max-width:11px!important;padding:0!important;margin:0 3px!important;border:1px solid #fff!important;border-radius:50%!important;background:#18c65a!important;box-shadow:0 0 0 2px #18a957!important;animation:headerGreenPulse .85s steps(2,end) infinite!important;}
+ body.dashboard-open #homeControlStrip{display:none!important;}
+ body.dashboard-open .content > :not(#homePhotoBanner):not(.final-quick-grid):not(.dashboard-overview-folder){display:none!important;}
+ body.dashboard-open .dashboard-overview-folder{display:block!important;visibility:visible!important;position:relative!important;width:100%!important;box-sizing:border-box!important;margin:7px 0 8px!important;padding:8px!important;border-radius:10px!important;}
+ body.dashboard-open .dashboard-overview-folder .overview-folder-head{display:flex!important;align-items:center!important;gap:4px!important;justify-content:space-between!important;}
+ body.dashboard-open .dashboard-overview-folder .overview-folder-head button{display:block!important;white-space:nowrap!important;}
+ body.dashboard-open .dashboard-overview-folder .overview-stats{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:3px!important;margin-top:6px!important;}
+ body.dashboard-open .dashboard-overview-folder .overview-stats>div{display:flex!important;min-width:0!important;flex-direction:column!important;padding:5px 2px!important;}
+ body.dashboard-open .dashboard-overview-folder .overview-stats span{font-size:7px!important;line-height:1.05!important;overflow-wrap:anywhere!important;}
+ body.dashboard-open .dashboard-overview-folder .overview-stats b{font-size:15px!important;line-height:1.1!important;}
+ body.dashboard-open .home-photo-banner{margin-top:0!important;}
+}
+@media(max-width:370px){
+ body.dashboard-open>.app .main>header.top{min-height:50px!important;padding:4px 4px!important;}
+ body.dashboard-open>.app .main>header.top .topright{gap:2px!important;max-width:46%!important;}
+ body.dashboard-open>.app .main>header.top .topright #installAppBtn,body.dashboard-open>.app .main>header.top .topright #alertBell,body.dashboard-open>.app .main>header.top .topright #alertSoundBtn{width:24px!important;height:24px!important;min-width:24px!important;}
+ body.dashboard-open>.app .main>header.top .title h1{font-size:12px!important;}
+ body.dashboard-open .dashboard-overview-folder .overview-stats span{font-size:6px!important;}
+ body.dashboard-open .dashboard-overview-folder .overview-stats b{font-size:13px!important;}
+}
+</style>
+<script id="SHAMBHU_HEADER_TOP_RIGHT_OVERVIEW_RESTORE_JS_11OCT">
+(function(){
+ function restore(){
+  var home=document.body.classList.contains('dashboard-open');
+  var top=document.querySelector('header.top');
+  var right=top&&top.querySelector('.topright');
+  var strip=document.getElementById('homeControlStrip');
+  if(!top||!right)return;
+  var ids=['installAppBtn','alertBell','alertSoundBtn','liveIndicator','today','updated'];
+  if(home){
+   ids.forEach(function(id){var e=document.getElementById(id);if(e&&e.parentElement!==right)right.appendChild(e)});
+   if(strip)strip.style.setProperty('display','none','important');
+   top.style.setProperty('display','flex','important');
+   var title=top.querySelector('.title');if(title)title.style.setProperty('display','block','important');
+  }else{
+   if(strip)strip.style.setProperty('display','none','important');
+   top.style.removeProperty('display');
+  }
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',restore);else restore();
+ new MutationObserver(restore).observe(document.body,{attributes:true,attributeFilter:['class']});
+ window.addEventListener('pageshow',restore);
+ setTimeout(restore,100);setTimeout(restore,500);setTimeout(restore,1200);
+})();
+</script>
+
+<style id="SHAMBHU_FINAL_HEADER_OVERVIEW_FIX_11OCT">
+/* Final override: keep the main header at the top, icons in its right corner, and restore Home overview. */
+body.dashboard-open > .app .main > header.top{display:flex!important;position:sticky!important;top:0!important;z-index:1000!important;width:100%!important;min-height:54px!important;align-items:center!important;justify-content:space-between!important;gap:6px!important;padding:6px 8px!important;margin:0!important;border-radius:0!important;box-sizing:border-box!important}
+body.dashboard-open > .app .main > header.top .top-left{flex:1 1 auto!important;min-width:0!important;width:auto!important;gap:5px!important}
+body.dashboard-open > .app .main > header.top .title{display:block!important;min-width:0!important}
+body.dashboard-open > .app .main > header.top .title h1{font-size:clamp(13px,3.5vw,19px)!important;white-space:nowrap!important;margin:0!important}
+body.dashboard-open > .app .main > header.top .title p{font-size:7px!important;margin:2px 0 0!important}
+body.dashboard-open > .app .main > header.top .topright{display:flex!important;flex:0 0 auto!important;align-items:center!important;justify-content:flex-end!important;gap:5px!important;width:auto!important;min-width:0!important;margin-left:auto!important}
+body.dashboard-open > .app .main > header.top .topright #today,body.dashboard-open > .app .main > header.top .topright #updated{display:none!important}
+body.dashboard-open > .app .main > header.top .topright #installAppBtn,body.dashboard-open > .app .main > header.top .topright #alertBell,body.dashboard-open > .app .main > header.top .topright #alertSoundBtn{display:inline-grid!important;place-items:center!important;width:29px!important;height:29px!important;min-width:29px!important;padding:0!important;margin:0!important;font-size:0!important;line-height:1!important;position:relative!important;border-radius:8px!important}
+body.dashboard-open > .app .main > header.top .topright #installAppBtn:before{content:'⬇'!important;font-size:17px!important}
+body.dashboard-open > .app .main > header.top .topright #alertBell:before{content:'🔔'!important;font-size:15px!important}
+body.dashboard-open > .app .main > header.top .topright #alertSoundBtn{font-size:16px!important}
+body.dashboard-open > .app .main > header.top .topright #liveIndicator{display:inline-block!important;width:11px!important;height:11px!important;min-width:11px!important;padding:0!important;margin:0 2px!important;border-radius:50%!important;background:#19c45a!important;border:2px solid #fff!important;box-shadow:0 0 0 2px #128544!important;animation:headerGreenPulse .85s steps(2,end) infinite!important}
+body.dashboard-open > .app .main > header.top .topright #installAppBtn:after,body.dashboard-open > .app .main > header.top .topright #alertBell:after,body.dashboard-open > .app .main > header.top .topright #alertSoundBtn:after{content:none!important;display:none!important}
+body.dashboard-open > .app .main .content .dashboard-overview-folder{display:block!important;visibility:visible!important;opacity:1!important;margin:8px 0 12px!important;order:initial!important}
+body.dashboard-open > .app .main .content #dashboardPage{display:block!important;visibility:visible!important}
+body.dashboard-open > .app .main .content .final-quick-row{display:none!important}
+@media(max-width:560px){body.dashboard-open > .app .main > header.top{padding:5px 6px!important;min-height:50px!important}body.dashboard-open > .app .main > header.top .top-menu-btn{font-size:0!important;width:26px!important;min-width:26px!important;padding:4px!important}body.dashboard-open > .app .main > header.top .top-menu-btn:before{content:'☰';font-size:17px!important}body.dashboard-open > .app .main > header.top .topright{gap:4px!important}body.dashboard-open > .app .main > header.top .topright #installAppBtn,body.dashboard-open > .app .main > header.top .topright #alertBell,body.dashboard-open > .app .main > header.top .topright #alertSoundBtn{width:26px!important;height:26px!important;min-width:26px!important}}
+</style>
