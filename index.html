@@ -2441,7 +2441,7 @@ body.dashboard-open> .app .main > .top{display:none!important}
 @media(max-width:420px){.home-banner-actions{gap:3px;right:5px}.home-banner-menu{left:5px;gap:3px}.home-banner-actions button,.home-banner-menu button{width:27px;height:27px;min-width:27px}.home-photo-banner{padding-top:36px!important}}
 </style>
 <script id="single-home-banner-controls-script">
-(function(){function moveHeaderControls(){const banner=document.getElementById("homePhotoBanner"),actions=document.getElementById("homeBannerActions"),menu=document.getElementById("homeBannerMenu"),strip=document.getElementById("homeControlStrip"),top=document.querySelector("header.top"),topLeft=top&&top.querySelector(".top-left"),topRight=top&&top.querySelector(".topright");if(!banner||!actions||!menu||!strip||!top||!topLeft||!topRight)return;const home=document.body.classList.contains("dashboard-open");if(home){["installAppBtn","alertBell","alertSoundBtn","liveIndicator"].forEach(id=>{const el=document.getElementById(id);if(el&&el.parentElement!==strip)strip.appendChild(el)});["topMenuBtn","backBtn","homeBtn"].forEach(id=>{const el=document.getElementById(id);if(el&&el.parentElement!==menu)menu.appendChild(el)});const title=top.querySelector(".title");if(title)title.style.display="none";["today","updated"].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display="none"});strip.style.display="flex";top.style.display="none";}else{["installAppBtn","alertBell","alertSoundBtn","liveIndicator","today","updated"].forEach(id=>{const el=document.getElementById(id);if(el&&el.parentElement!==topRight)topRight.appendChild(el)});["topMenuBtn","backBtn","homeBtn"].forEach(id=>{const el=document.getElementById(id);if(el&&el.parentElement!==topLeft)topLeft.insertBefore(el,topLeft.firstChild)});const title=top.querySelector(".title");if(title)title.style.display="";top.style.display="";strip.style.display="none";}}if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",moveHeaderControls);else moveHeaderControls();new MutationObserver(moveHeaderControls).observe(document.body,{attributes:true,attributeFilter:["class"]});setTimeout(moveHeaderControls,100);setTimeout(moveHeaderControls,500);setTimeout(moveHeaderControls,1500);})();
+(function(){function moveHeaderControls(){const banner=document.getElementById("homePhotoBanner"),actions=document.getElementById("homeBannerActions"),menu=document.getElementById("homeBannerMenu"),strip=document.getElementById("homeControlStrip"),top=document.querySelector("header.top"),topLeft=top&&top.querySelector(".top-left"),topRight=top&&top.querySelector(".topright");if(!banner||!actions||!menu||!strip||!top||!topLeft||!topRight)return;const home=document.body.classList.contains("dashboard-open");if(home){["installAppBtn","alertBell","alertSoundBtn","liveIndicator"].forEach(id=>{const el=document.getElementById(id);if(el&&el.parentElement!==actions)actions.appendChild(el)});["topMenuBtn","backBtn","homeBtn"].forEach(id=>{const el=document.getElementById(id);if(el&&el.parentElement!==menu)menu.appendChild(el)});const title=top.querySelector(".title");if(title)title.style.display="none";const today=document.getElementById("today"),updated=document.getElementById("updated");if(today)today.style.display="none";if(updated)updated.style.display="none";strip.style.display="none";top.style.display="none";}else{["installAppBtn","alertBell","alertSoundBtn","liveIndicator","today","updated"].forEach(id=>{const el=document.getElementById(id);if(el&&el.parentElement!==topRight)topRight.appendChild(el)});["topMenuBtn","backBtn","homeBtn"].forEach(id=>{const el=document.getElementById(id);if(el&&el.parentElement!==topLeft)topLeft.insertBefore(el,topLeft.firstChild)});const title=top.querySelector(".title");if(title)title.style.display="";top.style.display="";}}if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",moveHeaderControls);else moveHeaderControls();new MutationObserver(moveHeaderControls).observe(document.body,{attributes:true,attributeFilter:["class"]});setTimeout(moveHeaderControls,100);setTimeout(moveHeaderControls,500);setTimeout(moveHeaderControls,1500);})();
 </script>
 <style id="fci-header-image-options-final">
 /* Five selectable banner photos; only the banner background changes. */
@@ -2812,6 +2812,81 @@ body.dashboard-open> .app .main > header.top{display:none!important}
 .mo-completebar{margin:5px 0 7px!important}
 .mo-completebar #mCompleteBtnVisible{font-size:11px!important;padding:6px 9px!important}
 </style>
+
+<style id="FINAL-HOME-MOBILE-REAL-FIX-11OCT">
+/* Final correction: Home shows only its banner, control icons and folder tiles. */
+@media (max-width: 700px) {
+  body.dashboard-open .content { padding: 5px !important; max-width: 100% !important; margin: 0 !important; }
+  body.dashboard-open .content > :not(#homePhotoBanner):not(#homeControlStrip):not(.final-quick-grid) { display:none !important; }
+  body.dashboard-open #homeReportPanel,
+  body.dashboard-open .chem-report-folder,
+  body.dashboard-open .chemical-actions,
+  body.dashboard-open .final-quick-row,
+  body.dashboard-open .dashboard-overview-folder,
+  body.dashboard-open #dashboardPage,
+  body.dashboard-open .filters,
+  body.dashboard-open .home-pending-wrap,
+  body.dashboard-open .footer { display:none !important; }
+  body.dashboard-open .home-photo-banner { display:flex !important; position:relative !important; width:100% !important; height:106px !important; min-height:106px !important; margin:0 0 6px !important; padding:31px 3px 5px !important; gap:3px !important; border-radius:0 0 12px 12px !important; overflow:hidden !important; }
+  body.dashboard-open .home-fci-mark,
+  body.dashboard-open .home-fci-mark.right { display:flex !important; flex:0 0 42px !important; width:42px !important; min-width:42px !important; max-width:42px !important; }
+  body.dashboard-open .home-fci-mark .fci-leaf { width:25px !important; height:25px !important; font-size:16px !important; }
+  body.dashboard-open .home-fci-mark b { font-size:9px !important; margin-top:2px !important; }
+  body.dashboard-open .home-fci-mark small { font-size:5px !important; white-space:normal !important; line-height:1.05 !important; }
+  body.dashboard-open .home-banner-title { flex:1 1 auto !important; min-width:0 !important; padding:0 2px !important; }
+  body.dashboard-open .home-banner-title strong { font-size:clamp(15px,4.7vw,21px) !important; line-height:1.08 !important; overflow-wrap:anywhere !important; }
+  body.dashboard-open .home-banner-title small { font-size:6px !important; letter-spacing:.2px !important; margin-top:3px !important; }
+  body.dashboard-open .home-banner-actions { display:flex !important; visibility:visible !important; opacity:1 !important; position:absolute !important; top:3px !important; right:4px !important; left:auto !important; z-index:100 !important; gap:4px !important; }
+  body.dashboard-open .home-banner-menu { display:flex !important; visibility:visible !important; opacity:1 !important; position:absolute !important; top:3px !important; left:4px !important; z-index:100 !important; gap:4px !important; }
+  body.dashboard-open .home-banner-actions button,
+  body.dashboard-open .home-banner-menu button { display:inline-grid !important; visibility:visible !important; opacity:1 !important; width:25px !important; height:25px !important; min-width:25px !important; padding:0 !important; place-items:center !important; border-radius:7px !important; font-size:15px !important; }
+  body.dashboard-open .home-banner-actions #installAppBtn,
+  body.dashboard-open .home-banner-actions #alertBell { font-size:0 !important; }
+  body.dashboard-open .home-banner-actions #installAppBtn:before { content:'⬇' !important; font-size:17px !important; }
+  body.dashboard-open .home-banner-actions #alertBell:before { content:'🔔' !important; font-size:15px !important; }
+  body.dashboard-open .home-banner-actions #alertSoundBtn { font-size:16px !important; }
+  body.dashboard-open .home-banner-actions #liveIndicator,
+  body.dashboard-open .home-banner-actions #liveIndicator.live-ok { display:inline-block !important; visibility:visible !important; width:11px !important; height:11px !important; min-width:11px !important; padding:0 !important; border-radius:50% !important; background:#18c65a !important; border:1px solid #fff !important; animation:headerGreenPulse .8s steps(2,end) infinite !important; }
+  body.dashboard-open .final-quick-grid { display:grid !important; grid-template-columns:repeat(3,minmax(0,1fr)) !important; gap:5px !important; margin:0 !important; padding:0 !important; }
+  body.dashboard-open .final-quick-grid .mobile-folder { min-width:0 !important; min-height:76px !important; padding:7px 3px !important; margin:0 !important; border-radius:10px !important; overflow:hidden !important; }
+  body.dashboard-open .final-quick-grid .mobile-folder .mf-icon { width:29px !important; height:29px !important; font-size:18px !important; margin-bottom:4px !important; }
+  body.dashboard-open .final-quick-grid .mf-title { font-size:9px !important; line-height:1.1 !important; overflow-wrap:anywhere !important; }
+  body.dashboard-open .final-quick-grid .mobile-folder small { display:block !important; font-size:7px !important; line-height:1.05 !important; margin-top:2px !important; }
+}
+@media (max-width:370px) {
+  body.dashboard-open .home-fci-mark, body.dashboard-open .home-fci-mark.right { flex-basis:35px !important; width:35px !important; min-width:35px !important; max-width:35px !important; }
+  body.dashboard-open .home-banner-title strong { font-size:14px !important; }
+  body.dashboard-open .home-banner-actions { gap:2px !important; }
+  body.dashboard-open .home-banner-actions button { width:23px !important; height:23px !important; min-width:23px !important; }
+}
+</style>
+<script id="FINAL-HOME-ICONS-RELOCATE-11OCT">
+(function(){
+ function fixHome(){
+  var home=document.body.classList.contains('dashboard-open');
+  var banner=document.getElementById('homePhotoBanner');
+  var actions=document.getElementById('homeBannerActions');
+  var menu=document.getElementById('homeBannerMenu');
+  var top=document.querySelector('header.top');
+  var right=top&&top.querySelector('.topright');
+  var left=top&&top.querySelector('.top-left');
+  if(!banner||!actions||!menu||!right||!left)return;
+  if(home){
+   ['installAppBtn','alertBell','alertSoundBtn','liveIndicator'].forEach(function(id){var e=document.getElementById(id);if(e&&e.parentElement!==actions)actions.appendChild(e)});
+   ['topMenuBtn','backBtn','homeBtn'].forEach(function(id){var e=document.getElementById(id);if(e&&e.parentElement!==menu)menu.appendChild(e)});
+   top.style.setProperty('display','none','important');
+  } else {
+   ['installAppBtn','alertBell','alertSoundBtn','liveIndicator','today','updated'].forEach(function(id){var e=document.getElementById(id);if(e&&e.parentElement!==right)right.appendChild(e)});
+   ['topMenuBtn','backBtn','homeBtn'].forEach(function(id){var e=document.getElementById(id);if(e&&e.parentElement!==left)left.insertBefore(e,left.firstChild)});
+   top.style.removeProperty('display');
+  }
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fixHome);else fixHome();
+ new MutationObserver(fixHome).observe(document.body,{attributes:true,attributeFilter:['class']});
+ setTimeout(fixHome,100);setTimeout(fixHome,600);setTimeout(fixHome,1400);
+})();
+</script>
+
 </html>`;}
   window.renderChemicalReport=function(){
   try{
@@ -3277,36 +3352,4 @@ table.mir-test-check-table{width:max-content;min-width:1080px;table-layout:fixed
  .final-quick-grid .mobile-folder{min-height:80px!important}
  .final-quick-grid .mobile-folder .mf-icon{width:36px!important;height:36px!important;font-size:21px!important}
 }
-</style>
-
-<style id="mobile-home-layout-final-fix">
-/* Home is a launch screen on phones: keep report content inside its own folder/page. */
-@media(max-width:600px){
- body.dashboard-open .filters, body.dashboard-open #dashboardPage, body.dashboard-open .dashboard-overview-folder,
- body.dashboard-open .final-quick-row, body.dashboard-open #homeReportPanel, body.dashboard-open .charts {display:none!important}
- body.dashboard-open #dynamicPage{display:none!important}
- body.dashboard-open .content{padding:7px!important;max-width:100%!important}
- body.dashboard-open .home-photo-banner{position:relative!important;display:flex!important;min-height:94px!important;height:94px!important;padding:24px 60px 7px!important;margin:0 0 6px!important;overflow:hidden!important;align-items:center!important;justify-content:center!important}
- body.dashboard-open .home-fci-mark{display:flex!important;visibility:visible!important;opacity:1!important;position:absolute!important;top:27px!important;gap:1px!important;flex-direction:column!important;align-items:center!important;z-index:3!important;width:43px!important;color:#fff!important}
- body.dashboard-open .home-fci-mark.left{left:4px!important} body.dashboard-open .home-fci-mark.right{right:4px!important}
- body.dashboard-open .home-fci-mark .fci-leaf{font-size:13px!important;line-height:12px!important} body.dashboard-open .home-fci-mark b{font-size:15px!important;line-height:15px!important} body.dashboard-open .home-fci-mark small{font-size:5px!important;line-height:6px!important;white-space:nowrap!important}
- body.dashboard-open .home-banner-title{max-width:calc(100% - 4px)!important;text-align:center!important;min-width:0!important}
- body.dashboard-open .home-banner-title strong{font-size:clamp(14px,4.2vw,20px)!important;white-space:nowrap!important;letter-spacing:0!important}
- body.dashboard-open .home-banner-title small{font-size:7px!important}
- body.dashboard-open #homeControlStrip{display:flex!important;position:relative!important;z-index:30!important;justify-content:center!important;align-items:center!important;gap:12px!important;padding:5px 6px!important;margin:0 0 8px!important;background:#eaf7ef!important;border:1px solid #b8dec8!important;border-radius:10px!important;min-height:42px!important}
- body.dashboard-open #homeControlStrip button{display:inline-grid!important;visibility:visible!important;opacity:1!important;position:relative!important;place-items:center!important;width:34px!important;height:32px!important;min-width:34px!important;padding:0!important;border:1px solid #8cbfa2!important;border-radius:9px!important;background:#fff!important;color:#07543d!important;font-size:0!important;line-height:1!important;box-shadow:0 1px 3px #0002!important}
- body.dashboard-open #homeControlStrip #installAppBtn:before{content:'⬇️'!important;font-size:18px!important}
- body.dashboard-open #homeControlStrip #alertBell:before{content:'🔔'!important;font-size:17px!important}
- body.dashboard-open #homeControlStrip #alertSoundBtn{font-size:17px!important}
- body.dashboard-open #homeControlStrip #liveIndicator{display:inline-block!important;width:13px!important;height:13px!important;min-width:13px!important;border-radius:50%!important;background:#20c65a!important;border:2px solid #fff!important;box-shadow:0 0 0 2px #0a8b43!important;animation:headerGreenPulse .8s steps(2,end) infinite!important}
- body.dashboard-open #homeControlStrip #alertCount{position:absolute!important;right:-5px!important;top:-5px!important;min-width:15px!important;height:15px!important;padding:1px 3px!important;font-size:9px!important;line-height:13px!important;background:#d92d3b!important;color:#fff!important;border-radius:99px!important}
- body.dashboard-open .final-quick-grid{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:7px!important;margin:0 0 8px!important}
- body.dashboard-open .final-quick-grid .mobile-folder{min-width:0!important;min-height:88px!important;padding:8px 4px!important;border-radius:11px!important}
- body.dashboard-open .final-quick-grid .mf-icon{font-size:25px!important;line-height:28px!important}
- body.dashboard-open .final-quick-grid .mf-title{font-size:10px!important;line-height:1.15!important;white-space:normal!important}
- body.dashboard-open .final-quick-grid .mobile-folder small{font-size:8px!important;line-height:1.1!important}
- body.dashboard-open .home-pending-wrap{margin-top:6px!important}
-}
-/* Chemical reports belong only to the Chemical Register page, never the dashboard. */
-body.dashboard-open #dynamicPage, body.dashboard-open #dynamicPage .chem-report-folder, body.dashboard-open #dynamicPage .chem-register-downloads{display:none!important}
 </style>
