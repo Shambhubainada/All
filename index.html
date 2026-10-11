@@ -2440,9 +2440,7 @@ body.dashboard-open> .app .main > .top{display:none!important}
 .home-banner-menu #backBtn::before{content:'←';font-size:17px}.home-banner-menu #homeBtn::before{content:'⌂';font-size:18px}
 @media(max-width:420px){.home-banner-actions{gap:3px;right:5px}.home-banner-menu{left:5px;gap:3px}.home-banner-actions button,.home-banner-menu button{width:27px;height:27px;min-width:27px}.home-photo-banner{padding-top:36px!important}}
 </style>
-<script id="single-home-banner-controls-script">
-(function(){function moveHeaderControls(){const banner=document.getElementById("homePhotoBanner"),actions=document.getElementById("homeBannerActions"),menu=document.getElementById("homeBannerMenu"),strip=document.getElementById("homeControlStrip"),top=document.querySelector("header.top"),topLeft=top&&top.querySelector(".top-left"),topRight=top&&top.querySelector(".topright");if(!banner||!actions||!menu||!strip||!top||!topLeft||!topRight)return;const home=document.body.classList.contains("dashboard-open");if(home){["installAppBtn","alertBell","alertSoundBtn","liveIndicator"].forEach(id=>{const el=document.getElementById(id);if(el&&el.parentElement!==actions)actions.appendChild(el)});["topMenuBtn","backBtn","homeBtn"].forEach(id=>{const el=document.getElementById(id);if(el&&el.parentElement!==menu)menu.appendChild(el)});const title=top.querySelector(".title");if(title)title.style.display="none";const today=document.getElementById("today"),updated=document.getElementById("updated");if(today)today.style.display="none";if(updated)updated.style.display="none";strip.style.display="none";top.style.display="none";}else{["installAppBtn","alertBell","alertSoundBtn","liveIndicator","today","updated"].forEach(id=>{const el=document.getElementById(id);if(el&&el.parentElement!==topRight)topRight.appendChild(el)});["topMenuBtn","backBtn","homeBtn"].forEach(id=>{const el=document.getElementById(id);if(el&&el.parentElement!==topLeft)topLeft.insertBefore(el,topLeft.firstChild)});const title=top.querySelector(".title");if(title)title.style.display="";top.style.display="";}}if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",moveHeaderControls);else moveHeaderControls();new MutationObserver(moveHeaderControls).observe(document.body,{attributes:true,attributeFilter:["class"]});setTimeout(moveHeaderControls,100);setTimeout(moveHeaderControls,500);setTimeout(moveHeaderControls,1500);})();
-</script>
+<!-- header controls relocation consolidated below -->
 <style id="fci-header-image-options-final">
 /* Five selectable banner photos; only the banner background changes. */
 .home-photo-banner.header-image-fci{background-image:linear-gradient(90deg,#03472fe8,#056644b8),url('./shambhu-godown-banner.jpg')!important;background-position:center 52%!important}
@@ -2860,32 +2858,7 @@ body.dashboard-open> .app .main > header.top{display:none!important}
   body.dashboard-open .home-banner-actions button { width:23px !important; height:23px !important; min-width:23px !important; }
 }
 </style>
-<script id="FINAL-HOME-ICONS-RELOCATE-11OCT">
-(function(){
- function fixHome(){
-  var home=document.body.classList.contains('dashboard-open');
-  var banner=document.getElementById('homePhotoBanner');
-  var actions=document.getElementById('homeBannerActions');
-  var menu=document.getElementById('homeBannerMenu');
-  var top=document.querySelector('header.top');
-  var right=top&&top.querySelector('.topright');
-  var left=top&&top.querySelector('.top-left');
-  if(!banner||!actions||!menu||!right||!left)return;
-  if(home){
-   ['installAppBtn','alertBell','alertSoundBtn','liveIndicator'].forEach(function(id){var e=document.getElementById(id);if(e&&e.parentElement!==actions)actions.appendChild(e)});
-   ['topMenuBtn','backBtn','homeBtn'].forEach(function(id){var e=document.getElementById(id);if(e&&e.parentElement!==menu)menu.appendChild(e)});
-   top.style.setProperty('display','none','important');
-  } else {
-   ['installAppBtn','alertBell','alertSoundBtn','liveIndicator','today','updated'].forEach(function(id){var e=document.getElementById(id);if(e&&e.parentElement!==right)right.appendChild(e)});
-   ['topMenuBtn','backBtn','homeBtn'].forEach(function(id){var e=document.getElementById(id);if(e&&e.parentElement!==left)left.insertBefore(e,left.firstChild)});
-   top.style.removeProperty('display');
-  }
- }
- if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fixHome);else fixHome();
- new MutationObserver(fixHome).observe(document.body,{attributes:true,attributeFilter:['class']});
- setTimeout(fixHome,100);setTimeout(fixHome,600);setTimeout(fixHome,1400);
-})();
-</script>
+<!-- duplicate header controls relocation removed -->
 
 </html>`;}
   window.renderChemicalReport=function(){
@@ -3353,3 +3326,92 @@ table.mir-test-check-table{width:max-content;min-width:1080px;table-layout:fixed
  .final-quick-grid .mobile-folder .mf-icon{width:36px!important;height:36px!important;font-size:21px!important}
 }
 </style>
+
+
+<style id="SHAMBHU_HOME_MOBILE_FINAL_LOCK">
+/* Home contains only the banner, one control strip and the navigation folder icons. */
+@media (max-width: 700px) {
+  body.dashboard-open .content { width:100%!important;max-width:100%!important;margin:0!important;padding:5px!important; }
+  body.dashboard-open .content > :not(#homePhotoBanner):not(#homeControlStrip):not(.final-quick-grid) { display:none!important; }
+  body.dashboard-open #dynamicPage,
+  body.dashboard-open #dashboardPage,
+  body.dashboard-open #homeReportPanel,
+  body.dashboard-open .chem-report-folder,
+  body.dashboard-open .chemical-actions,
+  body.dashboard-open .chem-report-grid,
+  body.dashboard-open .chem-report-head,
+  body.dashboard-open .chemical-grid,
+  body.dashboard-open .final-quick-row,
+  body.dashboard-open .dashboard-overview-folder,
+  body.dashboard-open .filters,
+  body.dashboard-open .home-pending-wrap,
+  body.dashboard-open .footer,
+  body.dashboard-open .work-alert { display:none!important; }
+  body.dashboard-open .home-photo-banner { display:flex!important;position:relative!important;box-sizing:border-box!important;width:100%!important;height:100px!important;min-height:100px!important;margin:0 0 5px!important;padding:29px 3px 4px!important;gap:2px!important;border-radius:0 0 10px 10px!important;overflow:hidden!important; }
+  body.dashboard-open .home-fci-mark, body.dashboard-open .home-fci-mark.right { display:flex!important;flex:0 0 39px!important;width:39px!important;min-width:39px!important;max-width:39px!important; }
+  body.dashboard-open .home-fci-mark .fci-leaf { width:23px!important;height:23px!important;font-size:15px!important; }
+  body.dashboard-open .home-fci-mark b { font-size:9px!important; }
+  body.dashboard-open .home-fci-mark small { font-size:5px!important;line-height:1!important;white-space:normal!important; }
+  body.dashboard-open .home-banner-title { flex:1 1 auto!important;min-width:0!important;padding:0 1px!important; }
+  body.dashboard-open .home-banner-title strong { font-size:clamp(14px,4.2vw,20px)!important;line-height:1.05!important;white-space:nowrap!important;letter-spacing:0!important; }
+  body.dashboard-open .home-banner-title small { font-size:5px!important;line-height:1!important;margin-top:2px!important; }
+  body.dashboard-open .home-banner-actions { display:none!important; }
+  body.dashboard-open #homeControlStrip { display:flex!important;visibility:visible!important;opacity:1!important;position:relative!important;width:100%!important;min-height:43px!important;box-sizing:border-box!important;align-items:center!important;justify-content:center!important;gap:13px!important;padding:4px 8px!important;margin:0 0 7px!important;background:#eaf7ef!important;border:1px solid #b9dec8!important;border-radius:9px!important; }
+  body.dashboard-open #homeControlStrip button { position:relative!important;display:inline-grid!important;visibility:visible!important;opacity:1!important;place-items:center!important;width:32px!important;height:32px!important;min-width:32px!important;padding:0!important;margin:0!important;border:1px solid #9ccfb0!important;border-radius:8px!important;background:#fff!important;color:#07543d!important;font-size:0!important;line-height:1!important;box-shadow:0 1px 3px #00190d15!important; }
+  body.dashboard-open #homeControlStrip #installAppBtn:before { content:'⬇️'!important;font-size:19px!important; }
+  body.dashboard-open #homeControlStrip #alertBell:before { content:'🔔'!important;font-size:17px!important; }
+  body.dashboard-open #homeControlStrip #alertSoundBtn { font-size:17px!important; }
+  body.dashboard-open #homeControlStrip #liveIndicator,
+  body.dashboard-open #homeControlStrip #liveIndicator.live-ok { display:inline-block!important;width:12px!important;height:12px!important;min-width:12px!important;max-width:12px!important;padding:0!important;border:1px solid #fff!important;border-radius:50%!important;background:#18c65a!important;box-shadow:0 0 0 2px #18a957!important;animation:headerGreenPulse .85s steps(2,end) infinite!important; }
+  body.dashboard-open #homeControlStrip #installAppBtn:after,
+  body.dashboard-open #homeControlStrip #alertBell:after,
+  body.dashboard-open #homeControlStrip #alertSoundBtn:after { content:none!important;display:none!important; }
+  body.dashboard-open #homeControlStrip #alertBell b { position:absolute!important;right:-5px!important;top:-5px!important;transform:none!important;min-width:13px!important;height:13px!important;padding:0 3px!important;font-size:8px!important;line-height:12px!important;background:#d92d3b!important;color:#fff!important;border:1px solid #fff!important;border-radius:99px!important; }
+  body.dashboard-open .final-quick-grid { display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:5px!important;width:100%!important;margin:0!important;padding:0!important; }
+  body.dashboard-open .final-quick-grid .mobile-folder { display:flex!important;min-width:0!important;min-height:75px!important;padding:6px 2px!important;margin:0!important;gap:3px!important;border-radius:9px!important;overflow:hidden!important; }
+  body.dashboard-open .final-quick-grid .mobile-folder .mf-icon { display:grid!important;place-items:center!important;width:29px!important;height:29px!important;font-size:18px!important;margin:0 auto 2px!important; }
+  body.dashboard-open .final-quick-grid .mf-title { display:block!important;font-size:9px!important;line-height:1.08!important;overflow-wrap:anywhere!important;text-align:center!important; }
+  body.dashboard-open .final-quick-grid .mobile-folder small { display:block!important;font-size:7px!important;line-height:1.03!important;margin-top:1px!important;text-align:center!important; }
+}
+@media (max-width:370px) {
+  body.dashboard-open .home-photo-banner { height:92px!important;min-height:92px!important; }
+  body.dashboard-open .home-fci-mark,body.dashboard-open .home-fci-mark.right { flex-basis:33px!important;width:33px!important;min-width:33px!important;max-width:33px!important; }
+  body.dashboard-open .home-banner-title strong { font-size:13px!important; }
+  body.dashboard-open #homeControlStrip { gap:10px!important; }
+  body.dashboard-open #homeControlStrip button { width:29px!important;height:29px!important;min-width:29px!important; }
+  body.dashboard-open .final-quick-grid .mobile-folder { min-height:70px!important; }
+}
+@keyframes headerGreenPulse { 0%,100%{opacity:1;box-shadow:0 0 0 2px #18a957}50%{opacity:.3;box-shadow:0 0 0 3px #18a95755} }
+</style>
+<script id="SHAMBHU_HOME_CONTROLS_FINAL_LOCK">
+(function(){
+ function placeHomeControls(){
+  var home=document.body.classList.contains('dashboard-open');
+  var strip=document.getElementById('homeControlStrip');
+  var banner=document.getElementById('homePhotoBanner');
+  var menu=document.getElementById('homeBannerMenu');
+  var top=document.querySelector('header.top');
+  var right=top&&top.querySelector('.topright');
+  var left=top&&top.querySelector('.top-left');
+  if(!strip||!banner||!menu||!top||!right||!left)return;
+  if(home){
+   ['installAppBtn','alertBell','alertSoundBtn','liveIndicator'].forEach(function(id){var e=document.getElementById(id);if(e&&e.parentElement!==strip)strip.appendChild(e)});
+   ['topMenuBtn','backBtn','homeBtn'].forEach(function(id){var e=document.getElementById(id);if(e&&e.parentElement!==menu)menu.appendChild(e)});
+   var t=top.querySelector('.title');if(t)t.style.display='none';
+   ['today','updated'].forEach(function(id){var e=document.getElementById(id);if(e)e.style.display='none'});
+   top.style.setProperty('display','none','important');
+   strip.style.setProperty('display','flex','important');
+  }else{
+   ['installAppBtn','alertBell','alertSoundBtn','liveIndicator','today','updated'].forEach(function(id){var e=document.getElementById(id);if(e&&e.parentElement!==right)right.appendChild(e)});
+   ['topMenuBtn','backBtn','homeBtn'].forEach(function(id){var e=document.getElementById(id);if(e&&e.parentElement!==left)left.insertBefore(e,left.firstChild)});
+   var t=top.querySelector('.title');if(t)t.style.display='';
+   top.style.removeProperty('display');
+   strip.style.setProperty('display','none','important');
+  }
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',placeHomeControls);else placeHomeControls();
+ new MutationObserver(placeHomeControls).observe(document.body,{attributes:true,attributeFilter:['class']});
+ window.addEventListener('pageshow',placeHomeControls);
+ setTimeout(placeHomeControls,100);setTimeout(placeHomeControls,500);setTimeout(placeHomeControls,1200);
+})();
+</script>
