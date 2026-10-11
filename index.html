@@ -2441,7 +2441,7 @@ body.dashboard-open> .app .main > .top{display:none!important}
 @media(max-width:420px){.home-banner-actions{gap:3px;right:5px}.home-banner-menu{left:5px;gap:3px}.home-banner-actions button,.home-banner-menu button{width:27px;height:27px;min-width:27px}.home-photo-banner{padding-top:36px!important}}
 </style>
 <script id="single-home-banner-controls-script">
-(function(){function moveHeaderControls(){const banner=document.getElementById("homePhotoBanner"),actions=document.getElementById("homeBannerActions"),menu=document.getElementById("homeBannerMenu"),strip=document.getElementById("homeControlStrip"),top=document.querySelector("header.top"),topLeft=top&&top.querySelector(".top-left"),topRight=top&&top.querySelector(".topright");if(!banner||!actions||!menu||!strip||!top||!topLeft||!topRight)return;const home=document.body.classList.contains("dashboard-open");if(home){["installAppBtn","alertBell","alertSoundBtn","liveIndicator"].forEach(id=>{const el=document.getElementById(id);if(el&&el.parentElement!==strip)strip.appendChild(el)});["topMenuBtn","backBtn","homeBtn"].forEach(id=>{const el=document.getElementById(id);if(el&&el.parentElement!==menu)menu.appendChild(el)});const title=top.querySelector(".title");if(title)title.style.display="none";const today=document.getElementById("today"),updated=document.getElementById("updated");if(today)today.style.display="none";if(updated)updated.style.display="none";top.style.display="none";}else{["installAppBtn","alertBell","alertSoundBtn","liveIndicator","today","updated"].forEach(id=>{const el=document.getElementById(id);if(el&&el.parentElement!==topRight)topRight.appendChild(el)});["topMenuBtn","backBtn","homeBtn"].forEach(id=>{const el=document.getElementById(id);if(el&&el.parentElement!==topLeft)topLeft.insertBefore(el,topLeft.firstChild)});const title=top.querySelector(".title");if(title)title.style.display="";top.style.display="";}}if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",moveHeaderControls);else moveHeaderControls();new MutationObserver(moveHeaderControls).observe(document.body,{attributes:true,attributeFilter:["class"]});setTimeout(moveHeaderControls,500);setTimeout(moveHeaderControls,1500);})();
+(function(){function moveHeaderControls(){const banner=document.getElementById("homePhotoBanner"),actions=document.getElementById("homeBannerActions"),menu=document.getElementById("homeBannerMenu"),strip=document.getElementById("homeControlStrip"),top=document.querySelector("header.top"),topLeft=top&&top.querySelector(".top-left"),topRight=top&&top.querySelector(".topright");if(!banner||!actions||!menu||!strip||!top||!topLeft||!topRight)return;const home=document.body.classList.contains("dashboard-open");if(home){["installAppBtn","alertBell","alertSoundBtn","liveIndicator"].forEach(id=>{const el=document.getElementById(id);if(el&&el.parentElement!==actions)actions.appendChild(el)});["topMenuBtn","backBtn","homeBtn"].forEach(id=>{const el=document.getElementById(id);if(el&&el.parentElement!==menu)menu.appendChild(el)});const title=top.querySelector(".title");if(title)title.style.display="none";const today=document.getElementById("today"),updated=document.getElementById("updated");if(today)today.style.display="none";if(updated)updated.style.display="none";strip.style.display="none";top.style.display="none";}else{["installAppBtn","alertBell","alertSoundBtn","liveIndicator","today","updated"].forEach(id=>{const el=document.getElementById(id);if(el&&el.parentElement!==topRight)topRight.appendChild(el)});["topMenuBtn","backBtn","homeBtn"].forEach(id=>{const el=document.getElementById(id);if(el&&el.parentElement!==topLeft)topLeft.insertBefore(el,topLeft.firstChild)});const title=top.querySelector(".title");if(title)title.style.display="";top.style.display="";}}if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",moveHeaderControls);else moveHeaderControls();new MutationObserver(moveHeaderControls).observe(document.body,{attributes:true,attributeFilter:["class"]});setTimeout(moveHeaderControls,100);setTimeout(moveHeaderControls,500);setTimeout(moveHeaderControls,1500);})();
 </script>
 <style id="fci-header-image-options-final">
 /* Five selectable banner photos; only the banner background changes. */
@@ -2456,6 +2456,42 @@ body.dashboard-open> .app .main > header.top{display:none!important}
 .home-banner-actions #installAppBtn::before{content:'⬇';font-size:17px}
 .home-banner-actions #alertBell::before{content:'🔔';font-size:16px}
 </style>
+
+<style id="actual-mobile-home-layout-fix-11oct">
+/* Final mobile home: only navigation folders on Home; reports stay inside Reports. */
+@media(max-width:700px){
+ body.dashboard-open #homeControlStrip{display:none!important}
+ body.dashboard-open .home-photo-banner{min-height:116px!important;height:116px!important;padding:35px 3px 7px!important;margin-bottom:7px!important;gap:2px!important;overflow:hidden!important}
+ body.dashboard-open .home-fci-mark{display:flex!important;flex:0 0 42px!important;min-width:42px!important;max-width:42px!important}
+ body.dashboard-open .home-fci-mark.right{display:flex!important}
+ body.dashboard-open .home-fci-mark .fci-leaf{width:25px!important;height:25px!important;font-size:16px!important}
+ body.dashboard-open .home-fci-mark b{font-size:9px!important}
+ body.dashboard-open .home-fci-mark small{font-size:5.5px!important;white-space:normal!important;line-height:1.05!important}
+ body.dashboard-open .home-banner-title{flex:1 1 auto!important;min-width:0!important;padding:0!important}
+ body.dashboard-open .home-banner-title strong{font-size:clamp(15px,4.5vw,22px)!important;line-height:1.05!important;white-space:nowrap!important;letter-spacing:0!important}
+ body.dashboard-open .home-banner-title small{font-size:5.5px!important;letter-spacing:.2px!important;margin-top:3px!important}
+ body.dashboard-open .home-banner-actions{display:flex!important;visibility:visible!important;opacity:1!important;z-index:20!important;top:4px!important;right:5px!important;gap:4px!important}
+ body.dashboard-open .home-banner-menu{display:flex!important;visibility:visible!important;opacity:1!important;z-index:20!important;top:4px!important;left:5px!important}
+ body.dashboard-open .home-banner-actions button,body.dashboard-open .home-banner-menu button{display:inline-grid!important;visibility:visible!important;opacity:1!important;width:25px!important;height:25px!important;min-width:25px!important;padding:0!important;font-size:14px!important}
+ body.dashboard-open .home-banner-actions #installAppBtn:before{content:'⬇'!important;font-size:15px!important}
+ body.dashboard-open .home-banner-actions #alertBell:before{content:'🔔'!important;font-size:14px!important}
+ body.dashboard-open .home-banner-actions #alertSoundBtn{font-size:14px!important}
+ body.dashboard-open .home-banner-actions #liveIndicator{display:inline-block!important;visibility:visible!important;width:10px!important;height:10px!important;min-width:10px!important;background:#19c45a!important;border:2px solid white!important;box-shadow:0 0 0 2px #0b8f45!important;animation:headerGreenPulse .85s steps(2,end) infinite!important}
+ body.dashboard-open .home-banner-actions #installAppBtn:after,body.dashboard-open .home-banner-actions #alertBell:after,body.dashboard-open .home-banner-actions #alertSoundBtn:after{content:''!important;position:absolute!important;right:-2px!important;top:-2px!important;width:6px!important;height:6px!important;border-radius:50%!important;background:#20c765!important;border:1px solid white!important}
+ body.dashboard-open .home-banner-actions #alertBell b{font-size:8px!important;min-width:13px!important;height:13px!important;line-height:11px!important}
+ body.dashboard-open .content{padding:5px!important}
+ body.dashboard-open .filters{margin:5px 0 7px!important}
+ body.dashboard-open .final-quick-grid{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:6px!important;margin:5px 0!important}
+ body.dashboard-open .final-quick-grid .mobile-folder{min-width:0!important;min-height:78px!important;padding:6px 3px!important;gap:3px!important}
+ body.dashboard-open .final-quick-grid .mobile-folder .mf-icon{width:32px!important;height:32px!important;font-size:19px!important;border-radius:9px!important}
+ body.dashboard-open .final-quick-grid .mf-title{font-size:9px!important;line-height:1.1!important;overflow-wrap:anywhere!important}
+ body.dashboard-open .final-quick-grid .mobile-folder small{font-size:7px!important;line-height:1.05!important}
+ body.dashboard-open .final-quick-row,body.dashboard-open .dashboard-overview-folder,body.dashboard-open #dashboardPage,body.dashboard-open .home-pending-wrap,body.dashboard-open .footer{display:none!important}
+ body.dashboard-open #homeReportPanel{display:none!important}
+}
+@media(max-width:370px){body.dashboard-open .home-photo-banner{height:112px!important;min-height:112px!important}body.dashboard-open .home-fci-mark{flex-basis:36px!important;min-width:36px!important;max-width:36px!important}body.dashboard-open .home-fci-mark small{font-size:5px!important}body.dashboard-open .home-banner-title strong{font-size:15px!important}body.dashboard-open .home-banner-actions{gap:2px!important}body.dashboard-open .home-banner-actions button,body.dashboard-open .home-banner-menu button{width:23px!important;height:23px!important;min-width:23px!important}}
+</style>
+
 </body><style id="moisture-update-rmc-hide-only">
 /* Only requested Moisture Update change: keep Add New Stack, hide Manual/Current RMC cards. */
 .moisture-focused-page .mo-stack-details{display:none!important}
@@ -2510,6 +2546,42 @@ body.dashboard-open> .app .main > header.top{display:none!important}
 .home-banner-actions #installAppBtn::before{content:'⬇';font-size:17px}
 .home-banner-actions #alertBell::before{content:'🔔';font-size:16px}
 </style>
+
+<style id="actual-mobile-home-layout-fix-11oct">
+/* Final mobile home: only navigation folders on Home; reports stay inside Reports. */
+@media(max-width:700px){
+ body.dashboard-open #homeControlStrip{display:none!important}
+ body.dashboard-open .home-photo-banner{min-height:116px!important;height:116px!important;padding:35px 3px 7px!important;margin-bottom:7px!important;gap:2px!important;overflow:hidden!important}
+ body.dashboard-open .home-fci-mark{display:flex!important;flex:0 0 42px!important;min-width:42px!important;max-width:42px!important}
+ body.dashboard-open .home-fci-mark.right{display:flex!important}
+ body.dashboard-open .home-fci-mark .fci-leaf{width:25px!important;height:25px!important;font-size:16px!important}
+ body.dashboard-open .home-fci-mark b{font-size:9px!important}
+ body.dashboard-open .home-fci-mark small{font-size:5.5px!important;white-space:normal!important;line-height:1.05!important}
+ body.dashboard-open .home-banner-title{flex:1 1 auto!important;min-width:0!important;padding:0!important}
+ body.dashboard-open .home-banner-title strong{font-size:clamp(15px,4.5vw,22px)!important;line-height:1.05!important;white-space:nowrap!important;letter-spacing:0!important}
+ body.dashboard-open .home-banner-title small{font-size:5.5px!important;letter-spacing:.2px!important;margin-top:3px!important}
+ body.dashboard-open .home-banner-actions{display:flex!important;visibility:visible!important;opacity:1!important;z-index:20!important;top:4px!important;right:5px!important;gap:4px!important}
+ body.dashboard-open .home-banner-menu{display:flex!important;visibility:visible!important;opacity:1!important;z-index:20!important;top:4px!important;left:5px!important}
+ body.dashboard-open .home-banner-actions button,body.dashboard-open .home-banner-menu button{display:inline-grid!important;visibility:visible!important;opacity:1!important;width:25px!important;height:25px!important;min-width:25px!important;padding:0!important;font-size:14px!important}
+ body.dashboard-open .home-banner-actions #installAppBtn:before{content:'⬇'!important;font-size:15px!important}
+ body.dashboard-open .home-banner-actions #alertBell:before{content:'🔔'!important;font-size:14px!important}
+ body.dashboard-open .home-banner-actions #alertSoundBtn{font-size:14px!important}
+ body.dashboard-open .home-banner-actions #liveIndicator{display:inline-block!important;visibility:visible!important;width:10px!important;height:10px!important;min-width:10px!important;background:#19c45a!important;border:2px solid white!important;box-shadow:0 0 0 2px #0b8f45!important;animation:headerGreenPulse .85s steps(2,end) infinite!important}
+ body.dashboard-open .home-banner-actions #installAppBtn:after,body.dashboard-open .home-banner-actions #alertBell:after,body.dashboard-open .home-banner-actions #alertSoundBtn:after{content:''!important;position:absolute!important;right:-2px!important;top:-2px!important;width:6px!important;height:6px!important;border-radius:50%!important;background:#20c765!important;border:1px solid white!important}
+ body.dashboard-open .home-banner-actions #alertBell b{font-size:8px!important;min-width:13px!important;height:13px!important;line-height:11px!important}
+ body.dashboard-open .content{padding:5px!important}
+ body.dashboard-open .filters{margin:5px 0 7px!important}
+ body.dashboard-open .final-quick-grid{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:6px!important;margin:5px 0!important}
+ body.dashboard-open .final-quick-grid .mobile-folder{min-width:0!important;min-height:78px!important;padding:6px 3px!important;gap:3px!important}
+ body.dashboard-open .final-quick-grid .mobile-folder .mf-icon{width:32px!important;height:32px!important;font-size:19px!important;border-radius:9px!important}
+ body.dashboard-open .final-quick-grid .mf-title{font-size:9px!important;line-height:1.1!important;overflow-wrap:anywhere!important}
+ body.dashboard-open .final-quick-grid .mobile-folder small{font-size:7px!important;line-height:1.05!important}
+ body.dashboard-open .final-quick-row,body.dashboard-open .dashboard-overview-folder,body.dashboard-open #dashboardPage,body.dashboard-open .home-pending-wrap,body.dashboard-open .footer{display:none!important}
+ body.dashboard-open #homeReportPanel{display:none!important}
+}
+@media(max-width:370px){body.dashboard-open .home-photo-banner{height:112px!important;min-height:112px!important}body.dashboard-open .home-fci-mark{flex-basis:36px!important;min-width:36px!important;max-width:36px!important}body.dashboard-open .home-fci-mark small{font-size:5px!important}body.dashboard-open .home-banner-title strong{font-size:15px!important}body.dashboard-open .home-banner-actions{gap:2px!important}body.dashboard-open .home-banner-actions button,body.dashboard-open .home-banner-menu button{width:23px!important;height:23px!important;min-width:23px!important}}
+</style>
+
 </body></html>`;}
   function reportHtml(){const r=reportData(),month=new Date(r.m+'-01T00:00:00').toLocaleDateString('en-IN',{month:'long',year:'numeric'}), rows=r.mm.map((x,i)=>`<tr><td>${i+1}</td><td>${chemDate(x.date)}</td><td>${escC(x.shed)}</td><td>${escC(x.stack)}</td><td>${escC(x.commodity)}</td><td>${escC(x.chemical)}</td><td>${chemNum(x.qty).toFixed(2)}</td><td>${escC(x.unit)}</td><td>${escC(x.purpose)}</td><td>${escC(x.remarks)}</td></tr>`).join('');return `<!doctype html><html><head><meta charset="utf-8"><title>Chemical Report</title><style>body{font-family:Arial;margin:28px;color:#172d25}h1{text-align:center;margin:0;font-size:24px}h2{text-align:center;margin:5px 0 18px;font-size:18px}table{border-collapse:collapse;width:100%;font-size:11px}th,td{border:1px solid #999;padding:7px}th{background:#073d2c;color:white}.sum{margin:14px 0;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.card{border:1px solid #aaa;padding:10px}.card b{display:block;font-size:16px;margin-top:4px}</style><style id="compact-colour-summary-row">.report-summary-row td{font-weight:600;padding:4px 3px;line-height:1.15;background:#fff7d6;border:1px solid #d6b656;color:#243126}.report-summary-row td:nth-child(1),.report-summary-row td:nth-child(2){background:#e8eefc;color:#244a8f}.report-summary-row td:nth-child(3){background:#e8f7ec;color:#168a45}.report-summary-row td:nth-child(4){background:#fff0e1;color:#b45b16}.report-summary-row td:nth-child(5){background:#eee8ff;color:#6542a5}.report-summary-row td:nth-child(6){background:#e7f7f7;color:#16757a}.report-summary-row b{font-size:12px}</style><style id="exact-request-final-fix">
 /* Exact requested UI fixes only */
@@ -2560,6 +2632,42 @@ body.dashboard-open> .app .main > header.top{display:none!important}
 .home-banner-actions #installAppBtn::before{content:'⬇';font-size:17px}
 .home-banner-actions #alertBell::before{content:'🔔';font-size:16px}
 </style>
+
+<style id="actual-mobile-home-layout-fix-11oct">
+/* Final mobile home: only navigation folders on Home; reports stay inside Reports. */
+@media(max-width:700px){
+ body.dashboard-open #homeControlStrip{display:none!important}
+ body.dashboard-open .home-photo-banner{min-height:116px!important;height:116px!important;padding:35px 3px 7px!important;margin-bottom:7px!important;gap:2px!important;overflow:hidden!important}
+ body.dashboard-open .home-fci-mark{display:flex!important;flex:0 0 42px!important;min-width:42px!important;max-width:42px!important}
+ body.dashboard-open .home-fci-mark.right{display:flex!important}
+ body.dashboard-open .home-fci-mark .fci-leaf{width:25px!important;height:25px!important;font-size:16px!important}
+ body.dashboard-open .home-fci-mark b{font-size:9px!important}
+ body.dashboard-open .home-fci-mark small{font-size:5.5px!important;white-space:normal!important;line-height:1.05!important}
+ body.dashboard-open .home-banner-title{flex:1 1 auto!important;min-width:0!important;padding:0!important}
+ body.dashboard-open .home-banner-title strong{font-size:clamp(15px,4.5vw,22px)!important;line-height:1.05!important;white-space:nowrap!important;letter-spacing:0!important}
+ body.dashboard-open .home-banner-title small{font-size:5.5px!important;letter-spacing:.2px!important;margin-top:3px!important}
+ body.dashboard-open .home-banner-actions{display:flex!important;visibility:visible!important;opacity:1!important;z-index:20!important;top:4px!important;right:5px!important;gap:4px!important}
+ body.dashboard-open .home-banner-menu{display:flex!important;visibility:visible!important;opacity:1!important;z-index:20!important;top:4px!important;left:5px!important}
+ body.dashboard-open .home-banner-actions button,body.dashboard-open .home-banner-menu button{display:inline-grid!important;visibility:visible!important;opacity:1!important;width:25px!important;height:25px!important;min-width:25px!important;padding:0!important;font-size:14px!important}
+ body.dashboard-open .home-banner-actions #installAppBtn:before{content:'⬇'!important;font-size:15px!important}
+ body.dashboard-open .home-banner-actions #alertBell:before{content:'🔔'!important;font-size:14px!important}
+ body.dashboard-open .home-banner-actions #alertSoundBtn{font-size:14px!important}
+ body.dashboard-open .home-banner-actions #liveIndicator{display:inline-block!important;visibility:visible!important;width:10px!important;height:10px!important;min-width:10px!important;background:#19c45a!important;border:2px solid white!important;box-shadow:0 0 0 2px #0b8f45!important;animation:headerGreenPulse .85s steps(2,end) infinite!important}
+ body.dashboard-open .home-banner-actions #installAppBtn:after,body.dashboard-open .home-banner-actions #alertBell:after,body.dashboard-open .home-banner-actions #alertSoundBtn:after{content:''!important;position:absolute!important;right:-2px!important;top:-2px!important;width:6px!important;height:6px!important;border-radius:50%!important;background:#20c765!important;border:1px solid white!important}
+ body.dashboard-open .home-banner-actions #alertBell b{font-size:8px!important;min-width:13px!important;height:13px!important;line-height:11px!important}
+ body.dashboard-open .content{padding:5px!important}
+ body.dashboard-open .filters{margin:5px 0 7px!important}
+ body.dashboard-open .final-quick-grid{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:6px!important;margin:5px 0!important}
+ body.dashboard-open .final-quick-grid .mobile-folder{min-width:0!important;min-height:78px!important;padding:6px 3px!important;gap:3px!important}
+ body.dashboard-open .final-quick-grid .mobile-folder .mf-icon{width:32px!important;height:32px!important;font-size:19px!important;border-radius:9px!important}
+ body.dashboard-open .final-quick-grid .mf-title{font-size:9px!important;line-height:1.1!important;overflow-wrap:anywhere!important}
+ body.dashboard-open .final-quick-grid .mobile-folder small{font-size:7px!important;line-height:1.05!important}
+ body.dashboard-open .final-quick-row,body.dashboard-open .dashboard-overview-folder,body.dashboard-open #dashboardPage,body.dashboard-open .home-pending-wrap,body.dashboard-open .footer{display:none!important}
+ body.dashboard-open #homeReportPanel{display:none!important}
+}
+@media(max-width:370px){body.dashboard-open .home-photo-banner{height:112px!important;min-height:112px!important}body.dashboard-open .home-fci-mark{flex-basis:36px!important;min-width:36px!important;max-width:36px!important}body.dashboard-open .home-fci-mark small{font-size:5px!important}body.dashboard-open .home-banner-title strong{font-size:15px!important}body.dashboard-open .home-banner-actions{gap:2px!important}body.dashboard-open .home-banner-actions button,body.dashboard-open .home-banner-menu button{width:23px!important;height:23px!important;min-width:23px!important}}
+</style>
+
 </body>
 <style id="alp-few-heavy-final-fix">
 .stack-item.stack-weight-toggle.weight-few em{background:#e7f7ec!important;color:#168a45!important;border:1px solid #9bd3ad!important}
@@ -2632,6 +2740,42 @@ body.dashboard-open> .app .main > header.top{display:none!important}
 .home-banner-actions #installAppBtn::before{content:'⬇';font-size:17px}
 .home-banner-actions #alertBell::before{content:'🔔';font-size:16px}
 </style>
+
+<style id="actual-mobile-home-layout-fix-11oct">
+/* Final mobile home: only navigation folders on Home; reports stay inside Reports. */
+@media(max-width:700px){
+ body.dashboard-open #homeControlStrip{display:none!important}
+ body.dashboard-open .home-photo-banner{min-height:116px!important;height:116px!important;padding:35px 3px 7px!important;margin-bottom:7px!important;gap:2px!important;overflow:hidden!important}
+ body.dashboard-open .home-fci-mark{display:flex!important;flex:0 0 42px!important;min-width:42px!important;max-width:42px!important}
+ body.dashboard-open .home-fci-mark.right{display:flex!important}
+ body.dashboard-open .home-fci-mark .fci-leaf{width:25px!important;height:25px!important;font-size:16px!important}
+ body.dashboard-open .home-fci-mark b{font-size:9px!important}
+ body.dashboard-open .home-fci-mark small{font-size:5.5px!important;white-space:normal!important;line-height:1.05!important}
+ body.dashboard-open .home-banner-title{flex:1 1 auto!important;min-width:0!important;padding:0!important}
+ body.dashboard-open .home-banner-title strong{font-size:clamp(15px,4.5vw,22px)!important;line-height:1.05!important;white-space:nowrap!important;letter-spacing:0!important}
+ body.dashboard-open .home-banner-title small{font-size:5.5px!important;letter-spacing:.2px!important;margin-top:3px!important}
+ body.dashboard-open .home-banner-actions{display:flex!important;visibility:visible!important;opacity:1!important;z-index:20!important;top:4px!important;right:5px!important;gap:4px!important}
+ body.dashboard-open .home-banner-menu{display:flex!important;visibility:visible!important;opacity:1!important;z-index:20!important;top:4px!important;left:5px!important}
+ body.dashboard-open .home-banner-actions button,body.dashboard-open .home-banner-menu button{display:inline-grid!important;visibility:visible!important;opacity:1!important;width:25px!important;height:25px!important;min-width:25px!important;padding:0!important;font-size:14px!important}
+ body.dashboard-open .home-banner-actions #installAppBtn:before{content:'⬇'!important;font-size:15px!important}
+ body.dashboard-open .home-banner-actions #alertBell:before{content:'🔔'!important;font-size:14px!important}
+ body.dashboard-open .home-banner-actions #alertSoundBtn{font-size:14px!important}
+ body.dashboard-open .home-banner-actions #liveIndicator{display:inline-block!important;visibility:visible!important;width:10px!important;height:10px!important;min-width:10px!important;background:#19c45a!important;border:2px solid white!important;box-shadow:0 0 0 2px #0b8f45!important;animation:headerGreenPulse .85s steps(2,end) infinite!important}
+ body.dashboard-open .home-banner-actions #installAppBtn:after,body.dashboard-open .home-banner-actions #alertBell:after,body.dashboard-open .home-banner-actions #alertSoundBtn:after{content:''!important;position:absolute!important;right:-2px!important;top:-2px!important;width:6px!important;height:6px!important;border-radius:50%!important;background:#20c765!important;border:1px solid white!important}
+ body.dashboard-open .home-banner-actions #alertBell b{font-size:8px!important;min-width:13px!important;height:13px!important;line-height:11px!important}
+ body.dashboard-open .content{padding:5px!important}
+ body.dashboard-open .filters{margin:5px 0 7px!important}
+ body.dashboard-open .final-quick-grid{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:6px!important;margin:5px 0!important}
+ body.dashboard-open .final-quick-grid .mobile-folder{min-width:0!important;min-height:78px!important;padding:6px 3px!important;gap:3px!important}
+ body.dashboard-open .final-quick-grid .mobile-folder .mf-icon{width:32px!important;height:32px!important;font-size:19px!important;border-radius:9px!important}
+ body.dashboard-open .final-quick-grid .mf-title{font-size:9px!important;line-height:1.1!important;overflow-wrap:anywhere!important}
+ body.dashboard-open .final-quick-grid .mobile-folder small{font-size:7px!important;line-height:1.05!important}
+ body.dashboard-open .final-quick-row,body.dashboard-open .dashboard-overview-folder,body.dashboard-open #dashboardPage,body.dashboard-open .home-pending-wrap,body.dashboard-open .footer{display:none!important}
+ body.dashboard-open #homeReportPanel{display:none!important}
+}
+@media(max-width:370px){body.dashboard-open .home-photo-banner{height:112px!important;min-height:112px!important}body.dashboard-open .home-fci-mark{flex-basis:36px!important;min-width:36px!important;max-width:36px!important}body.dashboard-open .home-fci-mark small{font-size:5px!important}body.dashboard-open .home-banner-title strong{font-size:15px!important}body.dashboard-open .home-banner-actions{gap:2px!important}body.dashboard-open .home-banner-actions button,body.dashboard-open .home-banner-menu button{width:23px!important;height:23px!important;min-width:23px!important}}
+</style>
+
 </body>
 <style id="alp-few-heavy-final-fix">
 .stack-item.stack-weight-toggle.weight-few em{background:#e7f7ec!important;color:#168a45!important;border:1px solid #9bd3ad!important}
