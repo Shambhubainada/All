@@ -632,7 +632,7 @@ body.page-open:not(.dashboard-open) #backBtn{background:#d92d3b!important;color:
 <main class="main">
 <header class="top"><div class="top-left"><button class="top-menu-btn" id="topMenuBtn" onclick="toggleTopMenu()">☰ MAIN MENU</button><button class="page-nav-btn" id="backBtn" onclick="goBackPage()" style="display:none">← BACK</button><button class="page-nav-btn" id="homeBtn" onclick="openPage('dashboard')" style="display:none">⌂ HOME</button><div class="title"><h1>SHAMBHU SHED</h1><p>FSD SABARMATI · QC TREATMENT CONTROL</p></div></div><div class="topright"><span id="today">Today: --</span><span id="updated">Last Update: --</span><span id="liveIndicator" class="live live-ok" aria-label="Data Live"></span><button id="installAppBtn" class="install-app-btn" onclick="installShambhuApp()">📲 INSTALL APP</button><button id="alertBell" class="alert-bell" onclick="openPage('notepad')">🔔 Alerts <b id="alertCount">0</b></button><button id="alertSoundBtn" class="alert-sound-mini" type="button" onclick="event.stopPropagation();toggleAlertMute()" title="Mute / Unmute alert">🔊</button></div></header><div id="topMenu" class="top-menu"></div>
 <div class="content">
-<section class="home-photo-banner header-style-classic" id="homePhotoBanner" aria-label="Shambhu Shed home banner"><div class="home-fci-mark left"><span class="fci-leaf">🌿</span><b>FCI</b><small>FSD Sabarmati</small></div><div class="home-banner-title"><strong>SHAMBHU SHED</strong><small>QC TREATMENT CONTROL</small></div><div class="home-fci-mark right"><span class="fci-leaf">🌿</span><b>FCI</b><small>FSD Sabarmati</small></div><div class="home-banner-ribbon">● LIVE · FSD SABARMATI</div></section>
+<section class="home-photo-banner header-style-classic" id="homePhotoBanner" aria-label="Shambhu Shed home banner"><div class="home-fci-mark left"><span class="fci-leaf">🌿</span><b>FCI</b><small>FSD Sabarmati</small></div><div class="home-banner-title"><strong>SHAMBHU SHED</strong><small>QC TREATMENT CONTROL</small></div><div class="home-fci-mark right"><span class="fci-leaf">🌿</span><b>FCI</b><small>FSD Sabarmati</small></div><div class="home-banner-ribbon">● LIVE · FSD SABARMATI</div><div class="home-banner-menu" id="homeBannerMenu"></div><div class="home-banner-actions" id="homeBannerActions"></div></section>
 <div class="filters"><div class="group filter-select-group"><label>SELECT SHED</label><select id="shedSelect" class="filter-select"><option value="all">All Sheds</option><option value="9">Shed 9</option><option value="14">Shed 14</option><option value="18">Shed 18</option><option value="20">Shed 20</option></select></div><div class="group filter-select-group"><label>COMMODITY</label><select id="commoditySelect" class="filter-select"><option value="all">All Commodity</option><option value="wheat">Wheat</option><option value="rice">Rice</option></select></div><button class="refresh" id="refresh" title="Refresh Data" aria-label="Refresh Data">↻</button></div>
 <div class="status" id="status" style="display:none!important">Connecting to Google Sheet…</div>
 <div class="mobile-folder-grid final-quick-grid">
@@ -2401,7 +2401,32 @@ body.tight-back-gap #dynamicPage{margin-top:0!important}
 .mo-entry-datetime .mo-time{font-size:12px;font-weight:800;letter-spacing:.2px}
 @media(max-width:560px){.mo-final-table td{padding:8px 7px}.mo-entry-datetime{min-width:82px;font-size:12px}.mo-entry-datetime .mo-time{font-size:11px}}
 </style>
-</body><style id="moisture-update-rmc-hide-only">
+
+<style id="single-home-banner-controls-final">
+/* One visible header only: move existing live controls into the photo banner */
+body.dashboard-open> .app .main > .top{display:none!important}
+.home-photo-banner{padding-top:39px!important}
+.home-banner-actions{position:absolute;right:7px;top:5px;z-index:4;display:flex;align-items:center;gap:5px}
+.home-banner-menu{position:absolute;left:7px;top:5px;z-index:4;display:flex;align-items:center;gap:5px}
+.home-banner-actions button,.home-banner-menu button{width:30px;height:30px;min-width:30px;padding:0!important;border:1px solid #ffffffb8!important;border-radius:9px!important;background:#ffffffed!important;color:#07543d!important;display:inline-grid!important;place-items:center!important;font-size:16px!important;font-weight:900!important;line-height:1!important;box-shadow:0 2px 7px #00190d50!important}
+.home-banner-actions #installAppBtn,.home-banner-actions #alertBell{font-size:0!important}
+.home-banner-actions #installAppBtn{display:inline-grid}
+.home-banner-actions #installAppBtn::before{content:'⬇';font-size:17px;font-weight:1000}
+.home-banner-actions #alertBell{position:relative}
+.home-banner-actions #alertBell::before{content:'🔔';font-size:16px}
+.home-banner-actions #alertBell b{position:absolute;right:-5px;top:-5px;min-width:15px;height:15px;padding:1px 3px;margin:0;font-size:9px;line-height:13px;background:#d92d3b;color:#fff;border:1px solid #fff}
+.home-banner-actions #alertSoundBtn{font-size:15px!important}
+.home-banner-actions #liveIndicator{display:inline-block!important;width:12px;height:12px;min-width:12px;padding:0!important;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 2px #e3293b55;animation:liveLightBlink .8s steps(2,end) infinite!important}
+.home-banner-actions #today,.home-banner-actions #updated{display:none!important}
+.home-banner-menu .top-menu-btn{font-size:0!important;width:30px;height:30px;min-width:30px;padding:0!important;display:inline-grid!important;place-items:center!important;background:#ffffffed!important;color:#07543d!important;border:1px solid #ffffffb8!important;border-radius:9px!important}
+.home-banner-menu .top-menu-btn::before{content:'☰';font-size:17px}
+.home-banner-menu .page-nav-btn{font-size:0!important;width:30px;height:30px;min-width:30px;padding:0!important;display:inline-grid!important;place-items:center!important;background:#ffffffed!important;color:#07543d!important;border:1px solid #ffffffb8!important;border-radius:9px!important}
+.home-banner-menu #backBtn::before{content:'←';font-size:17px}.home-banner-menu #homeBtn::before{content:'⌂';font-size:18px}
+@media(max-width:420px){.home-banner-actions{gap:3px;right:5px}.home-banner-menu{left:5px;gap:3px}.home-banner-actions button,.home-banner-menu button{width:27px;height:27px;min-width:27px}.home-photo-banner{padding-top:36px!important}}
+</style>
+<script id="single-home-banner-controls-script">
+(function(){function moveHeaderControls(){const banner=document.getElementById("homePhotoBanner"),actions=document.getElementById("homeBannerActions"),menu=document.getElementById("homeBannerMenu"),top=document.querySelector("header.top"),topLeft=top&&top.querySelector(".top-left"),topRight=top&&top.querySelector(".topright");if(!banner||!actions||!menu||!top||!topLeft||!topRight)return;const home=document.body.classList.contains("dashboard-open");if(home){["installAppBtn","alertBell","alertSoundBtn","liveIndicator"].forEach(id=>{const el=document.getElementById(id);if(el&&el.parentElement!==actions)actions.appendChild(el)});["topMenuBtn","backBtn","homeBtn"].forEach(id=>{const el=document.getElementById(id);if(el&&el.parentElement!==menu)menu.appendChild(el)});const title=top.querySelector(".title");if(title)title.style.display="none";const today=document.getElementById("today"),updated=document.getElementById("updated");if(today)today.style.display="none";if(updated)updated.style.display="none";top.style.display="none";}else{["installAppBtn","alertBell","alertSoundBtn","liveIndicator","today","updated"].forEach(id=>{const el=document.getElementById(id);if(el&&el.parentElement!==topRight)topRight.appendChild(el)});["topMenuBtn","backBtn","homeBtn"].forEach(id=>{const el=document.getElementById(id);if(el&&el.parentElement!==topLeft)topLeft.insertBefore(el,topLeft.firstChild)});const title=top.querySelector(".title");if(title)title.style.display="";top.style.display="";}}if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",moveHeaderControls);else moveHeaderControls();new MutationObserver(moveHeaderControls).observe(document.body,{attributes:true,attributeFilter:["class"]});setTimeout(moveHeaderControls,500);setTimeout(moveHeaderControls,1500);})();
+</script></body><style id="moisture-update-rmc-hide-only">
 /* Only requested Moisture Update change: keep Add New Stack, hide Manual/Current RMC cards. */
 .moisture-focused-page .mo-stack-details{display:none!important}
 </style>
