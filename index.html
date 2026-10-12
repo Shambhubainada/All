@@ -619,6 +619,14 @@ body.page-open:not(.dashboard-open) #shambhuFloatingBack{display:flex}
 @keyframes redStarPulse{0%,100%{opacity:1;filter:drop-shadow(0 0 4px #ff3344) drop-shadow(0 0 9px #e3293b)}50%{opacity:.35;filter:drop-shadow(0 0 8px #ff3344) drop-shadow(0 0 14px #e3293b)}}
 </style>
 
+
+<style id="hindi-header-font-size-adjustment">
+/* Make both Hindi header lines slightly larger and use a consistent, readable size. */
+.shambhu-responsive-header .fci-hindi .fci-brand-copy strong,
+.shambhu-responsive-header .fci-hindi .fci-brand-copy small{font-size:clamp(11px,1.15vw,14px)!important;line-height:1.2!important;font-weight:900!important;letter-spacing:0!important}
+@media(max-width:700px){.shambhu-responsive-header .fci-hindi .fci-brand-copy strong,
+.shambhu-responsive-header .fci-hindi .fci-brand-copy small{font-size:clamp(10px,2.6vw,13px)!important;line-height:1.15!important;margin-top:2px!important}}
+</style>
 </head>
 <body>
 <div class="pin-screen" id="pinScreen">
