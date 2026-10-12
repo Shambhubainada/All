@@ -609,6 +609,16 @@ body.page-open:not(.dashboard-open) #topMenu{display:none!important}
 @media(max-width:700px){#liveIndicator{width:20px!important;height:20px!important;min-width:20px!important}}
 </style>
 
+
+<style id="restore-red-blinking-back-button">
+#shambhuFloatingBack{display:none;position:fixed;z-index:99990;left:10px;top:calc(env(safe-area-inset-top,0px) + 10px);width:44px;height:40px;border:2px solid #a91625;border-radius:11px;background:#d92d3b;color:#fff;font-size:24px;font-weight:1000;box-shadow:0 3px 12px #d92d3b66;align-items:center;justify-content:center;animation:backBlink .8s steps(2,end) infinite;cursor:pointer}
+body.page-open:not(.dashboard-open) #shambhuFloatingBack{display:flex}
+@keyframes backBlink{50%{opacity:.38}}
+/* When live data is unavailable, the star must blink red, not green. */
+#liveIndicator.live-bad{background:#e3293b!important;animation:redStarPulse .8s steps(2,end) infinite!important;filter:drop-shadow(0 0 4px #ff3344) drop-shadow(0 0 9px #e3293b)!important}
+@keyframes redStarPulse{0%,100%{opacity:1;filter:drop-shadow(0 0 4px #ff3344) drop-shadow(0 0 9px #e3293b)}50%{opacity:.35;filter:drop-shadow(0 0 8px #ff3344) drop-shadow(0 0 14px #e3293b)}}
+</style>
+
 </head>
 <body>
 <div class="pin-screen" id="pinScreen">
@@ -623,6 +633,7 @@ body.page-open:not(.dashboard-open) #topMenu{display:none!important}
   </div>
 </div>
 
+<button id="shambhuFloatingBack" type="button" aria-label="Back to Home" title="Back to Home" onclick="goBackPage()">←</button>
 <div class="app">
 <aside class="side">
   <div class="brand"><div class="mark">🌾</div>SHAMBHU<br>SHED</div>
