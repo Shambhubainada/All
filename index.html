@@ -630,7 +630,12 @@ body.page-open:not(.dashboard-open) #backBtn{background:#d92d3b!important;color:
   <div class="sidefoot">● Live Google Sheet<br>View Only</div>
 </aside>
 <main class="main">
-<header class="top"><div class="top-left"><button class="top-menu-btn" id="topMenuBtn" onclick="toggleTopMenu()">☰ MAIN MENU</button><button class="page-nav-btn" id="backBtn" onclick="goBackPage()" style="display:none">← BACK</button><button class="page-nav-btn" id="homeBtn" onclick="openPage('dashboard')" style="display:none">⌂ HOME</button><div class="title"><h1>SHAMBHU SHED</h1><p>FSD SABARMATI · QC TREATMENT CONTROL</p></div></div><div class="topright"><span id="today">Today: --</span><span id="updated">Last Update: --</span><span id="liveIndicator" class="live live-ok" aria-label="Data Live"></span><button id="installAppBtn" class="install-app-btn" onclick="installShambhuApp()">📲 INSTALL APP</button><button id="alertBell" class="alert-bell" onclick="openPage('notepad')">🔔 Alerts <b id="alertCount">0</b></button><button id="alertSoundBtn" class="alert-sound-mini" type="button" onclick="event.stopPropagation();toggleAlertMute()" title="Mute / Unmute alert">🔊</button></div></header><div id="topMenu" class="top-menu"></div>
+<header class="top shambhu-premium-header">
+<div class="fci-brand fci-brand-left" aria-label="Food Corporation of India"><div class="fci-emblem">🌾</div><div class="fci-brand-copy"><b>भारतीय खाद्य निगम</b><strong>FCI</strong><small>FOOD CORPORATION OF INDIA</small></div></div>
+<div class="top-left shambhu-header-center"><button class="top-menu-btn" id="topMenuBtn" onclick="toggleTopMenu()">☰ MAIN MENU</button><button class="page-nav-btn" id="backBtn" onclick="goBackPage()" style="display:none">← BACK</button><button class="page-nav-btn" id="homeBtn" onclick="openPage('dashboard')" style="display:none">⌂ HOME</button><div class="title"><h1>Shambhu Shed</h1><p>QUALITY CONTROL MONITORING · FSD SABARMATI</p></div></div>
+<div class="fci-brand fci-brand-right" aria-label="Food Corporation of India"><div class="fci-emblem">🌾</div><div class="fci-brand-copy"><b>भारतीय खाद्य निगम</b><strong>FCI</strong><small>FOOD CORPORATION OF INDIA</small></div></div>
+<div class="topright"><span id="today">Today: --</span><span id="updated">Last Update: --</span><span id="liveIndicator" class="live live-ok" aria-label="Data Live"></span><button id="installAppBtn" class="install-app-btn" onclick="installShambhuApp()" aria-label="Install app" title="Install app">⬇</button><button id="alertBell" class="alert-bell" onclick="openPage('notepad')" aria-label="Alerts" title="Alerts">🔔<b id="alertCount">0</b></button><button id="alertSoundBtn" class="alert-sound-mini" type="button" onclick="event.stopPropagation();toggleAlertMute()" title="Mute / Unmute alert" aria-label="Mute or unmute alert">🔊</button></div>
+</header><div id="topMenu" class="top-menu"></div>
 <div class="content">
 <div class="filters"><div class="group filter-select-group"><label>SELECT SHED</label><select id="shedSelect" class="filter-select"><option value="all">All Sheds</option><option value="9">Shed 9</option><option value="14">Shed 14</option><option value="18">Shed 18</option><option value="20">Shed 20</option></select></div><div class="group filter-select-group"><label>COMMODITY</label><select id="commoditySelect" class="filter-select"><option value="all">All Commodity</option><option value="wheat">Wheat</option><option value="rice">Rice</option></select></div><button class="refresh" id="refresh" title="Refresh Data" aria-label="Refresh Data">↻</button></div>
 <div class="status" id="status" style="display:none!important">Connecting to Google Sheet…</div>
@@ -2407,6 +2412,31 @@ body.tight-back-gap #dynamicPage{margin-top:0!important}
 .mo-entry-datetime .mo-time{font-size:12px;font-weight:800;letter-spacing:.2px}
 @media(max-width:560px){.mo-final-table td{padding:8px 7px}.mo-entry-datetime{min-width:82px;font-size:12px}.mo-entry-datetime .mo-time{font-size:11px}}
 </style>
+
+<style id="shambhu-reference-header-final">
+.shambhu-premium-header{position:relative!important;display:grid!important;grid-template-columns:minmax(170px,1fr) minmax(260px,1.6fr) minmax(170px,1fr) auto!important;align-items:center!important;gap:14px!important;min-height:112px!important;padding:12px 20px!important;background:linear-gradient(105deg,#003f30,#00533d 52%,#003f30)!important;flex-wrap:nowrap!important}
+.shambhu-premium-header .top-left{display:contents!important}
+.shambhu-premium-header .title{grid-column:2;grid-row:1;text-align:center!important;min-width:0}
+.shambhu-premium-header .title h1{font-size:clamp(24px,3.7vw,48px)!important;line-height:1.04!important;font-weight:900!important;letter-spacing:.2px!important;color:#fff!important;text-transform:none!important;margin:0!important}
+.shambhu-premium-header .title p{font-size:clamp(10px,1.3vw,16px)!important;font-weight:800!important;letter-spacing:.4px!important;color:#fff!important;margin:6px 0 0!important;white-space:nowrap}
+.shambhu-premium-header .fci-brand{display:flex;align-items:center;gap:10px;color:#fff;min-width:0}
+.shambhu-premium-header .fci-brand-right{grid-column:3;grid-row:1}
+.shambhu-premium-header .fci-emblem{width:54px;height:62px;display:grid;place-items:center;font-size:38px;color:#fff;background:#ffffff12;border:2px solid #d4f0df;border-radius:8px;flex-shrink:0}
+.shambhu-premium-header .fci-brand-copy{display:flex;flex-direction:column;line-height:1.05;min-width:0}
+.shambhu-premium-header .fci-brand-copy b{font-size:12px;white-space:nowrap}
+.shambhu-premium-header .fci-brand-copy strong{font-size:25px;line-height:1.1}
+.shambhu-premium-header .fci-brand-copy small{font-size:7px;font-weight:800;white-space:nowrap}
+.shambhu-premium-header .topright{grid-column:4;grid-row:1;display:flex;align-items:center;gap:8px!important;flex-wrap:nowrap!important;border-left:1px solid #ffffff55;padding-left:12px}
+.shambhu-premium-header #today,.shambhu-premium-header #updated{display:none!important}
+.shambhu-premium-header .live{width:11px;height:11px;padding:0!important;overflow:hidden;font-size:0;flex-shrink:0}
+.shambhu-premium-header .install-app-btn,.shambhu-premium-header .alert-bell,.shambhu-premium-header .alert-sound-mini{width:42px;height:42px;display:inline-grid;place-items:center;position:relative;padding:0!important;border:0;border-radius:8px;background:transparent;color:#fff;font-size:26px;font-weight:900;box-shadow:none;flex-shrink:0}
+.shambhu-premium-header .alert-bell{font-size:25px}
+.shambhu-premium-header #alertCount{position:absolute;right:-3px;top:-4px;min-width:15px;height:15px;border-radius:50%;display:grid;place-items:center;background:#ed343d;color:#fff;font-size:9px;padding:0 3px}
+.shambhu-premium-header .alert-sound-mini{font-size:25px}
+.shambhu-premium-header .top-menu-btn{position:absolute;left:10px;bottom:5px;font-size:10px;padding:3px 6px;opacity:.7}
+@media(max-width:900px){.shambhu-premium-header{grid-template-columns:1fr auto!important;grid-template-rows:auto auto!important;gap:8px!important;padding:10px 10px 30px!important;min-height:110px!important}.shambhu-premium-header .fci-brand-left{grid-column:1;grid-row:1}.shambhu-premium-header .fci-brand-right{display:none!important}.shambhu-premium-header .title{grid-column:1 / 3;grid-row:2;text-align:center!important}.shambhu-premium-header .topright{grid-column:2;grid-row:1;border:0;padding:0;gap:3px!important}.shambhu-premium-header .fci-emblem{width:34px;height:38px;font-size:23px}.shambhu-premium-header .fci-brand-copy b{font-size:9px}.shambhu-premium-header .fci-brand-copy strong{font-size:18px}.shambhu-premium-header .fci-brand-copy small{font-size:5px}.shambhu-premium-header .install-app-btn,.shambhu-premium-header .alert-bell,.shambhu-premium-header .alert-sound-mini{width:29px;height:30px;font-size:19px}.shambhu-premium-header .title h1{font-size:30px!important}.shambhu-premium-header .title p{font-size:10px!important;white-space:normal}.shambhu-premium-header .top-menu-btn{bottom:3px}}
+@media(max-width:380px){.shambhu-premium-header .fci-brand-copy small{display:none}.shambhu-premium-header .title h1{font-size:25px!important}.shambhu-premium-header .topright{gap:0!important}}
+</style>
 </body><style id="moisture-update-rmc-hide-only">
 /* Only requested Moisture Update change: keep Add New Stack, hide Manual/Current RMC cards. */
 .moisture-focused-page .mo-stack-details{display:none!important}
@@ -2447,6 +2477,31 @@ body.page-open:not(.dashboard-open) #backBtn{background:#d92d3b!important;color:
 .mo-entry-datetime .mo-time{font-size:12px;font-weight:800;letter-spacing:.2px}
 @media(max-width:560px){.mo-final-table td{padding:8px 7px}.mo-entry-datetime{min-width:82px;font-size:12px}.mo-entry-datetime .mo-time{font-size:11px}}
 </style>
+
+<style id="shambhu-reference-header-final">
+.shambhu-premium-header{position:relative!important;display:grid!important;grid-template-columns:minmax(170px,1fr) minmax(260px,1.6fr) minmax(170px,1fr) auto!important;align-items:center!important;gap:14px!important;min-height:112px!important;padding:12px 20px!important;background:linear-gradient(105deg,#003f30,#00533d 52%,#003f30)!important;flex-wrap:nowrap!important}
+.shambhu-premium-header .top-left{display:contents!important}
+.shambhu-premium-header .title{grid-column:2;grid-row:1;text-align:center!important;min-width:0}
+.shambhu-premium-header .title h1{font-size:clamp(24px,3.7vw,48px)!important;line-height:1.04!important;font-weight:900!important;letter-spacing:.2px!important;color:#fff!important;text-transform:none!important;margin:0!important}
+.shambhu-premium-header .title p{font-size:clamp(10px,1.3vw,16px)!important;font-weight:800!important;letter-spacing:.4px!important;color:#fff!important;margin:6px 0 0!important;white-space:nowrap}
+.shambhu-premium-header .fci-brand{display:flex;align-items:center;gap:10px;color:#fff;min-width:0}
+.shambhu-premium-header .fci-brand-right{grid-column:3;grid-row:1}
+.shambhu-premium-header .fci-emblem{width:54px;height:62px;display:grid;place-items:center;font-size:38px;color:#fff;background:#ffffff12;border:2px solid #d4f0df;border-radius:8px;flex-shrink:0}
+.shambhu-premium-header .fci-brand-copy{display:flex;flex-direction:column;line-height:1.05;min-width:0}
+.shambhu-premium-header .fci-brand-copy b{font-size:12px;white-space:nowrap}
+.shambhu-premium-header .fci-brand-copy strong{font-size:25px;line-height:1.1}
+.shambhu-premium-header .fci-brand-copy small{font-size:7px;font-weight:800;white-space:nowrap}
+.shambhu-premium-header .topright{grid-column:4;grid-row:1;display:flex;align-items:center;gap:8px!important;flex-wrap:nowrap!important;border-left:1px solid #ffffff55;padding-left:12px}
+.shambhu-premium-header #today,.shambhu-premium-header #updated{display:none!important}
+.shambhu-premium-header .live{width:11px;height:11px;padding:0!important;overflow:hidden;font-size:0;flex-shrink:0}
+.shambhu-premium-header .install-app-btn,.shambhu-premium-header .alert-bell,.shambhu-premium-header .alert-sound-mini{width:42px;height:42px;display:inline-grid;place-items:center;position:relative;padding:0!important;border:0;border-radius:8px;background:transparent;color:#fff;font-size:26px;font-weight:900;box-shadow:none;flex-shrink:0}
+.shambhu-premium-header .alert-bell{font-size:25px}
+.shambhu-premium-header #alertCount{position:absolute;right:-3px;top:-4px;min-width:15px;height:15px;border-radius:50%;display:grid;place-items:center;background:#ed343d;color:#fff;font-size:9px;padding:0 3px}
+.shambhu-premium-header .alert-sound-mini{font-size:25px}
+.shambhu-premium-header .top-menu-btn{position:absolute;left:10px;bottom:5px;font-size:10px;padding:3px 6px;opacity:.7}
+@media(max-width:900px){.shambhu-premium-header{grid-template-columns:1fr auto!important;grid-template-rows:auto auto!important;gap:8px!important;padding:10px 10px 30px!important;min-height:110px!important}.shambhu-premium-header .fci-brand-left{grid-column:1;grid-row:1}.shambhu-premium-header .fci-brand-right{display:none!important}.shambhu-premium-header .title{grid-column:1 / 3;grid-row:2;text-align:center!important}.shambhu-premium-header .topright{grid-column:2;grid-row:1;border:0;padding:0;gap:3px!important}.shambhu-premium-header .fci-emblem{width:34px;height:38px;font-size:23px}.shambhu-premium-header .fci-brand-copy b{font-size:9px}.shambhu-premium-header .fci-brand-copy strong{font-size:18px}.shambhu-premium-header .fci-brand-copy small{font-size:5px}.shambhu-premium-header .install-app-btn,.shambhu-premium-header .alert-bell,.shambhu-premium-header .alert-sound-mini{width:29px;height:30px;font-size:19px}.shambhu-premium-header .title h1{font-size:30px!important}.shambhu-premium-header .title p{font-size:10px!important;white-space:normal}.shambhu-premium-header .top-menu-btn{bottom:3px}}
+@media(max-width:380px){.shambhu-premium-header .fci-brand-copy small{display:none}.shambhu-premium-header .title h1{font-size:25px!important}.shambhu-premium-header .topright{gap:0!important}}
+</style>
 </body></html>`;}
   function reportHtml(){const r=reportData(),month=new Date(r.m+'-01T00:00:00').toLocaleDateString('en-IN',{month:'long',year:'numeric'}), rows=r.mm.map((x,i)=>`<tr><td>${i+1}</td><td>${chemDate(x.date)}</td><td>${escC(x.shed)}</td><td>${escC(x.stack)}</td><td>${escC(x.commodity)}</td><td>${escC(x.chemical)}</td><td>${chemNum(x.qty).toFixed(2)}</td><td>${escC(x.unit)}</td><td>${escC(x.purpose)}</td><td>${escC(x.remarks)}</td></tr>`).join('');return `<!doctype html><html><head><meta charset="utf-8"><title>Chemical Report</title><style>body{font-family:Arial;margin:28px;color:#172d25}h1{text-align:center;margin:0;font-size:24px}h2{text-align:center;margin:5px 0 18px;font-size:18px}table{border-collapse:collapse;width:100%;font-size:11px}th,td{border:1px solid #999;padding:7px}th{background:#073d2c;color:white}.sum{margin:14px 0;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.card{border:1px solid #aaa;padding:10px}.card b{display:block;font-size:16px;margin-top:4px}</style><style id="compact-colour-summary-row">.report-summary-row td{font-weight:600;padding:4px 3px;line-height:1.15;background:#fff7d6;border:1px solid #d6b656;color:#243126}.report-summary-row td:nth-child(1),.report-summary-row td:nth-child(2){background:#e8eefc;color:#244a8f}.report-summary-row td:nth-child(3){background:#e8f7ec;color:#168a45}.report-summary-row td:nth-child(4){background:#fff0e1;color:#b45b16}.report-summary-row td:nth-child(5){background:#eee8ff;color:#6542a5}.report-summary-row td:nth-child(6){background:#e7f7f7;color:#16757a}.report-summary-row b{font-size:12px}</style><style id="exact-request-final-fix">
 /* Exact requested UI fixes only */
@@ -2482,6 +2537,31 @@ body.page-open:not(.dashboard-open) #backBtn{background:#d92d3b!important;color:
 .mo-entry-datetime .mo-date{font-weight:900}
 .mo-entry-datetime .mo-time{font-size:12px;font-weight:800;letter-spacing:.2px}
 @media(max-width:560px){.mo-final-table td{padding:8px 7px}.mo-entry-datetime{min-width:82px;font-size:12px}.mo-entry-datetime .mo-time{font-size:11px}}
+</style>
+
+<style id="shambhu-reference-header-final">
+.shambhu-premium-header{position:relative!important;display:grid!important;grid-template-columns:minmax(170px,1fr) minmax(260px,1.6fr) minmax(170px,1fr) auto!important;align-items:center!important;gap:14px!important;min-height:112px!important;padding:12px 20px!important;background:linear-gradient(105deg,#003f30,#00533d 52%,#003f30)!important;flex-wrap:nowrap!important}
+.shambhu-premium-header .top-left{display:contents!important}
+.shambhu-premium-header .title{grid-column:2;grid-row:1;text-align:center!important;min-width:0}
+.shambhu-premium-header .title h1{font-size:clamp(24px,3.7vw,48px)!important;line-height:1.04!important;font-weight:900!important;letter-spacing:.2px!important;color:#fff!important;text-transform:none!important;margin:0!important}
+.shambhu-premium-header .title p{font-size:clamp(10px,1.3vw,16px)!important;font-weight:800!important;letter-spacing:.4px!important;color:#fff!important;margin:6px 0 0!important;white-space:nowrap}
+.shambhu-premium-header .fci-brand{display:flex;align-items:center;gap:10px;color:#fff;min-width:0}
+.shambhu-premium-header .fci-brand-right{grid-column:3;grid-row:1}
+.shambhu-premium-header .fci-emblem{width:54px;height:62px;display:grid;place-items:center;font-size:38px;color:#fff;background:#ffffff12;border:2px solid #d4f0df;border-radius:8px;flex-shrink:0}
+.shambhu-premium-header .fci-brand-copy{display:flex;flex-direction:column;line-height:1.05;min-width:0}
+.shambhu-premium-header .fci-brand-copy b{font-size:12px;white-space:nowrap}
+.shambhu-premium-header .fci-brand-copy strong{font-size:25px;line-height:1.1}
+.shambhu-premium-header .fci-brand-copy small{font-size:7px;font-weight:800;white-space:nowrap}
+.shambhu-premium-header .topright{grid-column:4;grid-row:1;display:flex;align-items:center;gap:8px!important;flex-wrap:nowrap!important;border-left:1px solid #ffffff55;padding-left:12px}
+.shambhu-premium-header #today,.shambhu-premium-header #updated{display:none!important}
+.shambhu-premium-header .live{width:11px;height:11px;padding:0!important;overflow:hidden;font-size:0;flex-shrink:0}
+.shambhu-premium-header .install-app-btn,.shambhu-premium-header .alert-bell,.shambhu-premium-header .alert-sound-mini{width:42px;height:42px;display:inline-grid;place-items:center;position:relative;padding:0!important;border:0;border-radius:8px;background:transparent;color:#fff;font-size:26px;font-weight:900;box-shadow:none;flex-shrink:0}
+.shambhu-premium-header .alert-bell{font-size:25px}
+.shambhu-premium-header #alertCount{position:absolute;right:-3px;top:-4px;min-width:15px;height:15px;border-radius:50%;display:grid;place-items:center;background:#ed343d;color:#fff;font-size:9px;padding:0 3px}
+.shambhu-premium-header .alert-sound-mini{font-size:25px}
+.shambhu-premium-header .top-menu-btn{position:absolute;left:10px;bottom:5px;font-size:10px;padding:3px 6px;opacity:.7}
+@media(max-width:900px){.shambhu-premium-header{grid-template-columns:1fr auto!important;grid-template-rows:auto auto!important;gap:8px!important;padding:10px 10px 30px!important;min-height:110px!important}.shambhu-premium-header .fci-brand-left{grid-column:1;grid-row:1}.shambhu-premium-header .fci-brand-right{display:none!important}.shambhu-premium-header .title{grid-column:1 / 3;grid-row:2;text-align:center!important}.shambhu-premium-header .topright{grid-column:2;grid-row:1;border:0;padding:0;gap:3px!important}.shambhu-premium-header .fci-emblem{width:34px;height:38px;font-size:23px}.shambhu-premium-header .fci-brand-copy b{font-size:9px}.shambhu-premium-header .fci-brand-copy strong{font-size:18px}.shambhu-premium-header .fci-brand-copy small{font-size:5px}.shambhu-premium-header .install-app-btn,.shambhu-premium-header .alert-bell,.shambhu-premium-header .alert-sound-mini{width:29px;height:30px;font-size:19px}.shambhu-premium-header .title h1{font-size:30px!important}.shambhu-premium-header .title p{font-size:10px!important;white-space:normal}.shambhu-premium-header .top-menu-btn{bottom:3px}}
+@media(max-width:380px){.shambhu-premium-header .fci-brand-copy small{display:none}.shambhu-premium-header .title h1{font-size:25px!important}.shambhu-premium-header .topright{gap:0!important}}
 </style>
 </body>
 <style id="alp-few-heavy-final-fix">
@@ -2540,6 +2620,31 @@ body.page-open:not(.dashboard-open) #backBtn{background:#d92d3b!important;color:
 .mo-entry-datetime .mo-date{font-weight:900}
 .mo-entry-datetime .mo-time{font-size:12px;font-weight:800;letter-spacing:.2px}
 @media(max-width:560px){.mo-final-table td{padding:8px 7px}.mo-entry-datetime{min-width:82px;font-size:12px}.mo-entry-datetime .mo-time{font-size:11px}}
+</style>
+
+<style id="shambhu-reference-header-final">
+.shambhu-premium-header{position:relative!important;display:grid!important;grid-template-columns:minmax(170px,1fr) minmax(260px,1.6fr) minmax(170px,1fr) auto!important;align-items:center!important;gap:14px!important;min-height:112px!important;padding:12px 20px!important;background:linear-gradient(105deg,#003f30,#00533d 52%,#003f30)!important;flex-wrap:nowrap!important}
+.shambhu-premium-header .top-left{display:contents!important}
+.shambhu-premium-header .title{grid-column:2;grid-row:1;text-align:center!important;min-width:0}
+.shambhu-premium-header .title h1{font-size:clamp(24px,3.7vw,48px)!important;line-height:1.04!important;font-weight:900!important;letter-spacing:.2px!important;color:#fff!important;text-transform:none!important;margin:0!important}
+.shambhu-premium-header .title p{font-size:clamp(10px,1.3vw,16px)!important;font-weight:800!important;letter-spacing:.4px!important;color:#fff!important;margin:6px 0 0!important;white-space:nowrap}
+.shambhu-premium-header .fci-brand{display:flex;align-items:center;gap:10px;color:#fff;min-width:0}
+.shambhu-premium-header .fci-brand-right{grid-column:3;grid-row:1}
+.shambhu-premium-header .fci-emblem{width:54px;height:62px;display:grid;place-items:center;font-size:38px;color:#fff;background:#ffffff12;border:2px solid #d4f0df;border-radius:8px;flex-shrink:0}
+.shambhu-premium-header .fci-brand-copy{display:flex;flex-direction:column;line-height:1.05;min-width:0}
+.shambhu-premium-header .fci-brand-copy b{font-size:12px;white-space:nowrap}
+.shambhu-premium-header .fci-brand-copy strong{font-size:25px;line-height:1.1}
+.shambhu-premium-header .fci-brand-copy small{font-size:7px;font-weight:800;white-space:nowrap}
+.shambhu-premium-header .topright{grid-column:4;grid-row:1;display:flex;align-items:center;gap:8px!important;flex-wrap:nowrap!important;border-left:1px solid #ffffff55;padding-left:12px}
+.shambhu-premium-header #today,.shambhu-premium-header #updated{display:none!important}
+.shambhu-premium-header .live{width:11px;height:11px;padding:0!important;overflow:hidden;font-size:0;flex-shrink:0}
+.shambhu-premium-header .install-app-btn,.shambhu-premium-header .alert-bell,.shambhu-premium-header .alert-sound-mini{width:42px;height:42px;display:inline-grid;place-items:center;position:relative;padding:0!important;border:0;border-radius:8px;background:transparent;color:#fff;font-size:26px;font-weight:900;box-shadow:none;flex-shrink:0}
+.shambhu-premium-header .alert-bell{font-size:25px}
+.shambhu-premium-header #alertCount{position:absolute;right:-3px;top:-4px;min-width:15px;height:15px;border-radius:50%;display:grid;place-items:center;background:#ed343d;color:#fff;font-size:9px;padding:0 3px}
+.shambhu-premium-header .alert-sound-mini{font-size:25px}
+.shambhu-premium-header .top-menu-btn{position:absolute;left:10px;bottom:5px;font-size:10px;padding:3px 6px;opacity:.7}
+@media(max-width:900px){.shambhu-premium-header{grid-template-columns:1fr auto!important;grid-template-rows:auto auto!important;gap:8px!important;padding:10px 10px 30px!important;min-height:110px!important}.shambhu-premium-header .fci-brand-left{grid-column:1;grid-row:1}.shambhu-premium-header .fci-brand-right{display:none!important}.shambhu-premium-header .title{grid-column:1 / 3;grid-row:2;text-align:center!important}.shambhu-premium-header .topright{grid-column:2;grid-row:1;border:0;padding:0;gap:3px!important}.shambhu-premium-header .fci-emblem{width:34px;height:38px;font-size:23px}.shambhu-premium-header .fci-brand-copy b{font-size:9px}.shambhu-premium-header .fci-brand-copy strong{font-size:18px}.shambhu-premium-header .fci-brand-copy small{font-size:5px}.shambhu-premium-header .install-app-btn,.shambhu-premium-header .alert-bell,.shambhu-premium-header .alert-sound-mini{width:29px;height:30px;font-size:19px}.shambhu-premium-header .title h1{font-size:30px!important}.shambhu-premium-header .title p{font-size:10px!important;white-space:normal}.shambhu-premium-header .top-menu-btn{bottom:3px}}
+@media(max-width:380px){.shambhu-premium-header .fci-brand-copy small{display:none}.shambhu-premium-header .title h1{font-size:25px!important}.shambhu-premium-header .topright{gap:0!important}}
 </style>
 </body>
 <style id="alp-few-heavy-final-fix">
