@@ -586,11 +586,27 @@ body.page-open:not(.dashboard-open) #backBtn{background:#d92d3b!important;color:
 @media(max-width:600px){.stack-compact-panel .stack-compact-table th,.stack-compact-panel .stack-compact-table td{font-size:14px!important;padding:8px 6px!important}.stack-compact-panel .stack-compact-table th{font-size:13px!important}.stack-compact-panel .panelhead{font-size:14px!important;font-weight:900!important}}
 </style>
 
+<style id="header-home-only-and-fsd">
+/* Show the branded header on the home/dashboard only; hide it in inner tabs and folders. */
+body.page-open:not(.dashboard-open) .shambhu-responsive-header,
+body.page-open:not(.dashboard-open) #topMenu{display:none!important}
+@media(max-width:700px){.fci-english .fci-brand-copy small{font-size:clamp(6px,1.7vw,8px);line-height:1.15}}
+</style>
 <style id="shambhu-reference-responsive-header">
 .shambhu-responsive-header{position:relative;display:grid!important;grid-template-columns:minmax(0,1fr) minmax(210px,1.1fr) minmax(0,1fr);align-items:center;gap:14px;background:linear-gradient(110deg,#003f2d,#075640 55%,#003e2e);padding:12px 18px 62px!important;min-height:145px;border-bottom:2px solid #41bb83;color:#fff;overflow:hidden}
 .fci-brand{display:flex;align-items:center;gap:10px;min-width:0;color:#fff}.fci-hindi{justify-content:flex-start}.fci-english{justify-content:flex-end;text-align:center}.fci-emblem{width:58px;height:58px;flex:0 0 58px;display:grid;place-items:center;border:2px solid #e4fff0;border-radius:50%;background:#fff;color:#087044;font-size:30px;box-shadow:inset 0 0 0 3px #d7f4e5}.fci-emblem img{width:100%;height:100%;object-fit:contain;padding:3px;display:block}.fci-brand-copy strong{display:block;font-size:clamp(13px,1.5vw,21px);line-height:1.15;font-weight:900}.fci-brand-copy small{display:block;font-size:clamp(8px,.9vw,12px);line-height:1.25;font-weight:800;margin-top:4px}.fci-english .fci-brand-copy strong{font-size:clamp(20px,2vw,30px)}.shambhu-center-title{min-width:0;text-align:center!important;border-left:1px solid #9de5c3;border-right:1px solid #9de5c3;padding:0 12px}.shambhu-center-title h1{font-size:clamp(24px,3vw,43px)!important;line-height:1.1;white-space:nowrap;letter-spacing:.2px}.shambhu-center-title p{font-size:clamp(14px,1.6vw,23px)!important;font-weight:900;margin:7px 0 0!important;opacity:1!important}.shambhu-header-tools{position:absolute;bottom:0;left:0;right:0;min-height:49px;display:flex;align-items:center;justify-content:flex-end;gap:9px;padding:7px 16px;background:#003d2c;border-top:1px solid #16845c}.shambhu-time-status{margin-right:auto;display:flex;align-items:center;gap:10px;border:1px solid #50c58d;border-radius:24px;padding:6px 14px;font-size:14px;font-weight:900;color:#fff}.shambhu-time-status .live{width:14px;height:14px;min-width:14px;padding:0;background:#68f22f;box-shadow:0 0 10px #67ff2c;border-radius:50%;animation:shambhuGreenPulse 1.5s infinite}.shambhu-time-status i{font-style:normal;opacity:.8}.shambhu-header-tools .install-app-btn,.shambhu-header-tools .alert-bell,.shambhu-header-tools .alert-sound-mini{position:relative;width:48px;height:36px;padding:0;border:1px solid #50c58d;border-radius:12px;background:transparent;color:#fff;display:inline-grid;place-items:center;font-size:21px;box-shadow:none}.shambhu-header-tools .alert-bell{font-size:21px}.shambhu-header-tools .alert-bell b{position:absolute;right:-4px;top:-5px;min-width:15px;padding:1px 4px;font-size:10px;background:#e52938;color:white;border-radius:20px}.shambhu-header-tools .top-menu-btn{display:none!important}@keyframes shambhuGreenPulse{0%,100%{box-shadow:0 0 4px #67ff2c}50%{box-shadow:0 0 14px #67ff2c}}
 @media(max-width:700px){.shambhu-responsive-header{grid-template-columns:minmax(0,1fr) minmax(120px,1.1fr) minmax(0,1fr);gap:5px;padding:8px 7px 57px!important;min-height:125px}.fci-brand{gap:4px}.fci-emblem{width:32px;height:32px;flex-basis:32px;font-size:18px;border-width:1px}.fci-brand-copy strong{font-size:10px;line-height:1.1}.fci-brand-copy small{font-size:6px;margin-top:3px}.fci-english .fci-brand-copy strong{font-size:17px}.fci-english .fci-brand-copy small{font-size:7px}.shambhu-center-title{padding:0 5px}.shambhu-center-title h1{font-size:clamp(17px,4.6vw,25px)!important;white-space:normal}.shambhu-center-title p{font-size:11px!important;margin-top:4px!important}.shambhu-header-tools{min-height:49px;padding:6px 8px;gap:7px}.shambhu-time-status{gap:6px;padding:5px 8px;font-size:11px;margin-right:auto}.shambhu-time-status .live{width:10px;height:10px;min-width:10px}.shambhu-header-tools .install-app-btn,.shambhu-header-tools .alert-bell,.shambhu-header-tools .alert-sound-mini{width:34px;height:31px;border-radius:9px;font-size:17px}.shambhu-header-tools .alert-bell b{font-size:8px;min-width:12px}.shambhu-header-tools #backBtn,.shambhu-header-tools #homeBtn{font-size:11px;padding:4px!important}}
 @media(max-width:390px){.shambhu-responsive-header{grid-template-columns:minmax(0,1fr) minmax(104px,1.05fr) minmax(0,1fr)}.fci-emblem{width:27px;height:27px;flex-basis:27px;font-size:15px}.fci-brand-copy strong{font-size:8px}.fci-brand-copy small{font-size:5px}.fci-english .fci-brand-copy strong{font-size:14px}.shambhu-center-title h1{font-size:16px!important}.shambhu-time-status{font-size:10px;gap:4px;padding:4px 6px}.shambhu-header-tools{gap:5px;padding-left:5px;padding-right:5px}}
+</style>
+
+
+<style id="green-star-status-light-fix">
+/* Requested: make the home header status light a glowing star shape */
+#liveIndicator{display:inline-block!important;width:25px!important;height:25px!important;min-width:25px!important;padding:0!important;border-radius:0!important;clip-path:polygon(50% 0%,61% 34%,98% 35%,69% 57%,79% 92%,50% 72%,21% 92%,31% 57%,2% 35%,39% 34%)!important;background:#18c964!important;box-shadow:none!important;filter:drop-shadow(0 0 4px #39ff78) drop-shadow(0 0 7px #18c964)!important;vertical-align:middle!important;animation:greenStarPulse 1.2s ease-in-out infinite!important}
+#liveIndicator.live-ok{background:#18c964!important}
+#liveIndicator.live-bad{background:#e3293b!important;filter:drop-shadow(0 0 4px #ff3344)!important}
+@keyframes greenStarPulse{0%,100%{opacity:1;filter:drop-shadow(0 0 3px #39ff78) drop-shadow(0 0 6px #18c964)}50%{opacity:.72;filter:drop-shadow(0 0 7px #39ff78) drop-shadow(0 0 12px #18c964)}}
+@media(max-width:700px){#liveIndicator{width:20px!important;height:20px!important;min-width:20px!important}}
 </style>
 
 </head>
@@ -645,7 +661,7 @@ body.page-open:not(.dashboard-open) #backBtn{background:#d92d3b!important;color:
   </div>
   <div class="title shambhu-center-title"><h1>Shambhu Shed</h1><p>(9 / 14 / 18 / 20)</p></div>
   <div class="fci-brand fci-english" aria-label="Food Corporation of India">
-    <div class="fci-brand-copy"><strong>FCI</strong><small>Food Corporation<br>of India</small></div>
+    <div class="fci-brand-copy"><strong>FCI</strong><small>Food Corporation<br>of India<br>FSD Sabarmati</small></div>
     <div class="fci-emblem" aria-hidden="true"><img src="./fci_official_logo.png" alt="FCI official logo"></div>
   </div>
   <div class="shambhu-header-tools">
