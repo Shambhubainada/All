@@ -2541,6 +2541,16 @@ body.tight-back-gap #dynamicPage{margin-top:0!important}
 /* Only requested Moisture Update change: keep Add New Stack, hide Manual/Current RMC cards. */
 .moisture-focused-page .mo-stack-details{display:none!important}
 </style>
+
+<style id="saved-moisture-rmc-imc-diff-bold-3d-blink">
+/* Saved Moisture Entry: emphasize RMC and IMC; make Difference 3D and blinking. */
+.mo-saved-rmc-strip>div span,.mo-saved-rmc-strip>div b{font-weight:900!important}
+.mo-saved-rmc-strip>div:nth-child(1) b,.mo-saved-rmc-strip>div:nth-child(2) b{font-weight:1000!important;text-shadow:0 1px 0 #fff,0 2px 0 rgba(0,0,0,.16)}
+.mo-saved-rmc-strip>div:nth-child(3) b{font-weight:1000!important;display:inline-block;animation:moDiff3DBlink 1s ease-in-out infinite alternate;text-shadow:1px 1px 0 #777,2px 2px 0 #555,3px 3px 0 #333,0 0 7px currentColor}
+.mo-saved-rmc-strip>div:nth-child(3) span{font-weight:1000!important}
+@keyframes moDiff3DBlink{from{transform:translateY(0);filter:brightness(.9);text-shadow:1px 1px 0 #777,2px 2px 0 #555,3px 3px 0 #333,0 0 4px currentColor}to{transform:translateY(-1px);filter:brightness(1.2);text-shadow:1px 1px 0 #777,2px 2px 0 #555,3px 3px 0 #333,0 0 10px currentColor}}
+@media(prefers-reduced-motion:reduce){.mo-saved-rmc-strip>div:nth-child(3) b{animation:none!important}}
+</style>
 </html>`;}
   function deltaReportHtml(){const r=reportData(),month=new Date(r.m+'-01T00:00:00').toLocaleDateString('en-IN',{month:'long',year:'numeric'});let prog=0;const lines=a=>Array.isArray(a)?a.map(st=>`<div>${escC(st)}</div>`).join(''):'',rows=r.mm.map((x,i)=>{const w=chemNum(x.wheatMt||0),ri=chemNum(x.riceMt||0),cons=chemNum(x.consumption||0);prog+=cons;return `<tr><td>${i+1}</td><td>${chemDate(x.date)}</td><td>${lines(x.stacksWheat)}</td><td>${lines(x.stacksRice)}</td><td>${w.toFixed(0)} MT</td><td>${ri.toFixed(0)} MT</td><td>${(w+ri).toFixed(0)} MT</td><td>${cons.toFixed(3)} kg</td><td><b>${prog.toFixed(3)} kg</b></td></tr>`}).join('');const totalRow=`<tr class="delta-total-row"><td colspan="4"><b>TOTAL</b></td><td><b>${chemNum(r.wheatQty||0).toFixed(0)} MT</b></td><td><b>${chemNum(r.riceQty||0).toFixed(0)} MT</b></td><td><b>${(chemNum(r.wheatQty||0)+chemNum(r.riceQty||0)).toFixed(0)} MT</b></td><td><b>${chemNum(r.totalDelta||0).toFixed(3)} kg</b></td><td><b>${chemNum(r.totalDelta||0).toFixed(3)} kg</b></td></tr>`;return `<!doctype html><html><head><meta charset="utf-8"><title>Delta Report</title><style>body{font-family:Arial;margin:28px;color:#172d25}h1{text-align:center;margin:0;font-size:24px}h2{text-align:center;margin:5px 0 18px;font-size:18px}table{border-collapse:collapse;width:100%;font-size:12px}th,td{border:1px solid #999;padding:7px;text-align:center;vertical-align:top}th{background:#073d2c;color:white}td div{line-height:1.35;font-weight:600}.delta-total-row td{font-weight:700;background:#fff7d6;border-top:2px solid #555}@media(max-width:700px){body{margin:12px}table{font-size:10px}th,td{padding:5px}}</style><style id="exact-request-final-fix">
 /* Exact requested UI fixes only */
@@ -2597,7 +2607,17 @@ body.page-open:not(.dashboard-open) #backBtn{background:#d92d3b!important;color:
 @media(max-width:700px){.fci-hindi .fci-brand-copy small{font-size:clamp(5px,1.45vw,7px)!important;line-height:1!important;margin-top:2px!important;}}
 @media(max-width:390px){.fci-hindi .fci-brand-copy small{font-size:5px!important;letter-spacing:-.25px!important;}}
 </style>
-</body></html>`;}
+</body>
+<style id="saved-moisture-rmc-imc-diff-bold-3d-blink">
+/* Saved Moisture Entry: emphasize RMC and IMC; make Difference 3D and blinking. */
+.mo-saved-rmc-strip>div span,.mo-saved-rmc-strip>div b{font-weight:900!important}
+.mo-saved-rmc-strip>div:nth-child(1) b,.mo-saved-rmc-strip>div:nth-child(2) b{font-weight:1000!important;text-shadow:0 1px 0 #fff,0 2px 0 rgba(0,0,0,.16)}
+.mo-saved-rmc-strip>div:nth-child(3) b{font-weight:1000!important;display:inline-block;animation:moDiff3DBlink 1s ease-in-out infinite alternate;text-shadow:1px 1px 0 #777,2px 2px 0 #555,3px 3px 0 #333,0 0 7px currentColor}
+.mo-saved-rmc-strip>div:nth-child(3) span{font-weight:1000!important}
+@keyframes moDiff3DBlink{from{transform:translateY(0);filter:brightness(.9);text-shadow:1px 1px 0 #777,2px 2px 0 #555,3px 3px 0 #333,0 0 4px currentColor}to{transform:translateY(-1px);filter:brightness(1.2);text-shadow:1px 1px 0 #777,2px 2px 0 #555,3px 3px 0 #333,0 0 10px currentColor}}
+@media(prefers-reduced-motion:reduce){.mo-saved-rmc-strip>div:nth-child(3) b{animation:none!important}}
+</style>
+</html>`;}
   function reportHtml(){const r=reportData(),month=new Date(r.m+'-01T00:00:00').toLocaleDateString('en-IN',{month:'long',year:'numeric'}), rows=r.mm.map((x,i)=>`<tr><td>${i+1}</td><td>${chemDate(x.date)}</td><td>${escC(x.shed)}</td><td>${escC(x.stack)}</td><td>${escC(x.commodity)}</td><td>${escC(x.chemical)}</td><td>${chemNum(x.qty).toFixed(2)}</td><td>${escC(x.unit)}</td><td>${escC(x.purpose)}</td><td>${escC(x.remarks)}</td></tr>`).join('');return `<!doctype html><html><head><meta charset="utf-8"><title>Chemical Report</title><style>body{font-family:Arial;margin:28px;color:#172d25}h1{text-align:center;margin:0;font-size:24px}h2{text-align:center;margin:5px 0 18px;font-size:18px}table{border-collapse:collapse;width:100%;font-size:11px}th,td{border:1px solid #999;padding:7px}th{background:#073d2c;color:white}.sum{margin:14px 0;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.card{border:1px solid #aaa;padding:10px}.card b{display:block;font-size:16px;margin-top:4px}</style><style id="compact-colour-summary-row">.report-summary-row td{font-weight:600;padding:4px 3px;line-height:1.15;background:#fff7d6;border:1px solid #d6b656;color:#243126}.report-summary-row td:nth-child(1),.report-summary-row td:nth-child(2){background:#e8eefc;color:#244a8f}.report-summary-row td:nth-child(3){background:#e8f7ec;color:#168a45}.report-summary-row td:nth-child(4){background:#fff0e1;color:#b45b16}.report-summary-row td:nth-child(5){background:#eee8ff;color:#6542a5}.report-summary-row td:nth-child(6){background:#e7f7f7;color:#16757a}.report-summary-row b{font-size:12px}</style><style id="exact-request-final-fix">
 /* Exact requested UI fixes only */
 #liveIndicator{display:inline-block!important;width:24px!important;height:24px!important;padding:0!important;border-radius:50%!important;background:#18a957!important;box-shadow:0 0 0 2px rgba(255,255,255,.25),0 2px 8px rgba(0,0,0,.25)!important;vertical-align:middle!important}
@@ -2662,6 +2682,16 @@ body.page-open:not(.dashboard-open) #backBtn{background:#d92d3b!important;color:
 <style id="moisture-update-rmc-hide-only">
 /* Only requested Moisture Update change: keep Add New Stack, hide Manual/Current RMC cards. */
 .moisture-focused-page .mo-stack-details{display:none!important}
+</style>
+
+<style id="saved-moisture-rmc-imc-diff-bold-3d-blink">
+/* Saved Moisture Entry: emphasize RMC and IMC; make Difference 3D and blinking. */
+.mo-saved-rmc-strip>div span,.mo-saved-rmc-strip>div b{font-weight:900!important}
+.mo-saved-rmc-strip>div:nth-child(1) b,.mo-saved-rmc-strip>div:nth-child(2) b{font-weight:1000!important;text-shadow:0 1px 0 #fff,0 2px 0 rgba(0,0,0,.16)}
+.mo-saved-rmc-strip>div:nth-child(3) b{font-weight:1000!important;display:inline-block;animation:moDiff3DBlink 1s ease-in-out infinite alternate;text-shadow:1px 1px 0 #777,2px 2px 0 #555,3px 3px 0 #333,0 0 7px currentColor}
+.mo-saved-rmc-strip>div:nth-child(3) span{font-weight:1000!important}
+@keyframes moDiff3DBlink{from{transform:translateY(0);filter:brightness(.9);text-shadow:1px 1px 0 #777,2px 2px 0 #555,3px 3px 0 #333,0 0 4px currentColor}to{transform:translateY(-1px);filter:brightness(1.2);text-shadow:1px 1px 0 #777,2px 2px 0 #555,3px 3px 0 #333,0 0 10px currentColor}}
+@media(prefers-reduced-motion:reduce){.mo-saved-rmc-strip>div:nth-child(3) b{animation:none!important}}
 </style>
 </html>`;}
   function malathionReportHtml(){const r=reportData(),month=new Date(r.m+'-01T00:00:00').toLocaleDateString('en-IN',{month:'long',year:'numeric'}),w=chemNum(r.monthWheatQty),ri=chemNum(r.monthRiceQty),t=w+ri,aw=chemNum(r.allWheatQty),ar=chemNum(r.allRiceQty),at=aw+ar,done=(r.mm||[]).reduce((s,x)=>s+Math.round(chemNum(x.qty)),0),allDone=(r.total||[]).reduce((s,x)=>s+Math.round(chemNum(x.qty)),0),target=t*0.20,allTarget=at*0.20,remain=Math.max(0,target-done),allRemain=Math.max(0,allTarget-allDone);return `<!doctype html><html><head><meta charset="utf-8"><title>Malathion Report</title><style>body{font-family:Arial;margin:28px;color:#172d25}h1{text-align:center;margin:0;font-size:24px}h2{text-align:center;margin:5px 0 18px;font-size:18px}.sum{margin:14px 0;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.card{border:1px solid #aaa;padding:10px;text-align:center}.card b{display:block;font-size:16px;margin-top:4px}.indicator{border:2px solid #b8860b;padding:12px;margin:16px 0;text-align:center;background:#fffaf0}.indicator strong{font-size:18px}</style><style id="compact-colour-summary-row">.report-summary-row td{font-weight:600;padding:4px 3px;line-height:1.15;background:#fff7d6;border:1px solid #d6b656;color:#243126}.report-summary-row td:nth-child(1),.report-summary-row td:nth-child(2){background:#e8eefc;color:#244a8f}.report-summary-row td:nth-child(3){background:#e8f7ec;color:#168a45}.report-summary-row td:nth-child(4){background:#fff0e1;color:#b45b16}.report-summary-row td:nth-child(5){background:#eee8ff;color:#6542a5}.report-summary-row td:nth-child(6){background:#e7f7f7;color:#16757a}.report-summary-row b{font-size:12px}</style>
@@ -2766,6 +2796,16 @@ body.page-open:not(.dashboard-open) #backBtn{background:#d92d3b!important;color:
 .mo-stack-remaining{font-size:10px!important;padding:4px 6px!important}
 .mo-completebar{margin:5px 0 7px!important}
 .mo-completebar #mCompleteBtnVisible{font-size:11px!important;padding:6px 9px!important}
+</style>
+
+<style id="saved-moisture-rmc-imc-diff-bold-3d-blink">
+/* Saved Moisture Entry: emphasize RMC and IMC; make Difference 3D and blinking. */
+.mo-saved-rmc-strip>div span,.mo-saved-rmc-strip>div b{font-weight:900!important}
+.mo-saved-rmc-strip>div:nth-child(1) b,.mo-saved-rmc-strip>div:nth-child(2) b{font-weight:1000!important;text-shadow:0 1px 0 #fff,0 2px 0 rgba(0,0,0,.16)}
+.mo-saved-rmc-strip>div:nth-child(3) b{font-weight:1000!important;display:inline-block;animation:moDiff3DBlink 1s ease-in-out infinite alternate;text-shadow:1px 1px 0 #777,2px 2px 0 #555,3px 3px 0 #333,0 0 7px currentColor}
+.mo-saved-rmc-strip>div:nth-child(3) span{font-weight:1000!important}
+@keyframes moDiff3DBlink{from{transform:translateY(0);filter:brightness(.9);text-shadow:1px 1px 0 #777,2px 2px 0 #555,3px 3px 0 #333,0 0 4px currentColor}to{transform:translateY(-1px);filter:brightness(1.2);text-shadow:1px 1px 0 #777,2px 2px 0 #555,3px 3px 0 #333,0 0 10px currentColor}}
+@media(prefers-reduced-motion:reduce){.mo-saved-rmc-strip>div:nth-child(3) b{animation:none!important}}
 </style>
 </html>`;}
   window.renderChemicalReport=function(){
