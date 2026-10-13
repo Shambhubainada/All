@@ -2982,6 +2982,19 @@ body.page-open:not(.dashboard-open) #backBtn{background:#d92d3b!important;color:
 @keyframes moDiffShadowOnly{from{text-shadow:1px 1px 0 rgba(0,0,0,.42),2px 2px 0 rgba(0,0,0,.28),3px 3px 0 rgba(0,0,0,.18),0 0 2px rgba(255,255,255,.45)}to{text-shadow:1px 1px 0 rgba(0,0,0,.62),2px 2px 0 rgba(0,0,0,.42),3px 3px 0 rgba(0,0,0,.3),0 0 5px rgba(255,255,255,.7)}}
 @media(prefers-reduced-motion:reduce){.moisture-focused-page .saved-moisture-focus .mo-saved-rmc-strip>div:nth-child(3) b{animation:none!important}}
 </style>
+
+<style id="difference-no-shadow-bold-blink-final">
+/* Difference: bold + blink only; remove every shadow/glow/stroke. */
+.moisture-focused-page .saved-moisture-focus .mo-saved-rmc-strip>div:nth-child(3) b,
+.saved-moisture-focus .mo-saved-rmc-strip>div:nth-child(3) b{
+  font-weight:1000!important;
+  text-shadow:none!important;
+  -webkit-text-stroke:0 transparent!important;
+  filter:none!important;
+  animation:moDiffPlainBlink .8s ease-in-out infinite alternate!important;
+}
+@keyframes moDiffPlainBlink{from{opacity:.58;transform:translateY(0)}to{opacity:1;transform:translateY(0)}}
+</style>
 </html>`;}
   window.renderChemicalReport=function(){
   try{
