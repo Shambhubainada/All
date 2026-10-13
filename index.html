@@ -307,6 +307,12 @@ body.page-open:not(.dashboard-open) #dashboardPage { display:none!important; }
 .mo-report-datetime{line-height:1.05!important;white-space:normal!important}
 .mo-report-datetime .mo-time,.mo-report-datetime .mo-date{display:block!important;font-size:9px!important;font-weight:700!important;line-height:1.05!important;letter-spacing:0!important}
 @media(max-width:560px){.modal{padding:8px}.modalbox{width:100%;padding:10px;border-radius:10px}.mo-report-details-title{font-size:10px;padding:6px}.mo-report-details-table th{font-size:8px!important;padding:4px 2px!important}.mo-report-details-table td{font-size:9px!important;padding:4px 2px!important}.mo-report-datetime .mo-time,.mo-report-datetime .mo-date{font-size:8px!important}}
+
+/* Compact home filters: hide headings, keep only small select controls */
+.filters .filter-select-group{min-width:0!important;flex:0 1 112px!important;gap:0!important}
+.filters .filter-select-group label{display:none!important}
+.filters .filter-select{font-size:11px!important;min-height:27px!important;height:27px!important;padding:3px 20px 3px 7px!important}
+@media(max-width:700px){.filters .filter-select-group{flex:0 1 94px!important}.filters .filter-select{font-size:10px!important;min-height:25px!important;height:25px!important;padding:2px 17px 2px 5px!important}}
 </style></style>
 <style id="data-refresh-smooth">html{scroll-behavior:auto}#dynamicPage{min-height:1px}</style>
 
@@ -627,6 +633,21 @@ body.page-open:not(.dashboard-open) #shambhuFloatingBack{display:flex}
 @media(max-width:700px){.shambhu-responsive-header .fci-hindi .fci-brand-copy strong,
 .shambhu-responsive-header .fci-hindi .fci-brand-copy small{font-size:clamp(10px,2.6vw,13px)!important;line-height:1.15!important;margin-top:2px!important}}
 </style>
+
+<style id="shambhu-title-font-size-adjustment">
+/* Slightly reduce only the centered Shambhu Shed title; preserve other header text and layout. */
+.shambhu-responsive-header .shambhu-center-title h1{font-size:clamp(20px,2.4vw,34px)!important;}
+@media(max-width:700px){.shambhu-responsive-header .shambhu-center-title h1{font-size:clamp(15px,4vw,21px)!important;}}
+@media(max-width:390px){.shambhu-responsive-header .shambhu-center-title h1{font-size:14px!important;}}
+</style>
+
+<style id="only-shambhu-word-smaller">
+.shambhu-responsive-header .shambhu-center-title h1{font-size:clamp(24px,3vw,43px)!important;}
+.shambhu-responsive-header .shambhu-center-title h1 .shambhu-word{font-size:.72em!important;}
+.shambhu-responsive-header .shambhu-center-title h1 .shed-word{font-size:1em!important;}
+@media(max-width:700px){.shambhu-responsive-header .shambhu-center-title h1{font-size:clamp(17px,4.6vw,25px)!important;}}
+@media(max-width:390px){.shambhu-responsive-header .shambhu-center-title h1{font-size:16px!important;}}
+</style>
 </head>
 <body>
 <div class="pin-screen" id="pinScreen">
@@ -678,7 +699,7 @@ body.page-open:not(.dashboard-open) #shambhuFloatingBack{display:flex}
     <div class="fci-emblem" aria-hidden="true"><img src="./fci_official_logo.png" alt="FCI official logo"></div>
     <div class="fci-brand-copy"><strong>भारतीय खाद्य निगम</strong><small>एफ.एस.डी. साबरमती</small></div>
   </div>
-  <div class="title shambhu-center-title"><h1>Shambhu Shed</h1><p>(9 / 14 / 18 / 20)</p></div>
+  <div class="title shambhu-center-title"><h1><span class="shambhu-word">Shambhu</span> <span class="shed-word">Shed</span></h1><p>(9 / 14 / 18 / 20)</p></div>
   <div class="fci-brand fci-english" aria-label="Food Corporation of India">
     <div class="fci-brand-copy"><strong>FOOD CORPORATION OF INDIA</strong><small>FSD SABARMATI</small></div>
     <div class="fci-emblem" aria-hidden="true"><img src="./fci_official_logo.png" alt="FCI official logo"></div>
