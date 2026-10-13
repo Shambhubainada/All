@@ -2656,17 +2656,22 @@ body.page-open:not(.dashboard-open) #backBtn{background:#d92d3b!important;color:
 @media(max-width:700px){.fci-hindi .fci-brand-copy small{font-size:clamp(5px,1.45vw,7px)!important;line-height:1!important;margin-top:2px!important;}}
 @media(max-width:390px){.fci-hindi .fci-brand-copy small{font-size:5px!important;letter-spacing:-.25px!important;}}
 </style>
-<style id="difference-shadow-contrast-fix">
-/* Keep Difference readable: neutral dark 3D shadow, never a red/currentColor glow. */
+<style id="difference-bold-blink-no-shadow-fix">
+/* RMC, IMC and Difference values bold; Difference blinks without any shadow/glow. */
+.moisture-focused-page .saved-moisture-focus .mo-saved-rmc-strip b,
+.saved-moisture-focus .mo-saved-rmc-strip b{
+  font-weight:1000!important;
+}
 .moisture-focused-page .saved-moisture-focus .mo-saved-rmc-strip>div:nth-child(3) b,
 .saved-moisture-focus .mo-saved-rmc-strip>div:nth-child(3) b{
-  text-shadow:0 1px 0 #fff,1px 1px 0 #222,2px 2px 0 #111,0 0 2px rgba(0,0,0,.35)!important;
+  display:inline-block!important;
+  text-shadow:none!important;
   filter:none!important;
-  animation:moDiffNeutralShadowBlink 1s ease-in-out infinite alternate!important;
+  animation:moDiffBlinkNoShadow 1s ease-in-out infinite alternate!important;
 }
-@keyframes moDiffNeutralShadowBlink{
- from{transform:translateY(0);text-shadow:0 1px 0 #fff,1px 1px 0 #222,2px 2px 0 #111,0 0 2px rgba(0,0,0,.25)}
- to{transform:translateY(-1px);text-shadow:0 1px 0 #fff,1px 1px 0 #222,2px 2px 0 #111,0 0 4px rgba(0,0,0,.4)}
+@keyframes moDiffBlinkNoShadow{
+  from{opacity:1;transform:scale(1)}
+  to{opacity:.62;transform:scale(1.04)}
 }
 </style>
 </body>
