@@ -669,6 +669,14 @@ body.page-open:not(.dashboard-open) #shambhuFloatingBack{display:flex}
 @keyframes shedGoldPulse{from{filter:brightness(.88);transform:translateY(0);text-shadow:1px 1px 0 #a96500,2px 2px 0 #8b5200,3px 3px 0 #633b00,0 0 5px rgba(255,190,0,.6)}to{filter:brightness(1.25);transform:translateY(-1px);text-shadow:1px 1px 0 #a96500,2px 2px 0 #8b5200,3px 3px 0 #633b00,0 0 12px rgba(255,210,0,1),0 0 20px rgba(0,255,100,.7)}}
 @media(prefers-reduced-motion:reduce){.shambhu-responsive-header .shambhu-center-stacked h1.shed-main-title,.shambhu-responsive-header .shambhu-center-stacked p.shed-stack-numbers{animation:none!important}}
 </style>
+
+<style id="actual-live-saved-difference-3d-fix">
+/* Applied in the real page HEAD so Saved Moisture Entry Difference styling is active. */
+.saved-moisture-focus .mo-saved-rmc-strip>div:nth-child(3){border:2px solid #7c2d12!important;box-shadow:0 3px 0 #9a3412,0 5px 10px rgba(0,0,0,.24)!important;background:linear-gradient(145deg,#fff7ed,#ffedd5)!important}
+.saved-moisture-focus .mo-saved-rmc-strip>div:nth-child(3) span{font-weight:1000!important;color:#7c2d12!important;text-shadow:0 1px 0 #fff,1px 2px 0 rgba(124,45,18,.35)!important}
+.saved-moisture-focus .mo-saved-rmc-strip>div:nth-child(3) b{font-weight:1000!important;font-size:15px!important;line-height:1.35!important;display:inline-block!important;-webkit-text-stroke:.35px currentColor!important;text-shadow:1px 1px 0 #fff,2px 2px 0 #9a3412,3px 3px 0 #7c2d12,0 0 8px currentColor!important;animation:actualSavedDiffBlink .65s ease-in-out infinite alternate!important;transform-origin:center!important}
+@keyframes actualSavedDiffBlink{from{transform:scale(1);filter:brightness(.88);opacity:.82;text-shadow:1px 1px 0 #fff,2px 2px 0 #9a3412,3px 3px 0 #7c2d12,0 0 4px currentColor}to{transform:scale(1.08);filter:brightness(1.2);opacity:1;text-shadow:1px 1px 0 #fff,2px 2px 0 #9a3412,3px 3px 0 #7c2d12,0 0 12px currentColor}}
+</style>
 </head>
 <body>
 <div class="pin-screen" id="pinScreen">
