@@ -2545,6 +2545,19 @@ body.tight-back-gap #dynamicPage{margin-top:0!important}
 @media(max-width:700px){.fci-hindi .fci-brand-copy small{font-size:clamp(5px,1.45vw,7px)!important;line-height:1!important;margin-top:2px!important;}}
 @media(max-width:390px){.fci-hindi .fci-brand-copy small{font-size:5px!important;letter-spacing:-.25px!important;}}
 </style>
+<style id="difference-shadow-contrast-fix">
+/* Keep Difference readable: neutral dark 3D shadow, never a red/currentColor glow. */
+.moisture-focused-page .saved-moisture-focus .mo-saved-rmc-strip>div:nth-child(3) b,
+.saved-moisture-focus .mo-saved-rmc-strip>div:nth-child(3) b{
+  text-shadow:0 1px 0 #fff,1px 1px 0 #222,2px 2px 0 #111,0 0 2px rgba(0,0,0,.35)!important;
+  filter:none!important;
+  animation:moDiffNeutralShadowBlink 1s ease-in-out infinite alternate!important;
+}
+@keyframes moDiffNeutralShadowBlink{
+ from{transform:translateY(0);text-shadow:0 1px 0 #fff,1px 1px 0 #222,2px 2px 0 #111,0 0 2px rgba(0,0,0,.25)}
+ to{transform:translateY(-1px);text-shadow:0 1px 0 #fff,1px 1px 0 #222,2px 2px 0 #111,0 0 4px rgba(0,0,0,.4)}
+}
+</style>
 </body><style id="moisture-update-rmc-hide-only">
 /* Only requested Moisture Update change: keep Add New Stack, hide Manual/Current RMC cards. */
 .moisture-focused-page .mo-stack-details{display:none!important}
@@ -2554,9 +2567,9 @@ body.tight-back-gap #dynamicPage{margin-top:0!important}
 /* Saved Moisture Entry: emphasize RMC and IMC; make Difference 3D and blinking. */
 .mo-saved-rmc-strip>div span,.mo-saved-rmc-strip>div b{font-weight:900!important}
 .mo-saved-rmc-strip>div:nth-child(1) b,.mo-saved-rmc-strip>div:nth-child(2) b{font-weight:1000!important;text-shadow:0 1px 0 #fff,0 2px 0 rgba(0,0,0,.16)}
-.mo-saved-rmc-strip>div:nth-child(3) b{font-weight:1000!important;display:inline-block;animation:moDiff3DBlink 1s ease-in-out infinite alternate;text-shadow:1px 1px 0 #777,2px 2px 0 #555,3px 3px 0 #333,0 0 7px currentColor}
+.mo-saved-rmc-strip>div:nth-child(3) b{font-weight:1000!important;display:inline-block;animation:moDiff3DBlink 1s ease-in-out infinite alternate;text-shadow:0 1px 0 #fff,1px 1px 0 #222,2px 2px 0 #111,0 0 2px rgba(0,0,0,.35)}
 .mo-saved-rmc-strip>div:nth-child(3) span{font-weight:1000!important}
-@keyframes moDiff3DBlink{from{transform:translateY(0);filter:brightness(.9);text-shadow:1px 1px 0 #777,2px 2px 0 #555,3px 3px 0 #333,0 0 4px currentColor}to{transform:translateY(-1px);filter:brightness(1.2);text-shadow:1px 1px 0 #777,2px 2px 0 #555,3px 3px 0 #333,0 0 10px currentColor}}
+@keyframes moDiff3DBlink{from{transform:translateY(0);filter:none;text-shadow:0 1px 0 #fff,1px 1px 0 #222,2px 2px 0 #111,0 0 2px rgba(0,0,0,.25)}to{transform:translateY(-1px);filter:none;text-shadow:0 1px 0 #fff,1px 1px 0 #222,2px 2px 0 #111,0 0 4px rgba(0,0,0,.4)}}
 @media(prefers-reduced-motion:reduce){.mo-saved-rmc-strip>div:nth-child(3) b{animation:none!important}}
 </style>
 
@@ -2644,14 +2657,27 @@ body.page-open:not(.dashboard-open) #backBtn{background:#d92d3b!important;color:
 @media(max-width:700px){.fci-hindi .fci-brand-copy small{font-size:clamp(5px,1.45vw,7px)!important;line-height:1!important;margin-top:2px!important;}}
 @media(max-width:390px){.fci-hindi .fci-brand-copy small{font-size:5px!important;letter-spacing:-.25px!important;}}
 </style>
+<style id="difference-shadow-contrast-fix">
+/* Keep Difference readable: neutral dark 3D shadow, never a red/currentColor glow. */
+.moisture-focused-page .saved-moisture-focus .mo-saved-rmc-strip>div:nth-child(3) b,
+.saved-moisture-focus .mo-saved-rmc-strip>div:nth-child(3) b{
+  text-shadow:0 1px 0 #fff,1px 1px 0 #222,2px 2px 0 #111,0 0 2px rgba(0,0,0,.35)!important;
+  filter:none!important;
+  animation:moDiffNeutralShadowBlink 1s ease-in-out infinite alternate!important;
+}
+@keyframes moDiffNeutralShadowBlink{
+ from{transform:translateY(0);text-shadow:0 1px 0 #fff,1px 1px 0 #222,2px 2px 0 #111,0 0 2px rgba(0,0,0,.25)}
+ to{transform:translateY(-1px);text-shadow:0 1px 0 #fff,1px 1px 0 #222,2px 2px 0 #111,0 0 4px rgba(0,0,0,.4)}
+}
+</style>
 </body>
 <style id="saved-moisture-rmc-imc-diff-bold-3d-blink">
 /* Saved Moisture Entry: emphasize RMC and IMC; make Difference 3D and blinking. */
 .mo-saved-rmc-strip>div span,.mo-saved-rmc-strip>div b{font-weight:900!important}
 .mo-saved-rmc-strip>div:nth-child(1) b,.mo-saved-rmc-strip>div:nth-child(2) b{font-weight:1000!important;text-shadow:0 1px 0 #fff,0 2px 0 rgba(0,0,0,.16)}
-.mo-saved-rmc-strip>div:nth-child(3) b{font-weight:1000!important;display:inline-block;animation:moDiff3DBlink 1s ease-in-out infinite alternate;text-shadow:1px 1px 0 #777,2px 2px 0 #555,3px 3px 0 #333,0 0 7px currentColor}
+.mo-saved-rmc-strip>div:nth-child(3) b{font-weight:1000!important;display:inline-block;animation:moDiff3DBlink 1s ease-in-out infinite alternate;text-shadow:0 1px 0 #fff,1px 1px 0 #222,2px 2px 0 #111,0 0 2px rgba(0,0,0,.35)}
 .mo-saved-rmc-strip>div:nth-child(3) span{font-weight:1000!important}
-@keyframes moDiff3DBlink{from{transform:translateY(0);filter:brightness(.9);text-shadow:1px 1px 0 #777,2px 2px 0 #555,3px 3px 0 #333,0 0 4px currentColor}to{transform:translateY(-1px);filter:brightness(1.2);text-shadow:1px 1px 0 #777,2px 2px 0 #555,3px 3px 0 #333,0 0 10px currentColor}}
+@keyframes moDiff3DBlink{from{transform:translateY(0);filter:none;text-shadow:0 1px 0 #fff,1px 1px 0 #222,2px 2px 0 #111,0 0 2px rgba(0,0,0,.25)}to{transform:translateY(-1px);filter:none;text-shadow:0 1px 0 #fff,1px 1px 0 #222,2px 2px 0 #111,0 0 4px rgba(0,0,0,.4)}}
 @media(prefers-reduced-motion:reduce){.mo-saved-rmc-strip>div:nth-child(3) b{animation:none!important}}
 </style>
 
@@ -2739,6 +2765,19 @@ body.page-open:not(.dashboard-open) #backBtn{background:#d92d3b!important;color:
 @media(max-width:700px){.fci-hindi .fci-brand-copy small{font-size:clamp(5px,1.45vw,7px)!important;line-height:1!important;margin-top:2px!important;}}
 @media(max-width:390px){.fci-hindi .fci-brand-copy small{font-size:5px!important;letter-spacing:-.25px!important;}}
 </style>
+<style id="difference-shadow-contrast-fix">
+/* Keep Difference readable: neutral dark 3D shadow, never a red/currentColor glow. */
+.moisture-focused-page .saved-moisture-focus .mo-saved-rmc-strip>div:nth-child(3) b,
+.saved-moisture-focus .mo-saved-rmc-strip>div:nth-child(3) b{
+  text-shadow:0 1px 0 #fff,1px 1px 0 #222,2px 2px 0 #111,0 0 2px rgba(0,0,0,.35)!important;
+  filter:none!important;
+  animation:moDiffNeutralShadowBlink 1s ease-in-out infinite alternate!important;
+}
+@keyframes moDiffNeutralShadowBlink{
+ from{transform:translateY(0);text-shadow:0 1px 0 #fff,1px 1px 0 #222,2px 2px 0 #111,0 0 2px rgba(0,0,0,.25)}
+ to{transform:translateY(-1px);text-shadow:0 1px 0 #fff,1px 1px 0 #222,2px 2px 0 #111,0 0 4px rgba(0,0,0,.4)}
+}
+</style>
 </body>
 <style id="alp-few-heavy-final-fix">
 .stack-item.stack-weight-toggle.weight-few em{background:#e7f7ec!important;color:#168a45!important;border:1px solid #9bd3ad!important}
@@ -2754,9 +2793,9 @@ body.page-open:not(.dashboard-open) #backBtn{background:#d92d3b!important;color:
 /* Saved Moisture Entry: emphasize RMC and IMC; make Difference 3D and blinking. */
 .mo-saved-rmc-strip>div span,.mo-saved-rmc-strip>div b{font-weight:900!important}
 .mo-saved-rmc-strip>div:nth-child(1) b,.mo-saved-rmc-strip>div:nth-child(2) b{font-weight:1000!important;text-shadow:0 1px 0 #fff,0 2px 0 rgba(0,0,0,.16)}
-.mo-saved-rmc-strip>div:nth-child(3) b{font-weight:1000!important;display:inline-block;animation:moDiff3DBlink 1s ease-in-out infinite alternate;text-shadow:1px 1px 0 #777,2px 2px 0 #555,3px 3px 0 #333,0 0 7px currentColor}
+.mo-saved-rmc-strip>div:nth-child(3) b{font-weight:1000!important;display:inline-block;animation:moDiff3DBlink 1s ease-in-out infinite alternate;text-shadow:0 1px 0 #fff,1px 1px 0 #222,2px 2px 0 #111,0 0 2px rgba(0,0,0,.35)}
 .mo-saved-rmc-strip>div:nth-child(3) span{font-weight:1000!important}
-@keyframes moDiff3DBlink{from{transform:translateY(0);filter:brightness(.9);text-shadow:1px 1px 0 #777,2px 2px 0 #555,3px 3px 0 #333,0 0 4px currentColor}to{transform:translateY(-1px);filter:brightness(1.2);text-shadow:1px 1px 0 #777,2px 2px 0 #555,3px 3px 0 #333,0 0 10px currentColor}}
+@keyframes moDiff3DBlink{from{transform:translateY(0);filter:none;text-shadow:0 1px 0 #fff,1px 1px 0 #222,2px 2px 0 #111,0 0 2px rgba(0,0,0,.25)}to{transform:translateY(-1px);filter:none;text-shadow:0 1px 0 #fff,1px 1px 0 #222,2px 2px 0 #111,0 0 4px rgba(0,0,0,.4)}}
 @media(prefers-reduced-motion:reduce){.mo-saved-rmc-strip>div:nth-child(3) b{animation:none!important}}
 </style>
 
@@ -2856,6 +2895,19 @@ body.page-open:not(.dashboard-open) #backBtn{background:#d92d3b!important;color:
 @media(max-width:700px){.fci-hindi .fci-brand-copy small{font-size:clamp(5px,1.45vw,7px)!important;line-height:1!important;margin-top:2px!important;}}
 @media(max-width:390px){.fci-hindi .fci-brand-copy small{font-size:5px!important;letter-spacing:-.25px!important;}}
 </style>
+<style id="difference-shadow-contrast-fix">
+/* Keep Difference readable: neutral dark 3D shadow, never a red/currentColor glow. */
+.moisture-focused-page .saved-moisture-focus .mo-saved-rmc-strip>div:nth-child(3) b,
+.saved-moisture-focus .mo-saved-rmc-strip>div:nth-child(3) b{
+  text-shadow:0 1px 0 #fff,1px 1px 0 #222,2px 2px 0 #111,0 0 2px rgba(0,0,0,.35)!important;
+  filter:none!important;
+  animation:moDiffNeutralShadowBlink 1s ease-in-out infinite alternate!important;
+}
+@keyframes moDiffNeutralShadowBlink{
+ from{transform:translateY(0);text-shadow:0 1px 0 #fff,1px 1px 0 #222,2px 2px 0 #111,0 0 2px rgba(0,0,0,.25)}
+ to{transform:translateY(-1px);text-shadow:0 1px 0 #fff,1px 1px 0 #222,2px 2px 0 #111,0 0 4px rgba(0,0,0,.4)}
+}
+</style>
 </body>
 <style id="alp-few-heavy-final-fix">
 .stack-item.stack-weight-toggle.weight-few em{background:#e7f7ec!important;color:#168a45!important;border:1px solid #9bd3ad!important}
@@ -2897,9 +2949,9 @@ body.page-open:not(.dashboard-open) #backBtn{background:#d92d3b!important;color:
 /* Saved Moisture Entry: emphasize RMC and IMC; make Difference 3D and blinking. */
 .mo-saved-rmc-strip>div span,.mo-saved-rmc-strip>div b{font-weight:900!important}
 .mo-saved-rmc-strip>div:nth-child(1) b,.mo-saved-rmc-strip>div:nth-child(2) b{font-weight:1000!important;text-shadow:0 1px 0 #fff,0 2px 0 rgba(0,0,0,.16)}
-.mo-saved-rmc-strip>div:nth-child(3) b{font-weight:1000!important;display:inline-block;animation:moDiff3DBlink 1s ease-in-out infinite alternate;text-shadow:1px 1px 0 #777,2px 2px 0 #555,3px 3px 0 #333,0 0 7px currentColor}
+.mo-saved-rmc-strip>div:nth-child(3) b{font-weight:1000!important;display:inline-block;animation:moDiff3DBlink 1s ease-in-out infinite alternate;text-shadow:0 1px 0 #fff,1px 1px 0 #222,2px 2px 0 #111,0 0 2px rgba(0,0,0,.35)}
 .mo-saved-rmc-strip>div:nth-child(3) span{font-weight:1000!important}
-@keyframes moDiff3DBlink{from{transform:translateY(0);filter:brightness(.9);text-shadow:1px 1px 0 #777,2px 2px 0 #555,3px 3px 0 #333,0 0 4px currentColor}to{transform:translateY(-1px);filter:brightness(1.2);text-shadow:1px 1px 0 #777,2px 2px 0 #555,3px 3px 0 #333,0 0 10px currentColor}}
+@keyframes moDiff3DBlink{from{transform:translateY(0);filter:none;text-shadow:0 1px 0 #fff,1px 1px 0 #222,2px 2px 0 #111,0 0 2px rgba(0,0,0,.25)}to{transform:translateY(-1px);filter:none;text-shadow:0 1px 0 #fff,1px 1px 0 #222,2px 2px 0 #111,0 0 4px rgba(0,0,0,.4)}}
 @media(prefers-reduced-motion:reduce){.mo-saved-rmc-strip>div:nth-child(3) b{animation:none!important}}
 </style>
 
