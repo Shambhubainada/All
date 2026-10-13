@@ -648,6 +648,27 @@ body.page-open:not(.dashboard-open) #shambhuFloatingBack{display:flex}
 @media(max-width:700px){.shambhu-responsive-header .shambhu-center-title h1{font-size:clamp(17px,4.6vw,25px)!important;}}
 @media(max-width:390px){.shambhu-responsive-header .shambhu-center-title h1{font-size:16px!important;}}
 </style>
+
+<style id="center-header-stacked-shambhu-ta">
+.shambhu-responsive-header .shambhu-center-stacked h1.shed-main-title{font-size:clamp(23px,2.8vw,39px)!important;line-height:1.0!important;margin:0!important;font-weight:900!important;letter-spacing:.6px!important;white-space:nowrap!important}
+.shambhu-responsive-header .shambhu-center-stacked p.shed-stack-numbers{font-size:clamp(14px,1.55vw,21px)!important;line-height:1.1!important;margin:3px 0 2px!important;font-weight:900!important;white-space:nowrap!important}
+.shambhu-responsive-header .shambhu-center-stacked .shambhu-small-line,.shambhu-responsive-header .shambhu-center-stacked .ta-small-line{font-size:clamp(9px,.95vw,13px)!important;line-height:1.05!important;font-weight:800!important;letter-spacing:.2px!important;margin-top:0!important;white-space:nowrap!important}
+@media(max-width:700px){.shambhu-responsive-header .shambhu-center-stacked h1.shed-main-title{font-size:clamp(17px,4.5vw,23px)!important}.shambhu-responsive-header .shambhu-center-stacked p.shed-stack-numbers{font-size:clamp(12px,3vw,16px)!important;margin:3px 0 2px!important}.shambhu-responsive-header .shambhu-center-stacked .shambhu-small-line,.shambhu-responsive-header .shambhu-center-stacked .ta-small-line{font-size:clamp(8px,2.2vw,10px)!important;margin-top:0!important}}
+@media(max-width:390px){.shambhu-responsive-header .shambhu-center-stacked h1.shed-main-title{font-size:16px!important}.shambhu-responsive-header .shambhu-center-stacked p.shed-stack-numbers{font-size:11px!important}.shambhu-responsive-header .shambhu-center-stacked .shambhu-small-line,.shambhu-responsive-header .shambhu-center-stacked .ta-small-line{font-size:8px!important}}
+</style>
+
+
+<style id="shed-3d-blink-and-combined-subtitle">
+.shambhu-responsive-header .shambhu-center-stacked h1.shed-main-title,
+.shambhu-responsive-header .shambhu-center-stacked p.shed-stack-numbers{
+ color:#ffd34d!important;
+ text-shadow:1px 1px 0 #a96500,2px 2px 0 #8b5200,3px 3px 0 #633b00,0 0 8px rgba(255,190,0,.85),0 0 16px rgba(0,255,100,.55)!important;
+ animation:shedGoldPulse 1.25s ease-in-out infinite alternate!important;
+}
+.shambhu-responsive-header .shambhu-center-stacked .shambhu-small-line{margin-top:0!important;line-height:1!important}
+@keyframes shedGoldPulse{from{filter:brightness(.88);transform:translateY(0);text-shadow:1px 1px 0 #a96500,2px 2px 0 #8b5200,3px 3px 0 #633b00,0 0 5px rgba(255,190,0,.6)}to{filter:brightness(1.25);transform:translateY(-1px);text-shadow:1px 1px 0 #a96500,2px 2px 0 #8b5200,3px 3px 0 #633b00,0 0 12px rgba(255,210,0,1),0 0 20px rgba(0,255,100,.7)}}
+@media(prefers-reduced-motion:reduce){.shambhu-responsive-header .shambhu-center-stacked h1.shed-main-title,.shambhu-responsive-header .shambhu-center-stacked p.shed-stack-numbers{animation:none!important}}
+</style>
 </head>
 <body>
 <div class="pin-screen" id="pinScreen">
@@ -699,7 +720,7 @@ body.page-open:not(.dashboard-open) #shambhuFloatingBack{display:flex}
     <div class="fci-emblem" aria-hidden="true"><img src="./fci_official_logo.png" alt="FCI official logo"></div>
     <div class="fci-brand-copy"><strong>भारतीय खाद्य निगम</strong><small>एफ.एस.डी. साबरमती</small></div>
   </div>
-  <div class="title shambhu-center-title"><h1><span class="shambhu-word">Shambhu</span> <span class="shed-word">Shed</span></h1><p>(9 / 14 / 18 / 20)</p></div>
+  <div class="title shambhu-center-title shambhu-center-stacked"><h1 class="shed-main-title">SHED</h1><p class="shed-stack-numbers">9/14/18/20</p><div class="shambhu-small-line">(SHAMBHU TA-II)</div></div>
   <div class="fci-brand fci-english" aria-label="Food Corporation of India">
     <div class="fci-brand-copy"><strong>FOOD CORPORATION OF INDIA</strong><small>FSD SABARMATI</small></div>
     <div class="fci-emblem" aria-hidden="true"><img src="./fci_official_logo.png" alt="FCI official logo"></div>
@@ -2479,6 +2500,18 @@ body.page-open:not(.dashboard-open) #backBtn{background:#d92d3b!important;color:
 body.tight-back-gap .content{padding-top:0!important}
 body.tight-back-gap #dynamicPage{margin-top:0!important}
 </style>
+
+<style id="shed-3d-blink-and-combined-subtitle">
+.shambhu-responsive-header .shambhu-center-stacked h1.shed-main-title,
+.shambhu-responsive-header .shambhu-center-stacked p.shed-stack-numbers{
+ color:#ffd34d!important;
+ text-shadow:1px 1px 0 #a96500,2px 2px 0 #8b5200,3px 3px 0 #633b00,0 0 8px rgba(255,190,0,.85),0 0 16px rgba(0,255,100,.55)!important;
+ animation:shedGoldPulse 1.25s ease-in-out infinite alternate!important;
+}
+.shambhu-responsive-header .shambhu-center-stacked .shambhu-small-line{margin-top:0!important;line-height:1!important}
+@keyframes shedGoldPulse{from{filter:brightness(.88);transform:translateY(0);text-shadow:1px 1px 0 #a96500,2px 2px 0 #8b5200,3px 3px 0 #633b00,0 0 5px rgba(255,190,0,.6)}to{filter:brightness(1.25);transform:translateY(-1px);text-shadow:1px 1px 0 #a96500,2px 2px 0 #8b5200,3px 3px 0 #633b00,0 0 12px rgba(255,210,0,1),0 0 20px rgba(0,255,100,.7)}}
+@media(prefers-reduced-motion:reduce){.shambhu-responsive-header .shambhu-center-stacked h1.shed-main-title,.shambhu-responsive-header .shambhu-center-stacked p.shed-stack-numbers{animation:none!important}}
+</style>
 </head><body><h1>SHED NO. 9 / 14 / 18 / 20</h1><h2>ALP CONSUMPTION REPORT — ${month}</h2><table><thead><tr><th>Sr No</th><th>Fumigation Date</th><th>Stack Number</th><th>Wheat Fumigation MT</th><th>Rice Fumigation MT</th><th>Progressive (MT)<br>Wheat | Rice</th><th>Consumption (kg)</th><th>Consumption Progressive (kg)</th></tr></thead><tbody>${rows||'<tr><td colspan="8">No saved ALP entries for this month.</td></tr>'}</tbody></table>
 
 <style id="moisture-saved-entry-datetime-final">
@@ -2520,6 +2553,18 @@ body.page-open:not(.dashboard-open) #backBtn{background:#d92d3b!important;color:
 @keyframes fumDaysBlink{50%{opacity:.35}}
 @media(max-width:600px){.stack-compact-panel .stack-compact-table th,.stack-compact-panel .stack-compact-table td{font-size:14px!important;padding:8px 6px!important}.stack-compact-panel .stack-compact-table th{font-size:13px!important}.stack-compact-panel .panelhead{font-size:14px!important;font-weight:900!important}}
 </style>
+
+<style id="shed-3d-blink-and-combined-subtitle">
+.shambhu-responsive-header .shambhu-center-stacked h1.shed-main-title,
+.shambhu-responsive-header .shambhu-center-stacked p.shed-stack-numbers{
+ color:#ffd34d!important;
+ text-shadow:1px 1px 0 #a96500,2px 2px 0 #8b5200,3px 3px 0 #633b00,0 0 8px rgba(255,190,0,.85),0 0 16px rgba(0,255,100,.55)!important;
+ animation:shedGoldPulse 1.25s ease-in-out infinite alternate!important;
+}
+.shambhu-responsive-header .shambhu-center-stacked .shambhu-small-line{margin-top:0!important;line-height:1!important}
+@keyframes shedGoldPulse{from{filter:brightness(.88);transform:translateY(0);text-shadow:1px 1px 0 #a96500,2px 2px 0 #8b5200,3px 3px 0 #633b00,0 0 5px rgba(255,190,0,.6)}to{filter:brightness(1.25);transform:translateY(-1px);text-shadow:1px 1px 0 #a96500,2px 2px 0 #8b5200,3px 3px 0 #633b00,0 0 12px rgba(255,210,0,1),0 0 20px rgba(0,255,100,.7)}}
+@media(prefers-reduced-motion:reduce){.shambhu-responsive-header .shambhu-center-stacked h1.shed-main-title,.shambhu-responsive-header .shambhu-center-stacked p.shed-stack-numbers{animation:none!important}}
+</style>
 </head><body><h1>SHED NO. 9 / 14 / 18 / 20</h1><h2>DELTA SPRAY REPORT — ${month}</h2><table><thead><tr><th>Sr Number</th><th>Date of Delta Spray</th><th>Stacks Numbers – Wheat</th><th>Stacks Numbers – Rice</th><th>Wheat Spray (MT)</th><th>Rice Spray (MT)</th><th>Total Spray (MT)</th><th>Consumption (kg)</th><th>Progressive Consumption (kg)</th></tr></thead><tbody>${rows||'<tr><td colspan="9">No Delta entries for this month.</td></tr>'}</tbody><tfoot>${totalRow}</tfoot></table>
 
 <style id="moisture-saved-entry-datetime-final">
@@ -2555,6 +2600,18 @@ body.page-open:not(.dashboard-open) #backBtn{background:#d92d3b!important;color:
 .stack-compact-panel .stack-compact-table .fum-days-blink{color:#d92d3b!important;font-weight:1000!important;animation:fumDaysBlink .8s steps(2,end) infinite!important}
 @keyframes fumDaysBlink{50%{opacity:.35}}
 @media(max-width:600px){.stack-compact-panel .stack-compact-table th,.stack-compact-panel .stack-compact-table td{font-size:14px!important;padding:8px 6px!important}.stack-compact-panel .stack-compact-table th{font-size:13px!important}.stack-compact-panel .panelhead{font-size:14px!important;font-weight:900!important}}
+</style>
+
+<style id="shed-3d-blink-and-combined-subtitle">
+.shambhu-responsive-header .shambhu-center-stacked h1.shed-main-title,
+.shambhu-responsive-header .shambhu-center-stacked p.shed-stack-numbers{
+ color:#ffd34d!important;
+ text-shadow:1px 1px 0 #a96500,2px 2px 0 #8b5200,3px 3px 0 #633b00,0 0 8px rgba(255,190,0,.85),0 0 16px rgba(0,255,100,.55)!important;
+ animation:shedGoldPulse 1.25s ease-in-out infinite alternate!important;
+}
+.shambhu-responsive-header .shambhu-center-stacked .shambhu-small-line{margin-top:0!important;line-height:1!important}
+@keyframes shedGoldPulse{from{filter:brightness(.88);transform:translateY(0);text-shadow:1px 1px 0 #a96500,2px 2px 0 #8b5200,3px 3px 0 #633b00,0 0 5px rgba(255,190,0,.6)}to{filter:brightness(1.25);transform:translateY(-1px);text-shadow:1px 1px 0 #a96500,2px 2px 0 #8b5200,3px 3px 0 #633b00,0 0 12px rgba(255,210,0,1),0 0 20px rgba(0,255,100,.7)}}
+@media(prefers-reduced-motion:reduce){.shambhu-responsive-header .shambhu-center-stacked h1.shed-main-title,.shambhu-responsive-header .shambhu-center-stacked p.shed-stack-numbers{animation:none!important}}
 </style>
 </head><body><h1>SHED NO. 9 / 14 / 18 / 20</h1><h2>CHEMICAL CONSUMPTION REPORT — ${month}</h2><div class="sum"><div class="card">Wheat ${activeChemicalFolder||"Chemical"}<b>${r.mm.filter(x=>x.commodity==="Wheat").reduce((s,x)=>s+chemNum(x.qty),0).toFixed(2)} Kg</b></div><div class="card">Rice ${activeChemicalFolder||"Chemical"}<b>${r.mm.filter(x=>x.commodity==="Rice").reduce((s,x)=>s+chemNum(x.qty),0).toFixed(2)} Kg</b></div><div class="card">Total ${activeChemicalFolder||"Chemical"}<b>${r.mm.reduce((s,x)=>s+chemNum(x.qty),0).toFixed(2)} Kg</b></div></div><table><thead><tr><th>Sr</th><th>Date</th><th>Shed</th><th>Stack</th><th>Commodity</th><th>Chemical</th><th>Qty</th><th>Unit</th><th>Purpose</th><th>Remarks</th></tr></thead><tbody>${rows||'<tr><td colspan="10">No entries for this month.</td></tr>'}</tbody></table><p><b>Abhi tak:</b> Wheat ${activeChemicalFolder||"Chemical"} ${r.total.filter(x=>x.commodity==="Wheat").reduce((s,x)=>s+chemNum(x.qty),0).toFixed(2)} Kg | Rice ${activeChemicalFolder||"Chemical"} ${r.total.filter(x=>x.commodity==="Rice").reduce((s,x)=>s+chemNum(x.qty),0).toFixed(2)} Kg | Total ${(r.total.reduce((s,x)=>s+chemNum(x.qty),0)).toFixed(2)} Kg</p>
 
@@ -2613,6 +2670,18 @@ body.page-open:not(.dashboard-open) #backBtn{background:#d92d3b!important;color:
 .stack-compact-panel .stack-compact-table .fum-days-blink{color:#d92d3b!important;font-weight:1000!important;animation:fumDaysBlink .8s steps(2,end) infinite!important}
 @keyframes fumDaysBlink{50%{opacity:.35}}
 @media(max-width:600px){.stack-compact-panel .stack-compact-table th,.stack-compact-panel .stack-compact-table td{font-size:14px!important;padding:8px 6px!important}.stack-compact-panel .stack-compact-table th{font-size:13px!important}.stack-compact-panel .panelhead{font-size:14px!important;font-weight:900!important}}
+</style>
+
+<style id="shed-3d-blink-and-combined-subtitle">
+.shambhu-responsive-header .shambhu-center-stacked h1.shed-main-title,
+.shambhu-responsive-header .shambhu-center-stacked p.shed-stack-numbers{
+ color:#ffd34d!important;
+ text-shadow:1px 1px 0 #a96500,2px 2px 0 #8b5200,3px 3px 0 #633b00,0 0 8px rgba(255,190,0,.85),0 0 16px rgba(0,255,100,.55)!important;
+ animation:shedGoldPulse 1.25s ease-in-out infinite alternate!important;
+}
+.shambhu-responsive-header .shambhu-center-stacked .shambhu-small-line{margin-top:0!important;line-height:1!important}
+@keyframes shedGoldPulse{from{filter:brightness(.88);transform:translateY(0);text-shadow:1px 1px 0 #a96500,2px 2px 0 #8b5200,3px 3px 0 #633b00,0 0 5px rgba(255,190,0,.6)}to{filter:brightness(1.25);transform:translateY(-1px);text-shadow:1px 1px 0 #a96500,2px 2px 0 #8b5200,3px 3px 0 #633b00,0 0 12px rgba(255,210,0,1),0 0 20px rgba(0,255,100,.7)}}
+@media(prefers-reduced-motion:reduce){.shambhu-responsive-header .shambhu-center-stacked h1.shed-main-title,.shambhu-responsive-header .shambhu-center-stacked p.shed-stack-numbers{animation:none!important}}
 </style>
 </head><body><h1>SHED NO. 9 / 14 / 18 / 20</h1><h2>MALATHION REQUIREMENT REPORT — ${month}</h2><div class="sum"><div class="card">ALP Wheat Qty<b>${Math.round(w)} MT</b></div><div class="card">ALP Rice Qty<b>${Math.round(ri)} MT</b></div><div class="card">Total ALP Qty<b>${Math.round(t)} MT</b></div><div class="card">Malathion 20% Target<b>${target.toFixed(2)} MT</b></div><div class="card">Malathion Done<b>${done.toFixed(2)} MT</b></div><div class="card">Malathion Baki<b>${remain.toFixed(2)} MT</b></div></div><div class="indicator"><b>20% MALATHION REQUIREMENT</b><br>Target ${target.toFixed(2)} MT · Done ${done.toFixed(2)} MT · <strong>Baki ${remain.toFixed(2)} MT</strong></div><p><b>Abhi tak:</b> Wheat ALP ${Math.round(aw)} MT | Rice ALP ${Math.round(ar)} MT | Total ALP ${Math.round(at)} MT | 20% Target ${allTarget.toFixed(2)} MT | Done ${allDone.toFixed(2)} MT | <b>Baki ${allRemain.toFixed(2)} MT</b></p>
 
