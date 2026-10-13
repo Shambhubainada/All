@@ -2528,6 +2528,14 @@ body.tight-back-gap #dynamicPage{margin-top:0!important}
 .mo-entry-datetime .mo-time{font-size:12px;font-weight:800;letter-spacing:.2px}
 @media(max-width:560px){.mo-final-table td{padding:8px 7px}.mo-entry-datetime{min-width:82px;font-size:12px}.mo-entry-datetime .mo-time{font-size:11px}}
 </style>
+
+<style id="hindi-fsd-sabarmati-one-row-mobile-fix">
+/* Keep Hindi FSD Sabarmati subtitle on one line on small mobile screens. */
+.fci-hindi .fci-brand-copy{min-width:0;flex:1 1 auto;}
+.fci-hindi .fci-brand-copy small{white-space:nowrap;display:block;letter-spacing:-.15px;}
+@media(max-width:700px){.fci-hindi .fci-brand-copy small{font-size:clamp(5px,1.45vw,7px)!important;line-height:1!important;margin-top:2px!important;}}
+@media(max-width:390px){.fci-hindi .fci-brand-copy small{font-size:5px!important;letter-spacing:-.25px!important;}}
+</style>
 </body><style id="moisture-update-rmc-hide-only">
 /* Only requested Moisture Update change: keep Add New Stack, hide Manual/Current RMC cards. */
 .moisture-focused-page .mo-stack-details{display:none!important}
@@ -2580,6 +2588,14 @@ body.page-open:not(.dashboard-open) #backBtn{background:#d92d3b!important;color:
 .mo-entry-datetime .mo-time{font-size:12px;font-weight:800;letter-spacing:.2px}
 @media(max-width:560px){.mo-final-table td{padding:8px 7px}.mo-entry-datetime{min-width:82px;font-size:12px}.mo-entry-datetime .mo-time{font-size:11px}}
 </style>
+
+<style id="hindi-fsd-sabarmati-one-row-mobile-fix">
+/* Keep Hindi FSD Sabarmati subtitle on one line on small mobile screens. */
+.fci-hindi .fci-brand-copy{min-width:0;flex:1 1 auto;}
+.fci-hindi .fci-brand-copy small{white-space:nowrap;display:block;letter-spacing:-.15px;}
+@media(max-width:700px){.fci-hindi .fci-brand-copy small{font-size:clamp(5px,1.45vw,7px)!important;line-height:1!important;margin-top:2px!important;}}
+@media(max-width:390px){.fci-hindi .fci-brand-copy small{font-size:5px!important;letter-spacing:-.25px!important;}}
+</style>
 </body></html>`;}
   function reportHtml(){const r=reportData(),month=new Date(r.m+'-01T00:00:00').toLocaleDateString('en-IN',{month:'long',year:'numeric'}), rows=r.mm.map((x,i)=>`<tr><td>${i+1}</td><td>${chemDate(x.date)}</td><td>${escC(x.shed)}</td><td>${escC(x.stack)}</td><td>${escC(x.commodity)}</td><td>${escC(x.chemical)}</td><td>${chemNum(x.qty).toFixed(2)}</td><td>${escC(x.unit)}</td><td>${escC(x.purpose)}</td><td>${escC(x.remarks)}</td></tr>`).join('');return `<!doctype html><html><head><meta charset="utf-8"><title>Chemical Report</title><style>body{font-family:Arial;margin:28px;color:#172d25}h1{text-align:center;margin:0;font-size:24px}h2{text-align:center;margin:5px 0 18px;font-size:18px}table{border-collapse:collapse;width:100%;font-size:11px}th,td{border:1px solid #999;padding:7px}th{background:#073d2c;color:white}.sum{margin:14px 0;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.card{border:1px solid #aaa;padding:10px}.card b{display:block;font-size:16px;margin-top:4px}</style><style id="compact-colour-summary-row">.report-summary-row td{font-weight:600;padding:4px 3px;line-height:1.15;background:#fff7d6;border:1px solid #d6b656;color:#243126}.report-summary-row td:nth-child(1),.report-summary-row td:nth-child(2){background:#e8eefc;color:#244a8f}.report-summary-row td:nth-child(3){background:#e8f7ec;color:#168a45}.report-summary-row td:nth-child(4){background:#fff0e1;color:#b45b16}.report-summary-row td:nth-child(5){background:#eee8ff;color:#6542a5}.report-summary-row td:nth-child(6){background:#e7f7f7;color:#16757a}.report-summary-row b{font-size:12px}</style><style id="exact-request-final-fix">
 /* Exact requested UI fixes only */
@@ -2627,6 +2643,14 @@ body.page-open:not(.dashboard-open) #backBtn{background:#d92d3b!important;color:
 .mo-entry-datetime .mo-date{font-weight:900}
 .mo-entry-datetime .mo-time{font-size:12px;font-weight:800;letter-spacing:.2px}
 @media(max-width:560px){.mo-final-table td{padding:8px 7px}.mo-entry-datetime{min-width:82px;font-size:12px}.mo-entry-datetime .mo-time{font-size:11px}}
+</style>
+
+<style id="hindi-fsd-sabarmati-one-row-mobile-fix">
+/* Keep Hindi FSD Sabarmati subtitle on one line on small mobile screens. */
+.fci-hindi .fci-brand-copy{min-width:0;flex:1 1 auto;}
+.fci-hindi .fci-brand-copy small{white-space:nowrap;display:block;letter-spacing:-.15px;}
+@media(max-width:700px){.fci-hindi .fci-brand-copy small{font-size:clamp(5px,1.45vw,7px)!important;line-height:1!important;margin-top:2px!important;}}
+@media(max-width:390px){.fci-hindi .fci-brand-copy small{font-size:5px!important;letter-spacing:-.25px!important;}}
 </style>
 </body>
 <style id="alp-few-heavy-final-fix">
@@ -2697,6 +2721,14 @@ body.page-open:not(.dashboard-open) #backBtn{background:#d92d3b!important;color:
 .mo-entry-datetime .mo-date{font-weight:900}
 .mo-entry-datetime .mo-time{font-size:12px;font-weight:800;letter-spacing:.2px}
 @media(max-width:560px){.mo-final-table td{padding:8px 7px}.mo-entry-datetime{min-width:82px;font-size:12px}.mo-entry-datetime .mo-time{font-size:11px}}
+</style>
+
+<style id="hindi-fsd-sabarmati-one-row-mobile-fix">
+/* Keep Hindi FSD Sabarmati subtitle on one line on small mobile screens. */
+.fci-hindi .fci-brand-copy{min-width:0;flex:1 1 auto;}
+.fci-hindi .fci-brand-copy small{white-space:nowrap;display:block;letter-spacing:-.15px;}
+@media(max-width:700px){.fci-hindi .fci-brand-copy small{font-size:clamp(5px,1.45vw,7px)!important;line-height:1!important;margin-top:2px!important;}}
+@media(max-width:390px){.fci-hindi .fci-brand-copy small{font-size:5px!important;letter-spacing:-.25px!important;}}
 </style>
 </body>
 <style id="alp-few-heavy-final-fix">
